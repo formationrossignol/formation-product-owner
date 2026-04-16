@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview — TP Product Owner (Light)</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; color: #0F172A; min-height: 100vh; padding: 24px; }
+
+  /* ── LAYOUT ── */
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1100px; margin: 0 auto; }
+  .demo-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #64748B; margin-bottom: 10px; }
+
+  /* ── SHARED ── */
+  .card { background: #fff; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 2px 12px rgba(79,70,241,0.08); padding: 20px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-inter  { background: rgba(245,158,11,0.1); color: #D97706; }
+  .badge-adv    { background: rgba(79,70,229,0.1); color: #4F46E5; }
+  .badge-jun    { background: rgba(16,185,129,0.1); color: #059669; }
+  .btn-primary  { background: linear-gradient(135deg,#4F46E5,#7C3AED); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .btn-ghost    { background: transparent; color: #64748B; border: 1px solid #E2E8F0; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-family: inherit; cursor: pointer; }
+
+  /* ── SECTION 1 : CaseSelection ── */
+  .case-featured { background: linear-gradient(135deg,rgba(79,70,229,0.06),rgba(124,58,237,0.04)); border-radius: 16px; border: 1px solid rgba(79,70,229,0.15); padding: 20px; margin-bottom: 12px; }
+  .case-featured .sector { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4F46E5; margin-bottom: 4px; }
+  .case-featured h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .case-featured p { font-size: 13px; color: #64748B; line-height: 1.6; margin-bottom: 14px; }
+  .case-featured-footer { display: flex; align-items: center; gap: 10px; }
+  .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mini-card { background: #fff; border-radius: 10px; border: 1px solid #E2E8F0; padding: 12px; border-top: 3px solid var(--accent, #4F46E5); box-shadow: 0 1px 6px rgba(79,70,241,0.05); }
+  .mini-card .icon { font-size: 18px; margin-bottom: 4px; }
+  .mini-card .title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .mini-card .sub   { font-size: 11px; color: #94A3B8; }
+
+  /* ── SECTION 2 : Workspace sidebar ── */
+  .workspace-demo { display: flex; gap: 0; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 2px 12px rgba(79,70,241,0.08); height: 320px; }
+  .sidebar { width: 56px; background: #FFFFFF; border-right: 1px solid #E2E8F0; display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px; flex-shrink: 0; }
+  .sidebar-logo { width: 32px; height: 32px; background: linear-gradient(135deg,#4F46E5,#7C3AED); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
+  .sidebar-sep { width: 24px; height: 1px; background: #E2E8F0; margin: 4px 0; }
+  .nav-item { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .nav-item.active { background: rgba(79,70,229,0.1); }
+  .nav-item svg { width: 18px; height: 18px; stroke: #94A3B8; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item.active svg { stroke: #4F46E5; }
+  .workspace-main { flex: 1; background: #F8FAFC; display: flex; flex-direction: column; overflow: hidden; }
+  .ws-topbar { background: #fff; border-bottom: 1px solid #E2E8F0; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .ws-topbar .company { font-size: 13px; font-weight: 700; color: #0F172A; }
+  .ws-topbar .sep { color: #CBD5E1; }
+  .ws-topbar .module-title { font-size: 13px; color: #64748B; }
+  .ws-topbar .progress-pill { margin-left: auto; background: rgba(79,70,229,0.1); color: #4F46E5; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+  .ws-content { flex: 1; padding: 20px; overflow-y: auto; }
+
+  /* ── SECTION 2b : Module Wizard ── */
+  .wizard-steps { display: flex; align-items: center; gap: 0; margin-bottom: 20px; }
+  .w-step { display: flex; align-items: center; }
+  .w-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .w-dot.done    { background: #10B981; color: white; }
+  .w-dot.active  { background: #4F46E5; color: white; }
+  .w-dot.pending { background: #E2E8F0; color: #94A3B8; }
+  .w-line { flex: 1; height: 2px; background: #E2E8F0; }
+  .w-line.done { background: #10B981; }
+  .situation-box { background: #fff; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 3px solid #4F46E5; padding: 14px 16px; margin-bottom: 16px; }
+  .situation-box .sit-label { font-size: 10px; font-weight: 700; color: #4F46E5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .situation-box p { font-size: 13px; color: #334155; line-height: 1.6; }
+  .choices-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .choice { background: #fff; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.15s; }
+  .choice.selected { border-color: #4F46E5; background: rgba(79,70,229,0.05); }
+  .choice .letter { font-size: 10px; font-weight: 700; color: #94A3B8; margin-bottom: 4px; }
+  .choice.selected .letter { color: #4F46E5; }
+  .choice p { font-size: 12px; color: #334155; line-height: 1.4; }
+  .choice.selected p { color: #1E293B; font-weight: 500; }
+  .rationale { border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; background: #fff; }
+  .rationale p { font-size: 12px; color: #94A3B8; font-style: italic; }
+
+  /* ── HEADING ── */
+  .page-title { text-align: center; margin-bottom: 32px; }
+  .page-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .page-title p { font-size: 13px; color: #64748B; }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>Preview — Redesign Light Mode</h1>
+  <p>Plus Jakarta Sans · Indigo/Violet · Enterprise SaaS</p>
+</div>
+
+<div class="demo-grid">
+
+  <!-- CASE SELECTION -->
+  <div>
+    <div class="demo-label">Page d'accueil — Sélection mission</div>
+    <div class="case-featured">
+      <div class="sector">⭐ Recommandée · E-commerce</div>
+      <h2>Panier+</h2>
+      <p>Arbitrer acquisition vs rétention sur une marketplace mode seconde main en pleine croissance.</p>
+      <div class="case-featured-footer">
+        <span class="badge badge-inter">Intermédiaire</span>
+        <span style="color:#94A3B8;font-size:12px;">⏱ 120 min · 8 modules</span>
+        <button class="btn-primary" style="margin-left:auto;">Démarrer →</button>
+      </div>
+    </div>
+    <div class="mini-grid">
+      <div class="mini-card" style="--accent:#7C3AED">
+        <div class="icon">⚙️</div>
+        <div class="title">OpsFlow</div>
+        <div class="sub">SaaS B2B · 150 min</div>
+        <span class="badge badge-adv" style="margin-top:6px;display:inline-block;">Avancé</span>
+      </div>
+      <div class="mini-card" style="--accent:#10B981">
+        <div class="icon">🏥</div>
+        <div class="title">MediLink</div>
+        <div class="sub">Santé · 150 min</div>
+        <span class="badge badge-adv" style="margin-top:6px;display:inline-block;">Avancé</span>
+      </div>
+      <div class="mini-card" style="--accent:#3B82F6">
+        <div class="icon">💰</div>
+        <div class="title">Finio</div>
+        <div class="sub">Finance · 120 min</div>
+        <span class="badge badge-inter" style="margin-top:6px;display:inline-block;">Intermédiaire</span>
+      </div>
+      <div class="mini-card" style="--accent:#EC4899">
+        <div class="icon">👥</div>
+        <div class="title">TalentOS</div>
+        <div class="sub">RH · 130 min</div>
+        <span class="badge badge-inter" style="margin-top:6px;display:inline-block;">Intermédiaire</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div>
+    <div class="demo-label">Workspace — Module actif</div>
+    <div class="workspace-demo">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-logo">P+</div>
+        <div class="sidebar-sep"></div>
+        <!-- Module icon (active) -->
+        <div class="nav-item active" title="Module">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <!-- KPI icon -->
+        <div class="nav-item" title="KPIs">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <!-- Inbox icon -->
+        <div class="nav-item" title="Inbox">
+          <svg viewBox="0 0 24 24"><polyline points="22 13 16 13 14 16 10 16 8 13 2 13"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+        </div>
+        <!-- Personas icon -->
+        <div class="nav-item" title="Équipe">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+      </div>
+      <!-- Main -->
+      <div class="workspace-main">
+        <div class="ws-topbar">
+          <span class="company">Panier+</span>
+          <span class="sep">›</span>
+          <span class="module-title">OKR Setting</span>
+          <div class="progress-pill">Module 2 / 8</div>
+        </div>
+        <div class="ws-content">
+          <!-- Wizard steps -->
+          <div class="wizard-steps">
+            <div class="w-step">
+              <div class="w-dot done">✓</div>
+            </div>
+            <div class="w-line done"></div>
+            <div class="w-step">
+              <div class="w-dot active">2</div>
+            </div>
+            <div class="w-line"></div>
+            <div class="w-step">
+              <div class="w-dot pending">3</div>
+            </div>
+            <div class="w-line"></div>
+            <div class="w-step">
+              <div class="w-dot pending">4</div>
+            </div>
+          </div>
+
+          <!-- Situation -->
+          <div class="situation-box">
+            <div class="sit-label">Situation</div>
+            <p>Le CMO veut lancer 3 nouvelles fonctionnalités ce trimestre. L'équipe tech estime qu'elle peut en livrer 1 proprement. Que faites-vous ?</p>
+          </div>
+
+          <!-- Choices -->
+          <div class="choices-row">
+            <div class="choice">
+              <div class="letter">A</div>
+              <p>Négocier pour livrer 2 features en MVP rapide</p>
+            </div>
+            <div class="choice selected">
+              <div class="letter">B ✓</div>
+              <p>Prioriser 1 seule feature avec qualité maximale</p>
+            </div>
+            <div class="choice">
+              <div class="letter">C</div>
+              <p>Demander plus de ressources à la direction</p>
+            </div>
+          </div>
+
+          <!-- Rationale -->
+          <div class="rationale">
+            <p>Justifiez votre choix (optionnel)…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

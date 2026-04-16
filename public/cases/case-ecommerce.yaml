@@ -1,0 +1,986 @@
+id: case-ecommerce
+title: "Panier+ : Croissance vs Rétention"
+version: "1.0"
+domain: ecommerce
+level: intermediate
+duration_minutes: 120
+
+context:
+  company: "Panier+"
+  role: "Product Owner — Équipe Expérience Acheteur"
+  industry: "Marketplace mode seconde main"
+  summary: "Panier+ est une marketplace B2C de mode seconde main lancée il y a 18 mois. La plateforme compte 420 000 inscrits et 38 000 vendeurs actifs. La croissance des inscriptions ralentit (+12% vs +67% l'an dernier) et le taux d'abandon panier a bondi à 71%. Le board exige un retour à la croissance pour la levée de fonds prévue dans 6 mois."
+  business_goal: "Atteindre 600 000 utilisateurs actifs mensuels et un GMV de 4,2M€/mois d'ici Q4"
+  constraints:
+    - "Équipe tech de 6 développeurs, vélocité de 42 pts/sprint"
+    - "Budget marketing gelé jusqu'à la levée de fonds"
+    - "Refonte graphique interdite (charte vendue aux investisseurs)"
+    - "Intégration paiement Stripe non modifiable avant audit de sécurité (Q3)"
+
+personas:
+  - id: clara
+    name: "Clara Fontaine"
+    role: "Acheteuse régulière (2-3 achats/mois)"
+    avatar: "👩"
+    personality: "Chercheuse de bonnes affaires, compare les prix, très sensible à la confiance vendeur"
+    goals:
+      - "Trouver des pièces de créateurs à prix raisonnable"
+      - "Être sûre de la qualité avant d'acheter"
+      - "Recevoir rapidement"
+    frustrations:
+      - "Photos trop peu nombreuses et de mauvaise qualité"
+      - "Vendeurs qui ne répondent pas avant achat"
+      - "Processus de paiement trop long (6 étapes)"
+
+  - id: marc
+    name: "Marc Delcourt"
+    role: "Vendeur actif (15-20 ventes/mois)"
+    avatar: "🧑"
+    personality: "Revendeur semi-professionnel, très orienté volume et rapidité de mise en vente"
+    goals:
+      - "Publier 20 annonces en moins d'une heure"
+      - "Être payé rapidement après vente confirmée"
+      - "Comprendre pourquoi certaines annonces ne se vendent pas"
+    frustrations:
+      - "Upload photo limité à 4 images par annonce"
+      - "Délai de paiement de 7 jours trop long"
+      - "Pas de statistiques de vues sur ses annonces"
+
+  - id: sophie
+    name: "Sophie Arnaud"
+    role: "Acheteuse occasionnelle (1 achat/2 mois)"
+    avatar: "👱‍♀️"
+    personality: "Méfiante, première expérience sur une marketplace de seconde main, besoin de rassurance"
+    goals:
+      - "Comprendre comment fonctionne la protection acheteur"
+      - "Pouvoir retourner facilement un article"
+      - "Voir des avis fiables sur les vendeurs"
+    frustrations:
+      - "Politique de retour peu visible"
+      - "Pas de chat en temps réel avec les vendeurs"
+      - "Sentiment que la plateforme favorise les vendeurs"
+
+kpis:
+  - id: taux_abandon_panier
+    label: "Taux d'abandon panier"
+    value: 71
+    unit: "%"
+    trend: up
+    target: 45
+
+  - id: gmv_mensuel
+    label: "GMV mensuel"
+    value: 2.8
+    unit: "M€"
+    trend: stable
+    target: 4.2
+
+  - id: retention_j30
+    label: "Rétention J30 acheteurs"
+    value: 34
+    unit: "%"
+    trend: down
+    target: 55
+
+  - id: nps
+    label: "NPS global"
+    value: 18
+    unit: "score"
+    trend: down
+    target: 45
+
+  - id: delai_premiere_vente
+    label: "Délai première vente vendeur"
+    value: 12
+    unit: "jours"
+    trend: up
+    target: 5
+
+datasets:
+  interviews:
+    - persona_id: clara
+      excerpt: "Franchement j'adore le principe mais à chaque fois que je veux acheter, il y a un truc qui coince. Là dernièrement j'avais un manteau dans mon panier depuis 3 jours, j'ai pas osé payer parce que le vendeur avait zéro avis. J'ai finalement trouvé le même ailleurs. Et le paiement... 6 étapes pour payer c'est trop. J'abandonne souvent à l'étape adresse."
+      key_insight: "Le manque de social proof vendeur et la longueur du tunnel de paiement sont les deux bloquants principaux à la conversion"
+
+    - persona_id: marc
+      excerpt: "Mon problème numéro un c'est les stats. Je vends des trucs, d'autres restent dans mon stock depuis 3 semaines, j'ai aucune idée de pourquoi. Combien de gens ont vu l'annonce ? Est-ce que c'est le prix ? La photo ? Je dois deviner. Et les 7 jours pour être payé c'est vraiment trop long pour quelqu'un qui tourne du stock."
+      key_insight: "L'absence de statistiques d'annonces empêche les vendeurs d'optimiser leurs ventes, ce qui dégrade la qualité du catalogue"
+
+    - persona_id: sophie
+      excerpt: "J'ai regardé pendant une heure, j'ai mis deux articles dans mon panier, et au moment de payer j'ai pas trouvé clairement ce qui se passe si l'article n'est pas comme décrit. J'ai fermé l'onglet. Sur Vinted c'est écrit partout 'protection acheteur'. Là j'ai dû chercher dans les FAQ. Et même dans les FAQ c'était pas clair."
+      key_insight: "La protection acheteur est un levier de conversion majeur mais elle est invisible dans le parcours d'achat"
+
+  analytics:
+    - metric: "Taux d'abandon par étape du tunnel"
+      data:
+        - label: "Panier"
+          value: 100
+        - label: "Identification"
+          value: 82
+        - label: "Adresse"
+          value: 61
+        - label: "Livraison"
+          value: 47
+        - label: "Paiement"
+          value: 31
+        - label: "Confirmation"
+          value: 29
+      insight: "La plus grande chute se produit entre Adresse (61%) et Livraison (47%) — 14 points perdus sur l'étape choix de livraison"
+
+    - metric: "Rétention acheteurs (cohorte mois 1)"
+      data:
+        - label: "J1"
+          value: 100
+        - label: "J7"
+          value: 58
+        - label: "J14"
+          value: 44
+        - label: "J30"
+          value: 34
+        - label: "J60"
+          value: 21
+        - label: "J90"
+          value: 15
+      insight: "La chute de J7 à J14 (14 points) suggère que les acheteurs qui n'ont pas eu une bonne expérience à leur premier achat ne reviennent pas"
+
+    - metric: "Conversion par nombre d'avis vendeur"
+      data:
+        - label: "0 avis"
+          value: 4
+        - label: "1-5 avis"
+          value: 11
+        - label: "6-20 avis"
+          value: 23
+        - label: "21-50 avis"
+          value: 31
+        - label: "51+ avis"
+          value: 38
+      insight: "Un vendeur avec 0 avis convertit 8x moins qu'un vendeur avec 51+ avis — la confiance est le principal levier de conversion"
+
+  feedback_clients:
+    - source: "Avis App Store"
+      verbatim: "Super concept mais le paiement est une galère. Ça m'a pris 8 minutes pour finaliser mon premier achat."
+      sentiment: negative
+
+    - source: "Enquête NPS — détracteur"
+      verbatim: "J'ai commandé une veste, le vendeur m'a envoyé quelque chose de complètement différent. J'ai mis 3 semaines à être remboursée. Jamais je ne recommanderai."
+      sentiment: negative
+
+    - source: "Avis Trustpilot"
+      verbatim: "Très bonne sélection de produits. Dommage que l'interface soit un peu lente sur mobile. Les vendeurs sont globalement sérieux."
+      sentiment: positive
+
+inbox:
+  - from: "Alexandre Petit (CEO)"
+    subject: "URGENT — Réunion investisseurs dans 3 semaines"
+    body: "Les investisseurs veulent voir une progression du GMV avant la réunion. Peux-tu me proposer les 3 features qui auront le plus d'impact rapide sur la conversion ? Je prépare le deck ce weekend."
+
+  - from: "Laure Chen (Head of Marketing)"
+    subject: "Idée : programme de parrainage"
+    body: "J'ai vu que Vinted a lancé un programme de parrainage très agressif. Est-ce qu'on pourrait faire pareil ? Je pense que ça pourrait booster les inscriptions rapidement. Je peux te préparer un brief si tu veux."
+
+  - from: "Thomas Roy (Lead Dev)"
+    subject: "Dette technique — alerte sur le module panier"
+    body: "Le module panier tourne sur une lib dépréciée depuis 6 mois. On a eu 2 bugs mineurs ce mois-ci. Je recommande qu'on planifie une migration propre. Ça prendrait environ 8 points sprint mais c'est important pour éviter des incidents en prod."
+
+modules:
+  - id: okr_setting
+    type: okr_setting
+    title: "Définir les OKRs du trimestre"
+    objectives:
+      - "Formuler un objectif qualitatif inspirant et aligné sur la stratégie"
+      - "Écrire des Key Results mesurables, avec une valeur cible et une date"
+    artifacts:
+      - type: document
+        title: "Brief stratégique CEO"
+        content: |
+          Objectif stratégique Q3 :
+          Préparer la levée de fonds Serie A en démontrant la traction produit.
+
+          Priorités du board :
+          1. Augmenter le GMV mensuel (indicateur principal pour les investisseurs)
+          2. Améliorer le NPS (preuve de product-market fit)
+          3. Réduire le taux d'abandon panier (levier direct sur le GMV)
+
+          Contrainte : pas de recrutement prévu avant la levée.
+    instructions: "Sur la base du brief stratégique et des KPIs actuels, définissez l'OKR principal du trimestre pour l'équipe Expérience Acheteur."
+    tasks:
+      - id: okr_1_objective
+        type: single_choice
+        label: "Quel objectif qualitatif est le plus adapté pour l'équipe Expérience Acheteur ce trimestre ?"
+        options:
+          - id: a
+            label: "Devenir la marketplace de seconde main avec la meilleure expérience d'achat en France"
+          - id: b
+            label: "Augmenter le GMV de 2,8M€ à 4,2M€ d'ici fin Q3"
+          - id: c
+            label: "Réduire les coûts de support client de 20%"
+          - id: d
+            label: "Lancer 5 nouvelles features dans le tunnel de paiement"
+        expected: a
+        points: 15
+        rationale: "Un objectif OKR doit être qualitatif et inspirant. L'option B est un Key Result (mesurable et chiffré). C et D sont des outputs, pas des outcomes. A définit une ambition qualitative alignée sur la mission de l'équipe."
+
+      - id: okr_1_kr_priorite
+        type: ranking
+        label: "Classez ces Key Results du plus au moins pertinent pour l'objectif défini"
+        options:
+          - id: kr1
+            label: "Réduire le taux d'abandon panier de 71% à 45% d'ici fin Q3"
+          - id: kr2
+            label: "Atteindre un NPS acheteur de 40 (vs 18 actuellement)"
+          - id: kr3
+            label: "Porter la rétention J30 de 34% à 50%"
+          - id: kr4
+            label: "Publier 10 articles de blog sur la mode durable"
+        expected_order:
+          - kr1
+          - kr3
+          - kr2
+          - kr4
+        points: 20
+        rationale: "KR1 est prioritaire car l'abandon panier à 71% est le frein direct au GMV demandé par les investisseurs. KR3 impacte le GMV sur le long terme. KR2 est important mais plus difficile à piloter directement. KR4 est du marketing, pas un KR produit."
+
+    debrief: "Un bon OKR distingue clairement l'objectif qualitatif (la direction) des Key Results quantitatifs (les jalons mesurables). Pour Panier+, l'urgence est de réduire l'abandon panier — c'est le levier le plus direct sur le GMV demandé par les investisseurs."
+    scoring:
+      max_points: 35
+      pass_threshold: 20
+
+  - id: competitive_analysis
+    type: competitive_analysis
+    title: "Analyser le paysage concurrentiel"
+    objectives:
+      - "Identifier les forces et faiblesses des concurrents"
+      - "Positionner Panier+ sur la matrice features vs coût"
+    artifacts:
+      - type: document
+        title: "Benchmark concurrents"
+        content: |
+          VINTED (leader européen)
+          - Aucun frais pour l'acheteur
+          - Protection acheteur très visible et rassurante
+          - Tunnel de paiement en 3 étapes
+          - Messagerie intégrée avant achat
+          - Pas de curation, volume brut
+          Commission vendeur : 0% + frais protection
+
+          VESTIAIRE COLLECTIVE (premium)
+          - Authentification obligatoire des articles
+          - Vendeurs professionnels uniquement
+          - Prix plus élevés, marges importantes
+          - Service client premium
+          Commission vendeur : 12-15%
+
+          DEPOP (jeunes/mode)
+          - Interface très visuelle, proche Instagram
+          - Forte communauté, abonnements vendeurs
+          - Faible en France (UK/US focus)
+          Commission vendeur : 10%
+
+          LEBONCOIN MODE (généraliste)
+          - Audience massive mais peu qualifiée mode
+          - Pas de protection acheteur intégrée
+          - Interface datée
+          Commission vendeur : 0%
+    instructions: "Positionnez Panier+ et ses concurrents sur la matrice, puis identifiez le positionnement stratégique optimal."
+    competitors:
+      - id: vinted
+        name: "Vinted"
+        description: "Leader, 0% frais acheteur, UX très fluide, peu de curation"
+      - id: vestiaire
+        name: "Vestiaire Collective"
+        description: "Premium, authentification, forte commission"
+      - id: depop
+        name: "Depop"
+        description: "Mode + communauté, interface Instagram-like"
+      - id: leboncoin
+        name: "Leboncoin Mode"
+        description: "Audience massive, peu de features, 0 protection"
+    tasks:
+      - id: comp_positioning
+        type: single_choice
+        label: "Quel est le principal avantage concurrentiel sur lequel Panier+ doit capitaliser ?"
+        options:
+          - id: a
+            label: "Réduire les commissions à 0% pour concurrencer Vinted"
+          - id: b
+            label: "Cibler le segment 'mode accessible de qualité' avec une expérience de confiance supérieure à Vinted mais accessible vs Vestiaire"
+          - id: c
+            label: "Copier l'interface de Depop pour attirer une audience jeune"
+          - id: d
+            label: "Fusionner avec Leboncoin pour bénéficier de leur audience"
+        expected: b
+        points: 15
+        rationale: "Panier+ est positionné entre le mass-market (Vinted) et le premium (Vestiaire). Baisser les commissions à 0% est une guerre de prix que Panier+ ne peut pas gagner. Copier Depop ou fusionner sont des non-stratégies. Le vrai différenciateur est la confiance + accessibilité."
+
+    debrief: "L'analyse concurrentielle révèle que Panier+ a un espace stratégique clair : offrir plus de confiance et de qualité que Vinted, avec des prix plus accessibles que Vestiaire Collective. Les features de confiance (avis, protection acheteur visible) sont donc prioritaires."
+    scoring:
+      max_points: 15
+      pass_threshold: 10
+
+  - id: roadmap_planning
+    type: roadmap_planning
+    title: "Construire la roadmap Q3-Q4"
+    objectives:
+      - "Prioriser les thèmes stratégiques sur les deux prochains trimestres"
+      - "Aligner la roadmap sur les OKRs définis"
+    artifacts:
+      - type: document
+        title: "Demandes backlog en attente"
+        content: |
+          THÈME CONFIANCE
+          - Affichage badge "Vendeur vérifié" sur les annonces [effort: M]
+          - Tunnel paiement réduit de 6 à 3 étapes [effort: L]
+          - Protection acheteur visible dans le panier [effort: S]
+
+          THÈME CROISSANCE VENDEURS
+          - Statistiques d'annonces (vues, favoris) [effort: M]
+          - Réduction délai paiement vendeur de 7 à 2 jours [effort: L]
+          - Outil de republication automatique des annonces [effort: M]
+
+          THÈME EXPÉRIENCE MOBILE
+          - Refonte onboarding mobile [effort: L]
+          - Upload jusqu'à 8 photos par annonce [effort: S]
+          - Notifications push personnalisées [effort: M]
+
+          THÈME TECH
+          - Migration module panier (dette technique) [effort: M]
+          - Upgrade infrastructure search [effort: XL]
+    instructions: "Répartissez les features dans la roadmap Q3/Q4 en cohérence avec les OKRs. Q3 = 6 sprints de 42 pts = 252 pts disponibles."
+    features:
+      - id: f1
+        title: "Tunnel paiement 3 étapes"
+        theme: ux
+        effort: 8
+      - id: f2
+        title: "Protection acheteur visible"
+        theme: ux
+        effort: 3
+      - id: f3
+        title: "Badge vendeur vérifié"
+        theme: growth
+        effort: 5
+      - id: f4
+        title: "Stats d'annonces vendeur"
+        theme: growth
+        effort: 5
+      - id: f5
+        title: "Délai paiement J+2"
+        theme: growth
+        effort: 8
+      - id: f6
+        title: "Upload 8 photos"
+        theme: ux
+        effort: 2
+      - id: f7
+        title: "Notifications push"
+        theme: growth
+        effort: 5
+      - id: f8
+        title: "Migration panier (dette tech)"
+        theme: tech
+        effort: 8
+      - id: f9
+        title: "Refonte onboarding mobile"
+        theme: ux
+        effort: 8
+      - id: f10
+        title: "Upgrade search"
+        theme: tech
+        effort: 13
+    tasks:
+      - id: roadmap_q3_focus
+        type: multi_select
+        label: "Quelles features doivent ABSOLUMENT être en Q3 pour atteindre les OKRs ? (sélectionnez 3 à 4 features)"
+        options:
+          - id: f1
+            label: "Tunnel paiement 3 étapes (impact direct abandon panier)"
+          - id: f2
+            label: "Protection acheteur visible (impact confiance + conversion)"
+          - id: f3
+            label: "Badge vendeur vérifié (impact conversion)"
+          - id: f7
+            label: "Notifications push (engagement)"
+          - id: f8
+            label: "Migration panier dette technique (stabilité)"
+          - id: f10
+            label: "Upgrade search (performance long terme)"
+        expected:
+          - f1
+          - f2
+          - f3
+          - f8
+        points: 25
+        hint: "Pensez à l'impact direct sur les KPIs prioritaires. La dette technique non traitée peut provoquer des incidents en prod."
+        rationale: "F1 et F2 attaquent directement l'abandon panier (OKR principal). F3 améliore la confiance (données analytics prouvent l'impact). F8 est critique : la dette technique sur le panier pourrait provoquer un incident lors du pic de fréquentation. F7 et F10 sont importants mais pas urgents pour Q3."
+
+    debrief: "Une bonne roadmap Q3 doit attaquer directement les KPIs bloquants (abandon panier) tout en gérant la dette technique critique. Reporter la migration panier est risqué avec un peak season (rentrée) en septembre."
+    scoring:
+      max_points: 25
+      pass_threshold: 15
+
+  - id: discovery
+    type: discovery
+    title: "Discovery — Comprendre les vrais problèmes"
+    objectives:
+      - "Analyser les interviews utilisateurs pour identifier les pain points réels"
+      - "Croiser données qualitatives et quantitatives"
+    interviews:
+      - persona_id: "Clara Fontaine (acheteuse)"
+        excerpt: "Franchement j'adore le principe mais à chaque fois que je veux acheter, il y a un truc qui coince. Là dernièrement j'avais un manteau dans mon panier depuis 3 jours, j'ai pas osé payer parce que le vendeur avait zéro avis. J'ai finalement trouvé le même ailleurs. Et le paiement... 6 étapes pour payer c'est trop. J'abandonne souvent à l'étape adresse."
+        key_insight: "Manque de confiance vendeur + tunnel trop long = abandon"
+      - persona_id: "Marc Delcourt (vendeur)"
+        excerpt: "Mon problème numéro un c'est les stats. Je vends des trucs, d'autres restent dans mon stock depuis 3 semaines, j'ai aucune idée de pourquoi. Et les 7 jours pour être payé c'est vraiment trop long pour quelqu'un qui tourne du stock."
+        key_insight: "Absence de feedback vendeur = qualité de catalogue dégradée"
+      - persona_id: "Sophie Arnaud (nouvelle acheteuse)"
+        excerpt: "J'ai regardé pendant une heure, j'ai mis deux articles dans mon panier, et au moment de payer j'ai pas trouvé clairement ce qui se passe si l'article n'est pas comme décrit. J'ai fermé l'onglet."
+        key_insight: "Protection acheteur invisible = abandon de nouveaux utilisateurs"
+    analytics_highlights:
+      - metric: "Abandon à l'étape livraison"
+        value: "47% → 31%"
+        insight: "14 points perdus sur l'étape choix de livraison — plus grosse chute du tunnel"
+      - metric: "Conversion 0 avis vs 51+ avis"
+        value: "4% vs 38%"
+        insight: "Un vendeur sans avis convertit 8x moins — la confiance est le levier #1"
+      - metric: "Rétention J14"
+        value: "44%"
+        insight: "Plus de la moitié des acheteurs ne reviennent pas après J14"
+    tasks:
+      - id: disc_main_insight
+        type: single_choice
+        label: "Quel est le problème racine principal qui explique à la fois l'abandon panier ET la mauvaise rétention ?"
+        options:
+          - id: a
+            label: "L'interface mobile est trop lente"
+          - id: b
+            label: "Le manque de confiance dans le vendeur et la plateforme bloque la conversion et le réachat"
+          - id: c
+            label: "Les prix pratiqués sur Panier+ sont trop élevés vs la concurrence"
+          - id: d
+            label: "Il n'y a pas assez de produits dans le catalogue"
+        expected: b
+        points: 20
+        rationale: "Les interviews et les analytics convergent vers la même cause : la confiance. Clara abandonne faute d'avis vendeur. Sophie abandonne faute de garantie visible. Les analytics montrent que conversion x8 entre 0 avis et 51+ avis. Ce n'est pas un problème de prix (pas mentionné) ni de catalogue (38k vendeurs actifs)."
+
+    debrief: "La discovery révèle que la confiance est le problème central, pas la performance technique ou les prix. Toute feature qui augmente la confiance (avis, protection visible, badge vérifié) aura un impact direct sur l'abandon panier ET la rétention."
+    scoring:
+      max_points: 20
+      pass_threshold: 15
+
+  - id: story_writing
+    type: story_writing
+    title: "Rédiger les User Stories"
+    objectives:
+      - "Maîtriser le format En tant que / Je veux / Afin de"
+      - "Définir des critères d'acceptance testables"
+    artifacts:
+      - type: document
+        title: "Brief feature — Protection acheteur visible"
+        content: |
+          Feature : Affichage de la Garantie Panier+ dans le tunnel d'achat
+
+          Contexte : Les nouvelles acheteuses (Sophie-type) ne trouvent pas l'information
+          sur la protection acheteur dans le tunnel de paiement. Résultat : abandon.
+
+          Données :
+          - 68% des nouvelles inscrites n'ont jamais lu les CGV
+          - Sur la page produit, le bloc "Protection Panier+" a un taux de clic de 0,8%
+          - Sur Vinted, le badge "Achat protégé" est visible en permanence
+
+          Cible : Afficher un résumé de la garantie (3 bullets max) à l'étape panier
+          et à l'étape paiement.
+    tasks:
+      - id: sw_format
+        type: single_choice
+        label: "Parmi ces User Stories pour la feature 'Protection acheteur visible', laquelle est correctement formulée et respecte INVEST ?"
+        options:
+          - id: a
+            label: "En tant que plateforme, je veux afficher la protection acheteur pour rassurer les gens."
+          - id: b
+            label: "En tant que nouvelle acheteuse hésitante, je veux voir clairement ce que Panier+ garantit à chaque étape du paiement, afin de finaliser mon achat en toute confiance."
+          - id: c
+            label: "Il faudrait faire une page FAQ sur les garanties."
+          - id: d
+            label: "En tant qu'acheteuse, je veux la protection acheteur."
+        expected: b
+        points: 15
+        rationale: "L'option B respecte INVEST : elle nomme un persona précis (nouvelle acheteuse hésitante), décrit une action claire et mesurable, et articule la valeur (finaliser l'achat en confiance). A parle de 'la plateforme' (pas un utilisateur). C est une note de design, pas une US. D est vague et n'a pas de valeur clairement exprimée."
+
+      - id: sw_acceptance
+        type: multi_select
+        label: "Quels critères d'acceptance sont nécessaires pour cette User Story ?"
+        options:
+          - id: ac1
+            label: "Le bloc garantie apparaît à l'étape panier avec 3 bullets maximum"
+          - id: ac2
+            label: "Le bloc garantie apparaît à l'étape paiement"
+          - id: ac3
+            label: "Le bloc est responsive mobile"
+          - id: ac4
+            label: "L'icône du bloc garantie est en vert"
+          - id: ac5
+            label: "Les utilisateurs non-connectés ne voient pas le bloc"
+        expected:
+          - ac1
+          - ac2
+          - ac3
+        points: 15
+        rationale: "AC1 et AC2 couvrent les deux points d'affichage définis dans le brief. AC3 est indispensable car 78% du trafic est mobile. AC4 est une décision graphique, pas un critère d'acceptance fonctionnel. AC5 est incorrect : les non-connectés sont précisément les nouveaux utilisateurs à rassurer."
+
+    debrief: "Une bonne User Story identifie un persona précis (pas 'l'utilisateur'), une action mesurable, et un bénéfice clair. Les critères d'acceptance doivent être binaires : testables par un QA sans interprétation."
+    scoring:
+      max_points: 30
+      pass_threshold: 20
+
+  - id: refinement
+    type: refinement
+    title: "Refinement — Estimer le backlog"
+    objectives:
+      - "Appliquer l'estimation en t-shirt sizes"
+      - "Identifier les stories trop grosses à découper"
+    stories:
+      - id: s1
+        title: "Afficher protection acheteur dans le panier"
+      - id: s2
+        title: "Réduire tunnel paiement de 6 à 3 étapes"
+      - id: s3
+        title: "Créer badge vendeur vérifié"
+      - id: s4
+        title: "Afficher stats de vues sur les annonces vendeur"
+      - id: s5
+        title: "Notification push lors d'une nouvelle annonce d'un vendeur favori"
+      - id: s6
+        title: "Refonte complète de l'expérience mobile"
+      - id: s7
+        title: "Permettre upload jusqu'à 8 photos"
+      - id: s8
+        title: "Migration module panier vers nouvelle lib"
+    tasks:
+      - id: ref_split
+        type: single_choice
+        label: "La story 'Réduire tunnel paiement de 6 à 3 étapes' est estimée XL par l'équipe. Quelle est la meilleure décision ?"
+        options:
+          - id: a
+            label: "L'accepter telle quelle et la planifier sur 2 sprints"
+          - id: b
+            label: "La découper en sous-stories : (1) fusionner étapes adresse+livraison, (2) pré-remplir adresse depuis profil, (3) mémoriser mode de paiement"
+          - id: c
+            label: "La supprimer du backlog car elle est trop complexe"
+          - id: d
+            label: "La déléguer à un autre PO"
+        expected: b
+        points: 15
+        rationale: "Une story XL (>8 pts) doit être découpée pour rentrer dans un sprint. L'option B propose un découpage vertical (chaque sous-story apporte de la valeur seule). L'option A est risquée car elle crée des dépendances entre sprints. Supprimer ou déléguer n'est pas une réponse valide."
+
+    debrief: "Le refinement sert à s'assurer que les stories sont estimables, testables et tiennent dans un sprint. Une story non découpée est une dette de planning qui génère du stress en fin de sprint."
+    scoring:
+      max_points: 15
+      pass_threshold: 10
+
+  - id: sprint_planning
+    type: sprint_planning
+    title: "Sprint Planning — Composer le Sprint 1"
+    objectives:
+      - "Sélectionner les stories en cohérence avec le sprint goal"
+      - "Respecter la capacité de l'équipe (42 pts)"
+    capacity: 42
+    stories:
+      - id: sp1
+        title: "Protection acheteur visible dans le panier"
+        points: 3
+        theme: ux
+        priority: "P1 — impact direct OKR1"
+      - id: sp2
+        title: "Protection acheteur visible à l'étape paiement"
+        points: 2
+        theme: ux
+        priority: "P1 — impact direct OKR1"
+      - id: sp3
+        title: "Badge vendeur vérifié sur les annonces"
+        points: 5
+        theme: growth
+        priority: "P1 — impact conversion"
+      - id: sp4
+        title: "Fusion étapes adresse + livraison (tunnel)"
+        points: 8
+        theme: ux
+        priority: "P1 — impact abandon panier"
+      - id: sp5
+        title: "Migration module panier (dette tech)"
+        points: 8
+        theme: tech
+        priority: "P1 — stabilité critique"
+      - id: sp6
+        title: "Pré-remplissage adresse depuis profil"
+        points: 5
+        theme: ux
+        priority: "P2"
+      - id: sp7
+        title: "Stats vues annonces vendeur"
+        points: 5
+        theme: growth
+        priority: "P2"
+      - id: sp8
+        title: "Upload 8 photos par annonce"
+        points: 2
+        theme: ux
+        priority: "P2"
+      - id: sp9
+        title: "Notifications push vendeur favori"
+        points: 5
+        theme: growth
+        priority: "P3"
+      - id: sp10
+        title: "Refonte onboarding mobile"
+        points: 13
+        theme: ux
+        priority: "P3 — trop grosse pour ce sprint"
+    tasks:
+      - id: sp_goal
+        type: single_choice
+        label: "Quel sprint goal est le plus approprié pour le Sprint 1 ?"
+        options:
+          - id: a
+            label: "Améliorer la performance technique de la plateforme"
+          - id: b
+            label: "Augmenter la confiance des acheteurs pour réduire l'abandon panier sur les étapes panier et paiement"
+          - id: c
+            label: "Livrer le maximum de features en 2 semaines"
+          - id: d
+            label: "Satisfaire les demandes du CEO pour la réunion investisseurs"
+        expected: b
+        points: 10
+        rationale: "Un sprint goal doit être orienté outcome (impact utilisateur) et aligné sur les OKRs. B décrit précisément l'objectif business. A est technique. C est une anti-pattern (livrer le max n'est pas un objectif). D est une motivation externe, pas un objectif produit."
+
+    debrief: "Le sprint goal guide les arbitrages en cours de sprint. Une équipe qui connaît son sprint goal peut décider seule quoi faire si une story bloque. Un bon sprint goal est mesurable à la fin du sprint."
+    scoring:
+      max_points: 10
+      pass_threshold: 7
+
+  - id: sprint_review
+    type: sprint_review
+    title: "Sprint Review — Accepter ou refuser les livrables"
+    objectives:
+      - "Appliquer rigoureusement les critères d'acceptance"
+      - "Ne pas confondre 'livré techniquement' et 'accepté fonctionnellement'"
+    delivered_stories:
+      - id: rev1
+        title: "Protection acheteur visible dans le panier"
+        acceptance_criteria:
+          - "Le bloc 'Garantie Panier+' apparaît sous le récapitulatif panier"
+          - "Il contient exactement 3 bullets de garantie"
+          - "Il est visible sur mobile (test iPhone 12 et Samsung S21)"
+        demo_note: "Le bloc s'affiche bien sur desktop. Sur mobile le bloc est présent mais les 3 bullets sont remplacées par '+ voir les garanties' — il faut cliquer pour voir."
+        issues: "Le critère d'acceptance AC3 (mobile) n'est pas pleinement respecté"
+
+      - id: rev2
+        title: "Badge vendeur vérifié sur les annonces"
+        acceptance_criteria:
+          - "Le badge apparaît sur toutes les annonces des vendeurs ayant complété la vérification"
+          - "Le badge est absent pour les vendeurs non vérifiés"
+          - "Un clic sur le badge ouvre un tooltip expliquant la vérification"
+        demo_note: "Badge affiché correctement sur toutes les annonces. Tooltip fonctionnel. Test sur 50 vendeurs vérifiés et 30 non vérifiés — 0 anomalie."
+        issues: null
+
+      - id: rev3
+        title: "Fusion étapes adresse + livraison"
+        acceptance_criteria:
+          - "Les étapes 3 (adresse) et 4 (livraison) sont fusionnées en une seule étape"
+          - "L'utilisateur peut sélectionner le mode de livraison sur la même page que l'adresse"
+          - "Le nombre total d'étapes affiché dans la barre de progression est mis à jour (5 → 4)"
+        demo_note: "Les deux formulaires sont sur la même page. La barre de progression affiche encore 5 étapes — le compteur n'a pas été mis à jour."
+        issues: "AC3 non respecté : la barre de progression n'est pas à jour"
+    tasks:
+      - id: rev_decision1
+        type: single_choice
+        label: "Pour la story 'Protection acheteur visible dans le panier' — quelle décision prenez-vous ?"
+        options:
+          - id: a
+            label: "Accepter : le bloc est visible, c'est l'essentiel"
+          - id: b
+            label: "Refuser : le critère d'acceptance mobile n'est pas respecté"
+          - id: c
+            label: "Accepter avec réserve et créer un ticket de bug"
+          - id: d
+            label: "Reporter la décision à la prochaine sprint review"
+        expected: b
+        points: 15
+        rationale: "78% du trafic est mobile. Un critère d'acceptance non respecté = story non terminée. Accepter 'avec réserve' est une mauvaise pratique qui crée de la dette qualité. Reporter n'a pas de sens : la Definition of Done est binaire."
+
+    debrief: "La sprint review n'est pas une formalité — c'est le moment où le PO protège la qualité produit. Accepter une story dont les critères d'acceptance ne sont pas respectés crée de la dette qualité et envoie un mauvais signal à l'équipe."
+    scoring:
+      max_points: 15
+      pass_threshold: 10
+
+  - id: kpi_analysis
+    type: kpi_analysis
+    title: "Analyse KPIs — Mesurer l'impact du Sprint 1"
+    objectives:
+      - "Interpréter les données post-sprint pour valider ou invalider les hypothèses"
+      - "Distinguer corrélation et causalité"
+    charts:
+      - title: "Taux d'abandon panier — semaines 1 à 6"
+        type: line
+        context: "Le sprint 1 a été livré en semaine 3. Le badge vendeur vérifié a été mis en prod en semaine 4."
+        data:
+          - label: "S1"
+            value: 71
+          - label: "S2"
+            value: 70
+          - label: "S3"
+            value: 71
+          - label: "S4"
+            value: 68
+          - label: "S5"
+            value: 65
+          - label: "S6"
+            value: 63
+        key_observation: "Baisse de 8 points depuis le sprint 1, mais progressive. Difficile d'isoler l'impact de chaque feature."
+
+      - title: "Taux de conversion par type de vendeur (S6)"
+        type: bar
+        context: "Comparaison conversion sur les annonces avec et sans badge vendeur vérifié"
+        data:
+          - label: "Sans badge"
+            value: 6
+          - label: "Avec badge"
+            value: 19
+        key_observation: "Les annonces avec badge convertissent 3x mieux — confirmation de l'impact confiance"
+    tasks:
+      - id: kpi_interpretation
+        type: single_choice
+        label: "L'abandon panier est passé de 71% à 63% après le sprint 1. Quelle interprétation est la plus rigoureuse ?"
+        options:
+          - id: a
+            label: "Le sprint 1 a résolu le problème d'abandon panier — on peut passer à autre chose"
+          - id: b
+            label: "La baisse est encourageante mais insuffisante. On est à 63% vs objectif 45%. Il faut continuer à travailler le tunnel."
+          - id: c
+            label: "La baisse de 8 points prouve que le badge vendeur vérifié est la cause principale"
+          - id: d
+            label: "La baisse est due à la saisonnalité, pas aux features"
+        expected: b
+        points: 20
+        rationale: "B est la seule réponse rigoureuse. A ignore l'objectif (45%). C est une erreur de causalité : plusieurs features ont été livrées, on ne peut pas isoler le badge. D est possible mais nécessite une analyse comparative pour être affirmé."
+
+      - id: kpi_next_action
+        type: single_choice
+        label: "Quel est le prochain levier à activer pour continuer à réduire l'abandon panier ?"
+        options:
+          - id: a
+            label: "Attendre encore 3 sprints pour avoir plus de données"
+          - id: b
+            label: "Lancer un A/B test sur la mémorisation du mode de paiement"
+          - id: c
+            label: "Changer complètement de stratégie et se focaliser sur l'acquisition"
+          - id: d
+            label: "Mettre fin au projet d'optimisation du tunnel"
+        expected: b
+        points: 15
+        rationale: "Les données montrent que l'abandon principal se situe maintenant à l'étape paiement (après la fusion adresse/livraison). La mémorisation du mode de paiement est le prochain levier logique. Attendre n'est pas acceptable avec une levée de fonds en approche. Changer de stratégie serait prématuré."
+
+    debrief: "L'analyse KPI est une compétence critique du PO. Une bonne analyse distingue corrélation et causalité, compare les résultats aux objectifs (pas juste à la baseline), et propose le prochain levier à activer."
+    scoring:
+      max_points: 35
+      pass_threshold: 25
+
+  - id: stakeholder_mgmt
+    type: stakeholder_mgmt
+    title: "Gérer les stakeholders"
+    objectives:
+      - "Prioriser les demandes conflictuelles entre stakeholders"
+      - "Communiquer les arbitrages avec clarté et données"
+    stakeholder_messages:
+      - from: "Alexandre Petit (CEO)"
+        subject: "Demande d'urgence — Programme parrainage pour la réunion investisseurs"
+        priority: high
+        body: "Les investisseurs veulent voir de la croissance. J'ai besoin qu'on lance un programme de parrainage avant la réunion dans 3 semaines. C'est non négociable."
+        demand: "Livrer un programme de parrainage complet en 3 semaines (1,5 sprints)"
+
+      - from: "Thomas Roy (Lead Dev)"
+        subject: "Incident prod — bug critique module panier"
+        priority: high
+        body: "On a un bug en production sur le module panier. 12% des tentatives de paiement mobile échouent silencieusement depuis ce matin. J'ai besoin de 2 jours dev pour patcher. Doit-on arrêter le sprint en cours ?"
+        demand: "Suspendre le sprint pour corriger le bug critique"
+
+      - from: "Laure Chen (Marketing)"
+        subject: "Push notifications — campagne Black Friday"
+        priority: medium
+        body: "On a besoin des notifications push avant le Black Friday (dans 6 semaines). Sans ça on ne peut pas faire de campagne. C'est important pour les revenus Q4."
+        demand: "Intégrer les notifications push dans le prochain sprint"
+    tasks:
+      - id: sh_bug_vs_ceo
+        type: single_choice
+        label: "Le bug critique (12% d'échecs paiement) et la demande CEO (parrainage) arrivent en même temps. Quelle est la bonne décision ?"
+        options:
+          - id: a
+            label: "Tout arrêter pour le programme de parrainage — le CEO a la priorité"
+          - id: b
+            label: "Corriger le bug immédiatement (impact direct sur le GMV), puis discuter du parrainage avec le CEO en lui montrant les données d'impact"
+          - id: c
+            label: "Ignorer le bug pour l'instant et livrer le parrainage d'abord"
+          - id: d
+            label: "Escalader au board pour arbitrage"
+        expected: b
+        points: 20
+        rationale: "Un bug qui bloque 12% des paiements impacte directement le GMV — indicateur suivi par les investisseurs. Le corriger EST dans l'intérêt du CEO. Le PO doit prendre cette décision en autonomie et le communiquer avec données. Ignorer le bug est dangereux. Escalader est une non-décision."
+
+    debrief: "La gestion des stakeholders nécessite d'arbitrer avec des données, pas avec la hiérarchie. Un bug critique qui impacte les revenus a toujours la priorité sur une nouvelle feature. Le PO doit être capable de dire non à un CEO en justifiant sa décision avec des métriques."
+    scoring:
+      max_points: 20
+      pass_threshold: 15
+
+  - id: release_communication
+    type: release_communication
+    title: "Communiquer la Release aux utilisateurs"
+    objectives:
+      - "Adapter le message selon l'audience (acheteurs vs vendeurs vs presse)"
+      - "Choisir le bon canal et le bon niveau de détail"
+    version: "v2.3"
+    release_date: "15 septembre"
+    released_features:
+      - title: "Paiement simplifié"
+        description: "Le tunnel de paiement passe de 6 à 4 étapes. Votre adresse est maintenant pré-remplie."
+        audience: "Acheteurs"
+      - title: "Badge Vendeur Vérifié"
+        description: "Les vendeurs qui ont complété notre processus de vérification affichent désormais un badge de confiance."
+        audience: "Acheteurs et Vendeurs"
+      - title: "Statistiques d'annonces"
+        description: "Chaque vendeur peut maintenant voir le nombre de vues et de mises en favoris de ses annonces."
+        audience: "Vendeurs"
+    audiences:
+      - "Acheteurs (email + notification)"
+      - "Vendeurs (email + dashboard)"
+      - "Presse (communiqué)"
+    tasks:
+      - id: rc_message_acheteur
+        type: single_choice
+        label: "Quel message est le plus adapté pour communiquer la release aux acheteurs (email) ?"
+        options:
+          - id: a
+            label: "Panier+ v2.3 — Migration tunnel de paiement vers architecture 4 étapes avec pré-remplissage d'adresse"
+          - id: b
+            label: "Acheter sur Panier+, c'est maintenant encore plus simple. Payez en 4 étapes au lieu de 6, avec votre adresse déjà renseignée."
+          - id: c
+            label: "On a livré 3 nouvelles features ce sprint : tunnel paiement, badge vérifié et stats vendeurs."
+          - id: d
+            label: "Dear valued customer, we are pleased to announce improvements to our checkout flow."
+        expected: b
+        points: 15
+        rationale: "L'option B parle le langage de l'utilisateur (bénéfice concret, pas de jargon technique), est en français, et met en avant la valeur utilisateur directement. A est du jargon technique. C parle de 'sprint' — terme interne. D est en anglais pour une audience française."
+
+      - id: rc_canal
+        type: match_pairs
+        label: "Associez chaque audience au canal de communication le plus adapté"
+        left:
+          - id: l1
+            label: "Nouveaux acheteurs (inscrits < 30 jours)"
+          - id: l2
+            label: "Vendeurs actifs (> 5 ventes)"
+          - id: l3
+            label: "Journalistes tech"
+        right:
+          - id: r1
+            label: "Email personnalisé avec mise en avant des garanties"
+          - id: r2
+            label: "Communiqué de presse avec données chiffrées"
+          - id: r3
+            label: "Email dashboard avec stats de vues activées"
+        expected:
+          l1: r1
+          l2: r3
+          l3: r2
+        points: 15
+        rationale: "Les nouveaux acheteurs ont besoin d'être rassurés (garanties). Les vendeurs actifs veulent des données concrètes sur les nouvelles features vendeur. Les journalistes veulent du chiffré pour leurs articles."
+
+    debrief: "La communication release est une responsabilité PO souvent sous-estimée. Un bon message de release traduit les fonctionnalités techniques en bénéfices utilisateurs, adapte le vocabulaire à l'audience, et choisit le bon canal."
+    scoring:
+      max_points: 30
+      pass_threshold: 20
+
+events:
+  - id: evt_bug_paiement
+    trigger: "after_module:sprint_planning"
+    title: "🚨 Bug critique en production"
+    description: "12% des tentatives de paiement mobile échouent silencieusement depuis 2 heures. Thomas (Lead Dev) confirme que c'est lié à un conflit entre la migration panier et une mise à jour Stripe. Réparer prendra 2 jours de dev. Le sprint en cours a démarré hier."
+    urgency: high
+    choices:
+      - id: evt1_a
+        label: "Suspendre le sprint et affecter 2 développeurs au correctif immédiatement"
+        points: 30
+        rationale: "Un bug qui bloque 12% des paiements coûte plus que 2 jours dev. C'est la décision correcte : protéger le GMV est prioritaire."
+        effects:
+          kpi_id: gmv_mensuel
+          delta: 0.1
+
+      - id: evt1_b
+        label: "Continuer le sprint normalement et corriger en parallèle si possible"
+        points: 10
+        rationale: "Accepter de continuer avec un bug critique est risqué. L'équipe ne peut pas se concentrer sur deux choses à la fois efficacement."
+        effects:
+          kpi_id: gmv_mensuel
+          delta: -0.2
+
+      - id: evt1_c
+        label: "Attendre de voir si le bug se corrige seul avant d'agir"
+        points: 0
+        rationale: "Attendre face à un bug critique qui impacte les revenus est une erreur grave. Le GMV continue de baisser chaque heure."
+        effects:
+          kpi_id: gmv_mensuel
+          delta: -0.5
+
+  - id: evt_concurrent
+    trigger: "after_module:kpi_analysis"
+    title: "⚡ Vinted annonce une fonctionnalité similaire"
+    description: "Vinted vient d'annoncer le lancement de 'Vinted Garantie' — une protection acheteur visible dans le tunnel. Les médias tech couvrent l'info. Laure (Marketing) vous envoie un message : 'On va se faire copier, il faut accélérer et communiquer fort sur notre badge de confiance.'"
+    urgency: medium
+    choices:
+      - id: evt2_a
+        label: "Accélérer la roadmap et doubler la capacité tech en faisant des heures sup"
+        points: 5
+        rationale: "Faire des heures supplémentaires pour répondre à un mouvement concurrent est une décision coûteuse et souvent contre-productive. La qualité baisse, l'équipe se démotive."
+
+      - id: evt2_b
+        label: "Maintenir la roadmap prévue et amplifier la communication sur les différenciateurs de Panier+ (badge vendeur vérifié + stats vendeurs)"
+        points: 30
+        rationale: "La meilleure réponse est de rester focalisé et de communiquer sur ce qui différencie Panier+ de Vinted. Une réaction précipitée à un mouvement concurrent dilue souvent la stratégie."
+
+      - id: evt2_c
+        label: "Abandonner le programme de confiance et pivoter vers un programme de parrainage agressif"
+        points: 0
+        rationale: "Pivoter sous pression concurrentielle sans données est une erreur classique. Le programme de confiance répond à un vrai problème utilisateur (abandon panier) — l'abandonner serait contre-productif."
+
+  - id: evt_ceo_pressure
+    trigger: "after_module:stakeholder_mgmt"
+    title: "📊 Le CEO demande un pivot vers le mobile"
+    description: "Suite à une conférence, le CEO revient avec une conviction forte : 'Notre futur c'est l'app mobile. Il faut tout refaire l'UX mobile. J'en ai parlé à des investisseurs qui adorent l'idée. Je veux qu'on démarre la semaine prochaine.'"
+    urgency: medium
+    choices:
+      - id: evt3_a
+        label: "Démarrer immédiatement la refonte mobile comme demandé"
+        points: 0
+        rationale: "Démarrer une refonte majeure sans discovery ni données est une erreur classique de PO sous pression. Cela annulerait tout le travail de priorisation effectué."
+
+      - id: evt3_b
+        label: "Accepter d'étudier la question et proposer un atelier discovery mobile dans 2 semaines avec les données actuelles"
+        points: 30
+        rationale: "La bonne réponse est de prendre le sujet au sérieux (le mobile représente 78% du trafic), mais de ne pas démarrer sans discovery. Proposer un atelier avec données montre que vous prenez la demande en compte sans vous laisser dicter la solution."
+
+      - id: evt3_c
+        label: "Refuser catégoriquement en expliquant que la roadmap est fixée"
+        points: 10
+        rationale: "Refuser catégoriquement sans proposer d'alternative crée inutilement un conflit. Le PO doit être capable de dire 'pas maintenant' avec une contre-proposition."
+
+feedback:
+  success_thresholds:
+    junior:
+      max_percent: 39
+      message: "Vous maîtrisez les bases du rôle de PO mais vous avez encore besoin de renforcer votre capacité à prioriser par la donnée et à gérer les conflits de stakeholders. Continuez avec les cas de niveau junior."
+    intermediate:
+      min_percent: 40
+      max_percent: 74
+      message: "Bonne maîtrise des activités PO ! Vous prenez globalement les bonnes décisions mais quelques arbitrages complexes vous ont échappé. Vous êtes prêt pour un rôle de PO dans une équipe accompagnée."
+    advanced:
+      min_percent: 75
+      message: "Excellent travail. Vous démontrez une maîtrise avancée du rôle de PO : priorisation par la donnée, gestion des stakeholders conflictuels, protection de la qualité en sprint review. Vous êtes prêt à opérer en autonomie."
+  total_points: 265

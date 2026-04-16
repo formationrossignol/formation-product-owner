@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style alternatives</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F0F2F5; padding: 32px 24px; }
+
+.page-title { text-align: center; margin-bottom: 32px; }
+.page-title h1 { font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
+.page-title p  { font-size: 13px; color: #64748B; }
+
+.alts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1080px; margin: 0 auto; }
+.alt-block { cursor: pointer; border-radius: 12px; overflow: hidden; border: 2px solid transparent; transition: border-color 0.15s; }
+.alt-block:hover { border-color: #94A3B8; }
+.alt-block.selected { border-color: #0F172A; }
+.alt-label { text-align: center; padding: 10px; background: #fff; font-size: 12px; font-weight: 700; color: #334155; border-top: 1px solid #E2E8F0; }
+.alt-sub   { text-align: center; padding: 0 10px 10px; background: #fff; font-size: 11px; color: #94A3B8; }
+
+/* ═══ ALT A : Linear-style ═══ */
+.a-wrap { background: #FAFAFA; padding: 16px; }
+.a-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.a-logo { width: 26px; height: 26px; background: #0F172A; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 800; }
+.a-title { font-size: 13px; font-weight: 700; color: #0F172A; }
+.a-pill { margin-left: auto; background: #F1F5F9; color: #64748B; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+
+.a-card { background: #fff; border: 1px solid #E4E7EB; border-radius: 8px; padding: 14px; margin-bottom: 8px; }
+.a-card:hover { border-color: #CBD5E1; }
+.a-card-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.a-card-icon { width: 32px; height: 32px; background: #F8FAFC; border: 1px solid #E4E7EB; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.a-card-name { font-size: 13px; font-weight: 700; color: #0F172A; }
+.a-card-domain { font-size: 11px; color: #94A3B8; }
+.a-card-badge { margin-left: auto; background: #F1F5F9; color: #475569; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+.a-card-desc { font-size: 11px; color: #64748B; line-height: 1.5; }
+
+/* ═══ ALT B : Notion/Linear dark header ═══ */
+.b-wrap { background: #fff; }
+.b-header { background: #0F172A; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+.b-logo { width: 28px; height: 28px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #0F172A; font-size: 10px; font-weight: 800; }
+.b-nav { display: flex; gap: 16px; margin-left: 12px; }
+.b-nav span { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; cursor: pointer; }
+.b-nav span.active { color: #fff; font-weight: 600; }
+.b-body { padding: 16px; }
+.b-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #94A3B8; margin-bottom: 10px; }
+.b-card { background: #F8FAFC; border-radius: 8px; padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; border: 1px solid #F1F5F9; }
+.b-card-icon { font-size: 20px; width: 36px; height: 36px; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #E2E8F0; }
+.b-card-name { font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 2px; }
+.b-card-sub  { font-size: 11px; color: #94A3B8; }
+.b-card-go   { margin-left: auto; font-size: 16px; color: #CBD5E1; }
+
+/* ═══ ALT C : Stripe/Vercel ═══ */
+.c-wrap { background: #fff; padding: 16px; }
+.c-eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #6B7280; margin-bottom: 4px; }
+.c-heading { font-size: 17px; font-weight: 800; color: #111827; margin-bottom: 4px; }
+.c-sub { font-size: 12px; color: #6B7280; margin-bottom: 16px; line-height: 1.5; }
+.c-featured { background: #111827; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.c-featured-tag  { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.c-featured-name { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.c-featured-desc { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; margin-bottom: 12px; }
+.c-featured-footer { display: flex; align-items: center; gap: 8px; }
+.c-badge { display: inline-block; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.c-btn { margin-left: auto; background: #fff; color: #111827; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer; }
+.c-list { display: flex; flex-direction: column; gap: 6px; }
+.c-list-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid #F3F4F6; border-radius: 7px; }
+.c-list-icon { font-size: 16px; }
+.c-list-name { font-size: 12px; font-weight: 700; color: #111827; }
+.c-list-sub  { font-size: 11px; color: #9CA3AF; }
+.c-list-arr  { margin-left: auto; color: #D1D5DB; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>Quel style pour les cartes de mission ?</h1>
+  <p>Sans bordures colorées, sans gradient IA — 3 directions "vrai outil pro"</p>
+</div>
+
+<div class="alts">
+
+  <!-- A : Linear -->
+  <div class="alt-block" onclick="this.classList.toggle('selected')">
+    <div class="a-wrap">
+      <div class="a-header">
+        <div class="a-logo">PO</div>
+        <span class="a-title">Missions</span>
+        <div class="a-pill">6 cas</div>
+      </div>
+      <div class="a-card">
+        <div class="a-card-row">
+          <div class="a-card-icon">🛒</div>
+          <div>
+            <div class="a-card-name">Panier+</div>
+            <div class="a-card-domain">E-commerce</div>
+          </div>
+          <div class="a-card-badge">Intermédiaire</div>
+        </div>
+        <div class="a-card-desc">Arbitrer acquisition vs rétention sur une marketplace mode.</div>
+      </div>
+      <div class="a-card">
+        <div class="a-card-row">
+          <div class="a-card-icon">⚙️</div>
+          <div>
+            <div class="a-card-name">OpsFlow</div>
+            <div class="a-card-domain">SaaS B2B</div>
+          </div>
+          <div class="a-card-badge">Avancé</div>
+        </div>
+        <div class="a-card-desc">Gérer la dette technique face aux renouvellements clients.</div>
+      </div>
+      <div class="a-card">
+        <div class="a-card-row">
+          <div class="a-card-icon">🏥</div>
+          <div>
+            <div class="a-card-name">MediLink</div>
+            <div class="a-card-domain">Santé</div>
+          </div>
+          <div class="a-card-badge">Avancé</div>
+        </div>
+        <div class="a-card-desc">Prioriser dans un contexte RGPD/HDS avec multi-personas.</div>
+      </div>
+    </div>
+    <div class="alt-label">A — Linear / Jira</div>
+    <div class="alt-sub">Fond gris pâle, cartes blanc pur, tout en sobriété</div>
+  </div>
+
+  <!-- B : Dark header -->
+  <div class="alt-block" onclick="this.classList.toggle('selected')">
+    <div class="b-wrap">
+      <div class="b-header">
+        <div class="b-logo">PO</div>
+        <div class="b-nav">
+          <span class="active">Missions</span>
+          <span>Progression</span>
+          <span>Aide</span>
+        </div>
+      </div>
+      <div class="b-body">
+        <div class="b-section-label">Choisissez votre mission</div>
+        <div class="b-card">
+          <div class="b-card-icon">🛒</div>
+          <div>
+            <div class="b-card-name">Panier+ · E-commerce</div>
+            <div class="b-card-sub">Intermédiaire · 120 min</div>
+          </div>
+          <div class="b-card-go">›</div>
+        </div>
+        <div class="b-card">
+          <div class="b-card-icon">⚙️</div>
+          <div>
+            <div class="b-card-name">OpsFlow · SaaS B2B</div>
+            <div class="b-card-sub">Avancé · 150 min</div>
+          </div>
+          <div class="b-card-go">›</div>
+        </div>
+        <div class="b-card">
+          <div class="b-card-icon">🏥</div>
+          <div>
+            <div class="b-card-name">MediLink · Santé</div>
+            <div class="b-card-sub">Avancé · 150 min</div>
+          </div>
+          <div class="b-card-go">›</div>
+        </div>
+        <div class="b-card">
+          <div class="b-card-icon">💰</div>
+          <div>
+            <div class="b-card-name">Finio · Finance</div>
+            <div class="b-card-sub">Intermédiaire · 120 min</div>
+          </div>
+          <div class="b-card-go">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="alt-label">B — Header sombre + liste (Basecamp / Notion)</div>
+    <div class="alt-sub">Contraste header/body, liste épurée, très "outil interne"</div>
+  </div>
+
+  <!-- C : Vercel/Stripe -->
+  <div class="alt-block" onclick="this.classList.toggle('selected')">
+    <div class="c-wrap">
+      <div class="c-eyebrow">TP Product Owner</div>
+      <div class="c-heading">Choisissez votre mission</div>
+      <div class="c-sub">6 cas métier · 2 à 3h par session</div>
+      <div class="c-featured">
+        <div class="c-featured-tag">Recommandée</div>
+        <div class="c-featured-name">Panier+</div>
+        <div class="c-featured-desc">Arbitrer acquisition vs rétention sur une marketplace mode seconde main en pleine croissance.</div>
+        <div class="c-featured-footer">
+          <span class="c-badge">E-commerce</span>
+          <span class="c-badge">120 min</span>
+          <button class="c-btn">Démarrer →</button>
+        </div>
+      </div>
+      <div class="c-list">
+        <div class="c-list-item">
+          <div class="c-list-icon">⚙️</div>
+          <div>
+            <div class="c-list-name">OpsFlow</div>
+            <div class="c-list-sub">SaaS B2B · Avancé · 150 min</div>
+          </div>
+          <div class="c-list-arr">›</div>
+        </div>
+        <div class="c-list-item">
+          <div class="c-list-icon">🏥</div>
+          <div>
+            <div class="c-list-name">MediLink</div>
+            <div class="c-list-sub">Santé · Avancé · 150 min</div>
+          </div>
+          <div class="c-list-arr">›</div>
+        </div>
+        <div class="c-list-item">
+          <div class="c-list-icon">💰</div>
+          <div>
+            <div class="c-list-name">Finio</div>
+            <div class="c-list-sub">Finance · Intermédiaire · 120 min</div>
+          </div>
+          <div class="c-list-arr">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="alt-label">C — Vercel / Stripe</div>
+    <div class="alt-sub">Typo forte, featured sombre inversé, liste minimaliste</div>
+  </div>
+
+</div>
+
+</body>
+</html>

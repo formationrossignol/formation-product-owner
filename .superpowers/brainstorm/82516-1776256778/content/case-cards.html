@@ -1,0 +1,123 @@
+<h2>Style des cartes de mission</h2>
+<p class="subtitle">Page d'accueil — l'apprenant choisit sa mission. Comment présenter les 6 cas ?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a;padding:16px;border-radius:8px;font-family:Inter,sans-serif;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <!-- Card 1 -->
+        <div style="background:#1e293b;border-radius:10px;padding:14px;border-top:3px solid #f59e0b;position:relative;overflow:hidden;">
+          <div style="font-size:24px;margin-bottom:8px;">🛒</div>
+          <div style="color:#f59e0b;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">E-commerce</div>
+          <div style="color:#f1f5f9;font-size:13px;font-weight:700;margin-bottom:6px;">Panier+</div>
+          <div style="color:#94a3b8;font-size:11px;line-height:1.4;margin-bottom:10px;">Arbitrer acquisition vs rétention sur une marketplace mode.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="background:rgba(245,158,11,0.1);color:#f59e0b;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;">Intermédiaire</span>
+            <span style="color:#64748b;font-size:10px;">120 min</span>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div style="background:#1e293b;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
+          <div style="font-size:24px;margin-bottom:8px;">⚙️</div>
+          <div style="color:#6366f1;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">SaaS B2B</div>
+          <div style="color:#f1f5f9;font-size:13px;font-weight:700;margin-bottom:6px;">OpsFlow</div>
+          <div style="color:#94a3b8;font-size:11px;line-height:1.4;margin-bottom:10px;">Gérer la dette technique face aux renouvellements clients.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="background:rgba(99,102,241,0.15);color:#6366f1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;">Avancé</span>
+            <span style="color:#64748b;font-size:10px;">150 min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Cards compactes en grille (actuel amélioré)</h3>
+      <p>Grille dense, accent couleur par secteur, badge niveau + durée. Similaire à l'actuel mais plus propre et lisible.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a;padding:16px;border-radius:8px;font-family:Inter,sans-serif;">
+      <!-- Mission list style -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#1e293b;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;border:1px solid #334155;">
+          <div style="width:40px;height:40px;background:rgba(245,158,11,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛒</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+              <span style="color:#f1f5f9;font-size:13px;font-weight:700;">Panier+</span>
+              <span style="color:#64748b;font-size:11px;">— E-commerce</span>
+              <span style="background:rgba(245,158,11,0.1);color:#f59e0b;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:auto;">Intermédiaire</span>
+            </div>
+            <div style="color:#94a3b8;font-size:11px;">Arbitrer acquisition vs rétention · 120 min</div>
+          </div>
+          <div style="color:#6366f1;font-size:18px;">→</div>
+        </div>
+        <div style="background:#1e293b;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;border:1px solid #334155;">
+          <div style="width:40px;height:40px;background:rgba(99,102,241,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⚙️</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+              <span style="color:#f1f5f9;font-size:13px;font-weight:700;">OpsFlow</span>
+              <span style="color:#64748b;font-size:11px;">— SaaS B2B</span>
+              <span style="background:rgba(99,102,241,0.1);color:#6366f1;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:auto;">Avancé</span>
+            </div>
+            <div style="color:#94a3b8;font-size:11px;">Dette technique vs renouvellements · 150 min</div>
+          </div>
+          <div style="color:#6366f1;font-size:18px;">→</div>
+        </div>
+        <div style="background:#1e293b;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;border:1px solid #334155;">
+          <div style="width:40px;height:40px;background:rgba(34,197,94,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏥</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+              <span style="color:#f1f5f9;font-size:13px;font-weight:700;">MediLink</span>
+              <span style="color:#64748b;font-size:11px;">— Santé</span>
+              <span style="background:rgba(99,102,241,0.1);color:#6366f1;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:auto;">Avancé</span>
+            </div>
+            <div style="color:#94a3b8;font-size:11px;">Prioriser en contexte réglementé · 150 min</div>
+          </div>
+          <div style="color:#6366f1;font-size:18px;">→</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Liste missions (style Linear / GitHub Issues)</h3>
+      <p>Chaque mission = une ligne. Scannable rapidement, toutes les infos visibles d'un coup, très "outil professionnel".</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a;padding:16px;border-radius:8px;font-family:Inter,sans-serif;">
+      <!-- Featured card style -->
+      <div style="background:#1e293b;border-radius:10px;overflow:hidden;border:1px solid #334155;">
+        <div style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05));padding:16px;border-bottom:1px solid #334155;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="font-size:28px;">🛒</div>
+            <div>
+              <div style="color:#f59e0b;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;">E-commerce</div>
+              <div style="color:#f1f5f9;font-size:16px;font-weight:800;">Panier+</div>
+            </div>
+            <div style="margin-left:auto;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.4);color:#f59e0b;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;">Intermédiaire</div>
+          </div>
+          <div style="color:#cbd5e1;font-size:12px;line-height:1.5;">Arbitrer acquisition vs rétention sur une marketplace mode seconde main en pleine croissance.</div>
+        </div>
+        <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;gap:12px;">
+            <span style="color:#64748b;font-size:11px;">⏱ 120 min</span>
+            <span style="color:#64748b;font-size:11px;">📋 8 modules</span>
+          </div>
+          <div style="background:#6366f1;color:white;padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;">Démarrer →</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <div style="flex:1;height:8px;background:#1e293b;border-radius:4px;border-top:2px solid #6366f1;"></div>
+        <div style="flex:1;height:8px;background:#1e293b;border-radius:4px;border-top:2px solid #22c55e;"></div>
+        <div style="flex:1;height:8px;background:#1e293b;border-radius:4px;border-top:2px solid #3b82f6;"></div>
+      </div>
+      <div style="color:#64748b;font-size:10px;text-align:center;margin-top:4px;">+ 5 autres missions</div>
+    </div>
+    <div class="card-body">
+      <h3>C — Card large featured + mini-cartes</h3>
+      <p>Une carte mise en avant (la recommandée), puis les autres en format réduit. Crée une hiérarchie claire et guide l'apprenant.</p>
+    </div>
+  </div>
+
+</div>

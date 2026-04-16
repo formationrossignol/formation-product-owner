@@ -1,0 +1,1106 @@
+id: case-rh
+title: "TalentOS — Fusion post-acquisition, deux bases clients contradictoires"
+difficulty: intermediate
+estimated_duration: 130
+
+context:
+  company: TalentOS
+  industry: RH Tech — SIRH (Système d'Information RH)
+  role: Product Owner
+  logo: "👥"
+  summary: >
+    TalentOS vient d'acquérir RHConnect, son concurrent direct.
+    Résultat : deux bases clients aux besoins contradictoires, deux codebases à merger,
+    et une roadmap complètement remise en question.
+    Les clients TalentOS veulent la fiabilité et les intégrations paie.
+    Les clients RHConnect veulent l'expérience mobile et les analytics.
+    Vous avez 6 mois pour unifier le produit et éviter l'hémorragie de churns.
+  business_goal: "Retenir 90% des clients des deux entités et livrer une version unifiée du produit dans les 6 mois"
+  constraints:
+    - "Deux codebases différentes : TalentOS (Java/legacy) et RHConnect (React/moderne)"
+    - "Les équipes produit des deux entités ont des cultures très différentes"
+    - "Les clients RHConnect ont des engagements contractuels sur des features spécifiques"
+    - "Les clients TalentOS refusent de changer d'interface sans validation préalable"
+
+personas:
+  - id: drh_talentes
+    name: "Marie-Claire Fontaine"
+    role: DRH, cliente TalentOS depuis 5 ans
+    avatar: "👩‍💼"
+    personality: "Habituée à TalentOS, résistante au changement, crainte des perturbations paie"
+    goals: "Garder la stabilité de son processus de paie, pas de migration forcée"
+    pain_points: "La migration vers RHConnect lui a été présentée comme inévitable"
+    communication_style: "Formelle, contractuelle, délègue peu"
+    quote: "Si vous touchez à notre intégration paie sans nous prévenir 6 mois à l'avance, on résilie."
+
+  - id: rh_rhconnect
+    name: "Antoine Belz"
+    role: RRH, client RHConnect
+    avatar: "👨‍💼"
+    personality: "Digital native, exige une bonne UX mobile, habitué aux analytics avancés"
+    goals: "Garder les analytics et l'expérience mobile qu'il avait sur RHConnect"
+    pain_points: "La migration vers TalentOS lui semble une régression technologique"
+    communication_style: "Informel, direct, compare constamment avec les concurrents"
+    quote: "Si TalentOS c'est juste TalentOS avec le nom RHConnect, je pars chez Lucca."
+
+  - id: cto_talentOS
+    name: "François Merle"
+    role: CTO TalentOS
+    avatar: "👨‍💻"
+    personality: "Pragmatique, préoccupé par la dette technique de la fusion"
+    goals: "Éviter de maintenir deux codebases en parallèle"
+    pain_points: "La fusion technique est sous-estimée par le business"
+    communication_style: "Technique, prudent sur les engagements, quantifie tout"
+    quote: "Maintenir deux codebases c'est 40% du budget dev gaspillé. On doit converger vite."
+
+  - id: ceo
+    name: "Sandra Petit"
+    role: CEO TalentOS
+    avatar: "🧑‍💼"
+    personality: "Visionnaire, sous pression des investisseurs post-acquisition"
+    goals: "Valoriser l'acquisition, démontrer la synergie produit"
+    pain_points: "Délais de synergies produit plus longs que prévu"
+    communication_style: "Stratégique, KPI-driven, ne supporte pas les excuses"
+    quote: "On a payé 18M€ pour RHConnect. Les investisseurs veulent voir les synergies en Q3."
+
+kpis:
+  - id: churn_risk_clients
+    label: "Clients à risque de churn"
+    value: 23
+    unit: "comptes"
+    target: 5
+    trend: up
+    description: "Comptes avec score de risque churn > 70% (anciens clients des deux entités)"
+
+  - id: nrr_combined
+    label: "NRR combiné"
+    value: 96
+    unit: "%"
+    target: 108
+    trend: down
+    description: "Net Revenue Retention après fusion (base combinée TalentOS + RHConnect)"
+
+  - id: product_satisfaction
+    label: "Satisfaction produit"
+    value: 54
+    unit: "%"
+    target: 78
+    trend: down
+    description: "% de clients satisfaits ou très satisfaits (enquête post-fusion)"
+
+  - id: feature_parity
+    label: "Parité fonctionnelle"
+    value: 67
+    unit: "%"
+    target: 100
+    trend: up
+    description: "% des features des deux produits disponibles dans la version unifiée"
+
+  - id: dev_velocity
+    label: "Vélocité de l'équipe dev"
+    value: 42
+    unit: "pts/sprint"
+    target: 65
+    trend: down
+    description: "Points de complexité livrés par sprint (baisse due au maintien de 2 codebases)"
+
+datasets:
+  interviews:
+    - persona_id: drh_talentes
+      excerpt: >
+        "On utilise TalentOS depuis 2019. Notre processus de paie est entièrement calé sur votre système.
+        Les intégrations avec Sage et ADP nous ont pris 6 mois à mettre en place.
+        Si on nous demande de migrer vers une nouvelle interface, on a besoin d'au moins
+        6 mois de préparation, d'une formation pour nos 8 RH, et d'une garantie que
+        les exports paie fonctionneront à l'identique. Le risque de se tromper en paie,
+        c'est un risque légal et social pour nous."
+
+    - persona_id: rh_rhconnect
+      excerpt: >
+        "Ce que j'aimais sur RHConnect, c'est les analytics. Je pouvais voir en temps réel
+        combien de demandes de congés étaient en attente, l'évolution des absences,
+        les pics de départs. Maintenant on me dit qu'il faut aller sur TalentOS qui n'a
+        pas d'analytics. Comment je présente le bilan social à ma direction sans les données ?
+        Et l'appli mobile ? Mes managers appro les congés depuis leur téléphone.
+        Sur TalentOS c'est impossible."
+
+    - persona_id: cto_talentOS
+      excerpt: >
+        "On a fait un audit des deux codebases. RHConnect est en React 18, bien structuré,
+        tests à 78%. TalentOS est en Java Spring avec une architecture 2017, tests à 23%.
+        Techniquement, la meilleure voie c'est de reconstruire les features TalentOS
+        dans l'architecture RHConnect, et pas l'inverse.
+        Mais ça implique que les clients TalentOS migrent vers une nouvelle interface —
+        et Marie-Claire va adoré ça... Pas du tout."
+
+  analytics:
+    - title: "Répartition des features demandées par segment client"
+      type: bar
+      data:
+        - label: "Intégrations paie"
+          value: 89
+        - label: "Mobile RH"
+          value: 76
+        - label: "Analytics avancés"
+          value: 71
+        - label: "Gestion des talents"
+          value: 45
+        - label: "Onboarding digital"
+          value: 38
+
+    - title: "Score de satisfaction par type de client (post-fusion)"
+      type: bar
+      data:
+        - label: "Clients TalentOS (anciens)"
+          value: 61
+        - label: "Clients RHConnect (anciens)"
+          value: 47
+        - label: "Nouveaux clients (post-fusion)"
+          value: 58
+
+inbox:
+  - from: "Marie-Claire Fontaine (cliente TalentOS)"
+    subject: "Migration annoncée — Nous demandons des garanties contractuelles"
+    body: >
+      Bonjour,
+
+      Notre CSM nous a informés d'une possible migration vers la nouvelle plateforme.
+      Avant toute décision, nous exigeons par écrit :
+      1. Les exports paie Sage et ADP seront maintenus à l'identique
+      2. Un délai de préavis de 6 mois avant toute migration
+      3. Un accompagnement dédié pendant la transition
+
+      Sans ces garanties, notre conseil d'administration examinera nos options contractuelles.
+
+      Marie-Claire Fontaine, DRH
+
+  - from: "Antoine Belz (client RHConnect)"
+    subject: "Analytics et mobile — C'est non-négociable pour nous"
+    body: >
+      Salut,
+
+      J'ai besoin de comprendre ce que devient notre contrat suite à la fusion.
+      On avait des features engagées par RHConnect : analytics temps réel et application mobile.
+      Si ces features ne sont pas disponibles sur la nouvelle plateforme, notre contrat
+      prévoit une clause de résiliation sans pénalité.
+
+      Qu'est-ce que vous me proposez ?
+
+      Antoine
+
+  - from: "François Merle (CTO)"
+    subject: "Architecture cible — Recommandation technique"
+    body: >
+      Bonjour,
+
+      Suite à l'audit des deux codebases, voici ma recommandation :
+
+      Architecture cible : RHConnect comme base (React, modern, bien testée)
+      Features TalentOS à porter : intégrations paie (Sage, ADP, Silae), gestion administrative
+      Features RHConnect à conserver : analytics, mobile, UX moderne
+
+      Timeline estimée : 6 mois pour la parité fonctionnelle, 9 mois pour la version unifiée complète.
+
+      François
+
+modules:
+  - id: okr_setting
+    type: okr_setting
+    title: "Module 1 — Définir les OKRs post-fusion"
+    objectives:
+      - "Formuler des OKRs qui réconcilient les deux bases clients"
+      - "Mesurer la réussite de la fusion sur des critères concrets"
+    instructions: >
+      La fusion crée deux audiences aux besoins contradictoires.
+      Vos OKRs doivent mesurer la satisfaction des deux segments, pas seulement l'un d'eux.
+    artifacts:
+      - type: document
+        title: "Enjeux stratégiques de la fusion"
+        content: |
+          ENJEUX STRATÉGIQUES — FUSION TALENTOS / RHCONNECT
+
+          RISQUE CLIENT :
+          - 23 comptes à risque de churn représentent ~2.8M€ d'ARR
+          - Les clients RHConnect ont des clauses contractuelles de résiliation sans pénalité
+            si les features engagées ne sont pas disponibles
+          - Les clients TalentOS résisteront à toute migration sans accompagnement
+
+          RISQUE TECHNIQUE :
+          - Maintenir 2 codebases = 40% du budget dev consacré à la maintenance
+          - Chaque sprint corrige des bugs dans 2 architectures différentes
+
+          OPPORTUNITÉ :
+          - La version unifiée peut proposer des features supérieures aux deux produits
+          - Le marché SIRH PME est en forte croissance (+18% par an)
+          - L'acquisition donne accès à 450 nouveaux clients RHConnect
+
+    tasks:
+      - id: okr_rh_objective
+        type: single_choice
+        label: "Quel objectif qualitatif reflète le mieux la priorité de TalentOS ce trimestre ?"
+        points: 15
+        options:
+          - id: a
+            label: "Accélérer la migration de tous les clients vers la nouvelle plateforme"
+          - id: b
+            label: "Devenir le SIRH unifié de référence pour les PME françaises en préservant la confiance des deux bases clients"
+          - id: c
+            label: "Maximiser les synergies techniques pour réduire les coûts de maintenance"
+          - id: d
+            label: "Lancer des fonctionnalités inédites pour attirer de nouveaux clients"
+        expected: b
+        rationale: >
+          L'option B est la seule qui intègre les deux enjeux critiques : la confiance des clients TalentOS
+          (qui craignent la migration) ET la confiance des clients RHConnect (qui craignent la régression).
+          Option A : forcer la migration sans accompagnement = recette pour le churn.
+          Option C : focus technique sans angle client = les synergies ne garantissent pas la rétention.
+          Option D : acquisition avec 23 comptes à risque = mauvaises priorités.
+        hint: "Quelles sont les deux peurs principales exprimées par vos clients ?"
+
+      - id: okr_rh_kr
+        type: multi_select
+        label: "Quels KRs mesurent correctement la réussite de la fusion ? (choisissez 3)"
+        points: 15
+        options:
+          - id: a
+            label: "Réduire les comptes à risque de churn de 23 à 5"
+          - id: b
+            label: "Migrer 100% des clients TalentOS vers la nouvelle plateforme"
+          - id: c
+            label: "Atteindre 85% de satisfaction client sur les deux segments"
+          - id: d
+            label: "Livrer la parité fonctionnelle complète sur la plateforme unifiée"
+          - id: e
+            label: "Recruter une équipe produit unifiée de 8 personnes"
+        expected:
+          - a
+          - c
+          - d
+        rationale: >
+          KR A : mesure directement la rétention client (objectif principal).
+          KR C : mesure la satisfaction sur les deux segments (valide que personne n'est sacrifié).
+          KR D : mesure le produit (parité = plus de raison de churner pour une feature manquante).
+          KR B est une action, pas un résultat (et potentiellement contre-productive si forcée).
+          KR E est une action RH, pas un résultat produit.
+    debrief: >
+      Les OKRs d'une fusion doivent mesurer la satisfaction des deux bases clients simultanément.
+      Prioriser l'une sur l'autre = perdre l'autre. L'objectif est l'intégration, pas la domination.
+
+  - id: competitive_analysis
+    type: competitive_analysis
+    title: "Module 2 — Positionnement du produit unifié"
+    objectives:
+      - "Définir le positionnement du nouveau TalentOS face aux concurrents SIRH"
+      - "Identifier les avantages combinés des deux produits"
+    instructions: >
+      La fusion crée un nouveau produit qui peut être meilleur que chacun des deux originaux.
+      Positionnez le nouveau TalentOS sur le marché SIRH PME.
+    artifacts:
+      - type: document
+        title: "Benchmark SIRH PME"
+        content: |
+          CONCURRENTS — MARCHÉ SIRH PME FRANCE
+
+          LUCCA
+          - Points forts : UX moderne, modules RH complets, SaaS natif
+          - Points faibles : prix élevé pour PME < 50 personnes
+          - Avantage clé : expérience utilisateur de référence
+
+          PAYFIT
+          - Points forts : paie native + RH intégré, automatisation forte
+          - Points faibles : moins de flexibilité sur les intégrations externes
+          - Avantage clé : paie simplifiée pour PME non-spécialistes RH
+
+          PEOPLESPHÈRE
+          - Points forts : intégrations (100+ connecteurs), plateforme ouverte
+          - Points faibles : interface plus complexe, nécessite expertise RH
+          - Avantage clé : flexibilité pour DRH experts
+
+          BAMBOOHR (US)
+          - Points forts : UX excellente, forte adoption internationale
+          - Points faibles : support en français limité, données hors EU
+          - Avantage clé : employee experience
+
+          NOUVEAU TALENTOS (cible)
+          - Combinaison : intégrations paie TalentOS + analytics/mobile RHConnect
+          - Potentiel : meilleure UX que Lucca + meilleures intégrations que PayFit
+
+    tasks:
+      - id: competitive_rh_gap
+        type: multi_select
+        label: "Quels avantages le nouveau TalentOS peut-il réellement proposer que les concurrents n'ont pas ? (choisissez 2)"
+        points: 20
+        options:
+          - id: a
+            label: "Intégrations paie natives avec Sage, ADP et Silae (uniques en SIRH PME)"
+          - id: b
+            label: "Prix le plus bas du marché"
+          - id: c
+            label: "Analytics RH temps réel avec application mobile pour managers"
+          - id: d
+            label: "Support humain en français 24h/24"
+        expected:
+          - a
+          - c
+        rationale: >
+          A : Les intégrations paie natives (Sage, ADP, Silae) sont rares — PayFit ne les couvre pas toutes,
+          Lucca non plus pour les clients avec des contraintes de paie spécifiques.
+          C : Analytics temps réel + mobile pour managers = avantage RHConnect transféré dans le nouveau produit.
+          B : la guerre des prix est perdante face à des acteurs plus financés.
+          D : le support 24h n'est pas un différenciateur unique pour les PME.
+    competitors:
+      - id: lucca
+        name: "Lucca"
+        description: "UX moderne, modules RH complets, SaaS natif — prix élevé pour PME < 50 personnes"
+      - id: payfit
+        name: "PayFit"
+        description: "Paie native + RH intégré, automatisation forte — moins flexible sur intégrations externes"
+      - id: peoplesphere
+        name: "PeopleSphère"
+        description: "100+ connecteurs, plateformeRH ouverte — interface complexe, nécessite expertise RH"
+      - id: bamboohr
+        name: "BambooHR"
+        description: "UX excellente, forte adoption internationale — support FR limité, données hors UE"
+    debrief: >
+      La fusion crée un avantage concurrentiel réel : les intégrations paie de TalentOS
+      combinées avec l'analytics et le mobile de RHConnect. Aucun concurrent direct ne combine
+      les deux aussi bien. C'est l'argument commercial central du nouveau produit.
+
+  - id: roadmap_planning
+    type: roadmap_planning
+    title: "Module 3 — Roadmap de migration unifiée"
+    objectives:
+      - "Planifier la migration sans forcer les clients"
+      - "Prioriser la parité fonctionnelle avant les nouvelles features"
+    instructions: >
+      La roadmap doit respecter la contrainte clé : les clients TalentOS ne peuvent pas
+      être forcés à migrer sans accompagnement. Séquencez la convergence.
+    artifacts:
+      - type: document
+        title: "Plan de migration recommandé par le CTO"
+        content: |
+          PLAN TECHNIQUE — CONVERGENCE TALENTOS / RHCONNECT
+
+          PHASE 1 (J0-J90) : Parité fonctionnelle
+          P1-1: Porter les intégrations paie (Sage, ADP, Silae) sur RHConnect — 8 semaines
+          P1-2: Porter la gestion administrative TalentOS sur RHConnect — 4 semaines
+          P1-3: Construire le guide de migration client — 2 semaines
+
+          PHASE 2 (J90-J150) : Migration accompagnée
+          P2-1: Migration pilote (10 clients TalentOS volontaires) — 4 semaines
+          P2-2: Ajustements post-pilote — 2 semaines
+          P2-3: Migration en vagues du reste des clients TalentOS
+
+          NOUVELLES FEATURES (APRÈS PARITÉ)
+          NF-1: Analytics avancés (au-delà du niveau RHConnect)
+          NF-2: Onboarding digital employé
+          NF-3: Module recrutement intégré
+
+    tasks:
+      - id: roadmap_rh_phase1
+        type: multi_select
+        label: "Quelles initiatives sont critiques en Phase 1 pour éviter le churn ?"
+        points: 20
+        options:
+          - id: a
+            label: "P1-1 : Porter les intégrations paie sur la nouvelle plateforme"
+          - id: b
+            label: "NF-1 : Lancer les analytics avancés pour attirer de nouveaux clients"
+          - id: c
+            label: "P1-2 : Porter la gestion administrative TalentOS"
+          - id: d
+            label: "P1-3 : Construire le guide de migration"
+          - id: e
+            label: "NF-3 : Module recrutement intégré"
+        expected:
+          - a
+          - c
+          - d
+        rationale: >
+          P1-1 est critique : sans les intégrations paie, les clients TalentOS ne peuvent pas
+          migrer même s'ils le voulaient.
+          P1-2 est critique : les features administratives sont au cœur de l'usage TalentOS.
+          P1-3 est critique : un guide de migration proactif réduit la résistance au changement.
+          NF-1 et NF-3 sont des nouvelles features — elles attendent que la parité soit atteinte
+          pour ne pas détourner les ressources des clients existants.
+        hint: "Qu'est-ce qui doit être fait pour que les clients actuels puissent migrer SANS perdre de valeur ?"
+    features:
+      - id: p11
+        title: "P1-1 : Intégrations paie (Sage, ADP, Silae)"
+        theme: tech
+        effort: 8
+      - id: p12
+        title: "P1-2 : Gestion administrative TalentOS"
+        theme: strategy
+        effort: 4
+      - id: p13
+        title: "P1-3 : Guide de migration client"
+        theme: ux
+        effort: 2
+      - id: p21
+        title: "P2-1 : Migration pilote (10 clients)"
+        theme: strategy
+        effort: 4
+      - id: nf1
+        title: "NF-1 : Analytics avancés"
+        theme: growth
+        effort: 6
+      - id: nf2
+        title: "NF-2 : Onboarding digital employé"
+        theme: ux
+        effort: 4
+      - id: nf3
+        title: "NF-3 : Module recrutement intégré"
+        theme: growth
+        effort: 8
+    debrief: >
+      Dans une fusion, la priorité absolue est de sécuriser les clients existants avant de chercher
+      à acquérir de nouveaux clients avec de nouvelles features. La parité fonctionnelle
+      est la condition sine qua non pour que la migration soit acceptée.
+
+  - id: discovery
+    type: discovery
+    title: "Module 4 — Comprendre les résistances et les attentes"
+    objectives:
+      - "Identifier les besoins non-négociables de chaque segment"
+      - "Trouver les points communs pour une proposition de valeur unifiée"
+    instructions: >
+      Analysez les interviews pour comprendre ce qui est vraiment non-négociable
+      pour chaque type de client. L'objectif est de trouver la proposition de valeur
+      qui satisfait les deux.
+    artifacts:
+      - type: email
+        title: "Atelier Discovery — Résultats des sessions utilisateurs"
+        content: |
+          RAPPORT DISCOVERY — SESSIONS MIXTES CLIENTS
+
+          SESSION 1 : Marie-Claire (TalentOS) et Antoine (RHConnect)
+          Question posée : "Qu'est-ce qui vous ferait quitter votre SIRH actuel ?"
+
+          Marie-Claire : "Si j'ai une erreur dans la paie à cause d'une migration.
+          Une seule erreur de paie et c'est le conseil d'administration sur moi."
+
+          Antoine : "Si je perds mes données historiques d'analytics.
+          J'ai 3 ans de data RH. C'est ma mémoire organisationnelle."
+
+          Question : "Qu'est-ce qui vous ferait rester ET recommander ?"
+
+          Marie-Claire : "Si la migration est invisible pour mes collaborateurs et que
+          mes exports paie fonctionnent exactement pareil. Je n'ai pas besoin de nouvelles features."
+
+          Antoine : "Si en plus de mes analytics je pouvais avoir les intégrations paie
+          que j'avais pas sur RHConnect. Je gère ma paie avec un prestataire externe,
+          c'est un vrai problème de double saisie."
+
+      - type: dashboard
+        title: "Features non-négociables par segment (enquête NPS)"
+        content: |
+          FEATURES "DEAL-BREAKER" PAR SEGMENT
+
+          Clients TalentOS (si absent = résiliation) :
+          1. Intégrations paie Sage/ADP/Silae — 94% des clients
+          2. Export paie identique — 87% des clients
+          3. Gestion des congés légaux (calculs conformes) — 78% des clients
+
+          Clients RHConnect (si absent = résiliation selon clause contractuelle) :
+          1. Analytics temps réel — 82% des clients
+          2. Application mobile managers — 76% des clients
+          3. Historique des données conservé — 91% des clients
+
+    tasks:
+      - id: discovery_rh_convergence
+        type: single_choice
+        label: "Quelle est la proposition de valeur unifiée la plus convaincante pour les deux segments ?"
+        points: 20
+        options:
+          - id: a
+            label: "Le SIRH qui remplace votre ancienne solution sans perdre aucune donnée ni aucune feature"
+          - id: b
+            label: "Un SIRH moderne avec analytics et intégrations paie dans une seule plateforme mobile-first"
+          - id: c
+            label: "Le SIRH le plus complet du marché avec toutes les fonctionnalités RH"
+          - id: d
+            label: "La migration la plus rapide du marché avec zéro interruption de service"
+        expected: b
+        rationale: >
+          Option B répond aux besoins des deux segments : "intégrations paie" répond à TalentOS,
+          "analytics" répond à RHConnect, "mobile-first" répond aux managers.
+          Antoine a même dit qu'il voudrait les intégrations paie qu'il n'avait pas.
+          Option A : focus sur "ne rien perdre" = proposition défensive, pas transformante.
+          Option C : "le plus complet" = impossible à valider, crée des attentes irréalistes.
+          Option D : la vitesse de migration n'est pas le critère principal pour aucun segment.
+        hint: "Relisez les verbatims. Qu'est-ce qu'Antoine a dit qu'il voudrait en PLUS de ce qu'il a déjà ?"
+    debrief: >
+      La discovery révèle que les deux segments ne sont pas si contradictoires.
+      Antoine veut les intégrations paie (feature TalentOS). Marie-Claire veut juste migrer sans risque.
+      La proposition unifiée "analytics + intégrations paie + mobile" satisfait les deux
+      et crée un avantage concurrentiel que ni l'un ni l'autre n'avait seul.
+
+  - id: story_writing
+    type: story_writing
+    title: "Module 5 — Stories pour la migration et la parité fonctionnelle"
+    objectives:
+      - "Rédiger des stories qui capturent les besoins de migration"
+      - "Intégrer la compatibilité ascendante dans les critères d'acceptation"
+    instructions: >
+      Les stories de migration doivent garantir que rien n'est perdu pour les clients.
+      La compatibilité ascendante est un critère d'acceptation obligatoire.
+    artifacts:
+      - type: document
+        title: "Contraintes de migration"
+        content: |
+          CONTRAINTES MIGRATION — NON-NÉGOCIABLES
+
+          POUR LES CLIENTS TALENTOS :
+          - Tous les exports paie existants doivent fonctionner sans modification côté client
+          - Les droits utilisateurs existants doivent être transposés automatiquement
+          - Les données historiques (5 ans min) doivent être accessibles dès la migration
+
+          POUR LES CLIENTS RHCONNECT :
+          - L'historique analytics (3 ans) doit être migré et accessible
+          - Les intégrations existantes (Slack, Google Calendar) doivent rester actives
+          - Tous les workflows d'approbation configurés doivent être conservés
+
+    tasks:
+      - id: story_rh_migration
+        type: multi_select
+        label: "Quelles stories de migration respectent les contraintes et les critères INVEST ?"
+        points: 15
+        options:
+          - id: a
+            label: "En tant que DRH cliente TalentOS, je veux que mes exports paie Sage fonctionnent sur la nouvelle plateforme exactement comme avant, afin de ne pas interrompre mon processus de paie. [Critères : exports identiques, zéro modification requise côté client, tests sur 100 exports réels]"
+          - id: b
+            label: "Migrer toutes les données clients TalentOS vers la nouvelle base de données RHConnect."
+          - id: c
+            label: "En tant que RRH client RHConnect, je veux retrouver mon historique analytics des 3 dernières années sur la nouvelle plateforme, afin de maintenir ma vision long terme des indicateurs RH. [Critères : données 36 mois accessibles, graphiques cohérents, export CSV disponible]"
+          - id: d
+            label: "Créer un outil de migration universel qui gère tous les cas de figure des deux codebases."
+        expected:
+          - a
+          - c
+        rationale: >
+          Story A : persona clair, besoin précis, critères mesurables incluant la compatibilité ascendante.
+          Story C : persona clair, durée définie (3 ans), critères vérifiables.
+          Story B : technique, pas de perspective utilisateur (non INVEST).
+          Story D : "tous les cas de figure" = non-estimable, trop large, non INVEST.
+    debrief: >
+      Les stories de migration doivent être rédigées du point de vue de l'utilisateur,
+      pas de l'équipe technique. "Migrer les données" est une tâche technique.
+      "Retrouver mon historique tel que je le connaissais" est une user story.
+
+  - id: refinement
+    type: refinement
+    title: "Module 6 — Estimer les stories de migration et de parité"
+    objectives:
+      - "Évaluer la complexité des stories de migration"
+      - "Identifier les stories bloquantes pour la Phase 1"
+    instructions: >
+      La Phase 1 doit livrer la parité fonctionnelle. Certaines stories sont plus complexes
+      que prévu à cause des différences d'architecture entre les deux codebases.
+    artifacts:
+      - type: document
+        title: "Notes de refinement — Complexité identifiée"
+        content: |
+          REFINEMENT — COMPLEXITÉ TECHNIQUE
+
+          INTÉGRATIONS PAIE TALENTOS → RHCONNECT
+          François : "L'intégration Sage utilise un format IDOC propriétaire non documenté.
+          On doit faire du reverse engineering. Estimation : 3-4 semaines."
+          Antoine (dev RHConnect) : "Le système de webhook de RHConnect est adapté mais
+          on n'a jamais intégré Sage. C'est nouveau pour nous."
+
+          MIGRATION ANALYTICS RHCONNECT
+          L'équipe data : "Les analytics RHConnect utilisent une base TimeSeries (InfluxDB).
+          TalentOS utilise MySQL. La migration des données historiques est complexe mais faisable.
+          On peut faire des requêtes de migration en batch."
+
+          WORKFLOWS D'APPROBATION
+          Antoine : "Les workflows configurés par les clients sont stockés en JSON dans notre base.
+          Le portage vers TalentOS est une conversion JSON → format propriétaire.
+          Simple en théorie, mais chaque client a ses propres configurations."
+
+    tasks:
+      - id: refinement_rh_sizing
+        type: match_pairs
+        label: "Associez chaque story à son estimation correcte"
+        points: 20
+        left:
+          - id: s1
+            label: "Intégration paie Sage (reverse engineering IDOC)"
+          - id: s2
+            label: "Migration analytics historiques (InfluxDB → TimeSeries)"
+          - id: s3
+            label: "Portage des droits utilisateurs TalentOS"
+          - id: s4
+            label: "Portage des workflows d'approbation (JSON conversion)"
+        right:
+          - id: p3
+            label: "3 points"
+          - id: p5
+            label: "5 points"
+          - id: p8
+            label: "8 points"
+          - id: p13
+            label: "13 points"
+        expected:
+          s1: p13
+          s2: p8
+          s3: p3
+          s4: p5
+        rationale: >
+          Sage IDOC = 13pts : format propriétaire, reverse engineering, tests extensifs requis, risque élevé.
+          Analytics migration = 8pts : deux bases différentes, batch complexe mais bien défini.
+          Droits utilisateurs = 3pts : mapping standard, pas de logique métier complexe.
+          Workflows JSON = 5pts : conversion algorithmique, nombreux cas par client mais pattern clair.
+    debrief: >
+      L'estimation révèle que l'intégration Sage (13pts) est la plus complexe.
+      C'est une estimation rare qui devrait déclencher une investigation :
+      peut-on documenter le format IDOC auprès de Sage pour réduire le risque ?
+
+  - id: sprint_planning
+    type: sprint_planning
+    title: "Module 7 — Sprint planning Phase 1"
+    objectives:
+      - "Composer le premier sprint de la Phase 1"
+      - "Livrer des preuves concrètes de parité aux clients à risque"
+    instructions: >
+      Sprint de 2 semaines. Capacité : 30 points.
+      Objectif : livrer les premières preuves de parité pour rassurer les clients à risque.
+    stories:
+      - id: sage_idoc
+        title: "P1-1a : Intégration Sage IDOC (partie 1)"
+        points: 8
+        theme: tech
+      - id: droits_users
+        title: "P1-2a : Portage droits utilisateurs TalentOS"
+        points: 3
+        theme: tech
+      - id: analytics_migration
+        title: "P1-3 : Migration analytics historiques batch"
+        points: 8
+        theme: strategy
+      - id: guide_migration
+        title: "P1-4 : Guide de migration client v1"
+        points: 3
+        theme: ux
+      - id: workflows_json
+        title: "P1-2b : Portage workflows d'approbation"
+        points: 5
+        theme: tech
+      - id: mobile_analytics
+        title: "NF-A : Analytiques mobiles (nouvelle feature)"
+        points: 8
+        theme: growth
+      - id: export_paie_test
+        title: "P1-1b : Test exports paie sur 50 comptes pilotes"
+        points: 3
+        theme: ux
+    capacity: 30
+
+    tasks:
+      - id: sprint_rh_composition
+        type: multi_select
+        label: "Quelles stories composent le sprint optimal pour rassurer les clients à risque ?"
+        points: 20
+        options:
+          - id: a
+            label: "Sage IDOC (8) + Droits users (3) + Analytics migration (8) + Guide migration (3) + Export tests (3) = 25pts"
+          - id: b
+            label: "Sage IDOC (8) + Analytics migration (8) + Mobile analytics (8) + Workflows JSON (5) = 29pts"
+          - id: c
+            label: "Mobile analytics (8) + Guide migration (3) + Workflows JSON (5) + Analytics migration (8) = 24pts"
+          - id: d
+            label: "Sage IDOC (8) + Droits users (3) + Guide migration (3) + Workflows JSON (5) + Export tests (3) = 22pts"
+        expected:
+          - a
+        rationale: >
+          Option A est optimale : progresse sur l'intégration Sage (critique pour TalentOS),
+          migre les analytics (critique pour RHConnect), porte les droits users (prérequis migration),
+          crée le guide de migration (rassure les clients), et teste les exports paie (preuve concrète).
+          Option B : inclut "Mobile analytics" (nouvelle feature) avant la parité = mauvaise priorité.
+          Option C : inclut "Mobile analytics" et omet l'intégration Sage = mauvaise priorité.
+          Option D : n'inclut pas la migration analytics = les clients RHConnect restent insatisfaits.
+    debrief: >
+      Le premier sprint d'une migration doit livrer des preuves concrètes à chaque segment.
+      Pour TalentOS : progression sur Sage + tests exports.
+      Pour RHConnect : migration analytics.
+      Ce double signal rassure les deux groupes à risque simultanément.
+
+  - id: sprint_review
+    type: sprint_review
+    title: "Module 8 — Sprint Review avec clients présents"
+    objectives:
+      - "Valider la parité avec des clients des deux segments présents"
+      - "Gérer les feedbacks contradictoires en Sprint Review"
+    instructions: >
+      Marie-Claire (TalentOS) et Antoine (RHConnect) sont invités à la Sprint Review.
+      Gérez les feedbacks des deux personas et prenez les bonnes décisions d'acceptation.
+    delivered_stories:
+      - id: sr_sage
+        title: "P1-1a : Intégration Sage IDOC (partie 1)"
+        acceptance_criteria:
+          - "Les exports Sage fonctionnent pour 10 formats IDOC parmi les 18 existants"
+          - "Aucune erreur sur les 200 exports de test"
+          - "La partie 2 (8 formats restants) est estimée et planifiée"
+        demo_note: "10/18 formats IDOC fonctionnels. Marie-Claire : 'Mon format principal (DSN mensuelle) est inclus. Bonne nouvelle. Il manque quand même l'export de solde de tout compte.' Léa : 'Planifié au prochain sprint.'"
+
+      - id: sr_analytics
+        title: "P1-3 : Migration analytics historiques"
+        acceptance_criteria:
+          - "36 mois de données analytics accessibles sur la nouvelle plateforme"
+          - "Les graphiques existants fonctionnent avec les données migrées"
+          - "Export CSV disponible"
+        demo_note: "36 mois migrés. Graphiques OK. Export CSV fonctionne. Antoine : 'C'est exactement ce que je voulais. Par contre les filtres personnalisés que j'avais créés ne sont pas là.' Léa : 'Ce n'était pas dans la story... On peut l'ajouter au prochain sprint.'"
+
+      - id: sr_guide
+        title: "P1-4 : Guide de migration client v1"
+        acceptance_criteria:
+          - "Guide disponible en ligne et téléchargeable PDF"
+          - "Inclut un checklist pré-migration"
+          - "Validé par 2 clients TalentOS en preview"
+        demo_note: "Guide en ligne OK. Checklist incluse. Validé par Marie-Claire et un autre client TalentOS : 'C'est rassurant, on voit que vous avez pensé à tout.'"
+
+    tasks:
+      - id: review_rh_decision
+        type: multi_select
+        label: "Quelles stories acceptez-vous ?"
+        points: 20
+        options:
+          - id: a
+            label: "Sage IDOC partie 1 — ACCEPTER (critères remplis, partie 2 planifiée)"
+          - id: b
+            label: "Analytics migration — ACCEPTER (critères remplis, filtres personnalisés = story séparée)"
+          - id: c
+            label: "Analytics migration — REFUSER (filtres personnalisés manquants)"
+          - id: d
+            label: "Guide migration — ACCEPTER (tous critères remplis et validé clients)"
+        expected:
+          - a
+          - b
+          - d
+        rationale: >
+          Sage IDOC : les critères d'acceptation sont remplis (10/18 formats dont le principal).
+          La partie 2 est planifiée → ACCEPTER.
+          Analytics migration : les 3 critères d'acceptation sont remplis.
+          Les filtres personnalisés n'étaient pas dans la story → ACCEPTER + créer une nouvelle story.
+          Guide migration : tous critères remplis et validé par clients → ACCEPTER.
+          Refuser Analytics à cause des filtres (non dans la story) serait injuste pour l'équipe
+          et confus pour le PO.
+    debrief: >
+      La Sprint Review révèle la règle d'or : les critères d'acceptation sont la source de vérité.
+      Si une feature est dans les critères et remplie → ACCEPTER.
+      Si une feature est demandée mais pas dans les critères → nouvelle story, pas un refus.
+      Mélanger les deux crée de la confusion et démoralise l'équipe.
+
+  - id: kpi_analysis
+    type: kpi_analysis
+    title: "Module 9 — Mesurer l'impact de la fusion à mi-parcours"
+    objectives:
+      - "Analyser l'évolution des KPIs à 3 mois de la fusion"
+      - "Identifier les segments à surveiller"
+    instructions: >
+      Nous sommes à mi-parcours de la Phase 1. Analysez les KPIs pour décider
+      si la stratégie est sur la bonne voie.
+    charts:
+      - title: "Comptes à risque de churn (évolution)"
+        type: line
+        context: "Nombre de comptes avec score churn > 70%"
+        data:
+          - label: "J0 (fusion)"
+            value: 23
+          - label: "J+15"
+            value: 25
+          - label: "J+30"
+            value: 22
+          - label: "J+45"
+            value: 18
+          - label: "J+60"
+            value: 14
+          - label: "J+75"
+            value: 11
+          - label: "J+90"
+            value: 8
+
+      - title: "Satisfaction par segment (J0 vs J+90)"
+        type: bar
+        context: "% de clients satisfaits ou très satisfaits"
+        data:
+          - label: "TalentOS J0"
+            value: 61
+          - label: "TalentOS J+90"
+            value: 71
+          - label: "RHConnect J0"
+            value: 47
+          - label: "RHConnect J+90"
+            value: 68
+          - label: "Objectif"
+            value: 85
+
+    tasks:
+      - id: kpi_rh_interpretation
+        type: single_choice
+        label: "Quelle conclusion tirez-vous des données à J+90 ?"
+        points: 15
+        options:
+          - id: a
+            label: "La stratégie fonctionne : les KPIs s'améliorent sur tous les indicateurs, on peut accélérer"
+          - id: b
+            label: "La tendance est bonne mais les objectifs ne sont pas encore atteints. Continuer la Phase 2 sans accélérer sur les nouvelles features"
+          - id: c
+            label: "Les clients RHConnect restent insatisfaits (68% vs objectif 85%). Il faut changer de stratégie"
+          - id: d
+            label: "8 comptes à risque de churn restants est acceptable. Passer aux nouvelles features maintenant"
+        expected: b
+        rationale: >
+          La tendance est positive sur tous les indicateurs mais les objectifs ne sont pas atteints :
+          - Churn risk : 8 comptes vs objectif 5.
+          - Satisfaction RHConnect : 68% vs objectif 85%.
+          - Satisfaction TalentOS : 71% vs objectif 85%.
+          Option A serait prématurée : accélérer avant d'atteindre les objectifs = risque de dérocher.
+          Option C : 68% en hausse depuis 47% est une amélioration significative, pas un échec.
+          Option D : 8 comptes ≠ 5 comptes objectif, et "nouvelles features maintenant" = retard sur la parité.
+        hint: "Comparez chaque KPI à son objectif, pas seulement à son point de départ."
+    debrief: >
+      Une amélioration visible n'est pas la même chose qu'un objectif atteint.
+      Un PO data-driven lit les deux : la tendance (bonne direction) ET l'écart à l'objectif
+      (encore du travail à faire). La Phase 2 doit continuer avant les nouvelles features.
+
+  - id: stakeholder_mgmt
+    type: stakeholder_mgmt
+    title: "Module 10 — Gérer les pressions contradictoires des stakeholders"
+    objectives:
+      - "Arbitrer entre les demandes des clients et les ambitions de la direction"
+      - "Communiquer les arbitrages avec données à l'appui"
+    instructions: >
+      À J+90, trois messages arrivent simultanément. Les arbitrages sont difficiles.
+    stakeholder_messages:
+      - from: "Sandra Petit (CEO)"
+        subject: "Synergies Q3 — Les investisseurs veulent voir des nouvelles features"
+        priority: high
+        body: >
+          Bonjour,
+
+          J'ai présenté la roadmap aux investisseurs ce matin.
+          Ils sont impatients de voir des nouvelles features (analytics avancés, recrutement intégré).
+          "On a pas payé 18M€ pour avoir le même produit."
+
+          Est-ce qu'on peut accélérer la Phase 2 et commencer les nouvelles features en Q3 ?
+
+          Sandra
+
+      - from: "Marie-Claire Fontaine"
+        subject: "Migration pilote — Retour d'expérience"
+        priority: medium
+        body: >
+          Bonjour,
+
+          Nous avons participé à la migration pilote. Globalement satisfaisant.
+          Un point critique : l'export DSN mensuelle fonctionne mais le format des libellés
+          a changé. Notre logiciel de paie (Silae) rejette les fichiers.
+          C'est bloquant pour nous.
+
+      - from: "Antoine Belz"
+        subject: "Bonne surprise — Je voudrais les intégrations paie"
+        priority: low
+        body: >
+          Salut,
+
+          J'ai vu dans la démo que les intégrations paie TalentOS arrivent.
+          Est-ce que ça sera disponible pour nous aussi (anciens clients RHConnect) ?
+          On fait appel à un cabinet paie externe, ça simplifierait vraiment la vie.
+
+    tasks:
+      - id: stakeholder_rh_priority
+        type: ranking
+        label: "Dans quel ordre traitez-vous ces demandes ?"
+        points: 15
+        options:
+          - id: a
+            label: "Répondre à Marie-Claire : corriger le format DSN Silae en urgence"
+          - id: b
+            label: "Répondre à Sandra : expliquer pourquoi les nouvelles features attendent la parité"
+          - id: c
+            label: "Répondre à Antoine : confirmer la disponibilité des intégrations paie pour RHConnect"
+        expected_order:
+          - a
+          - b
+          - c
+        rationale: >
+          A en premier : un bug bloquant pour un client pilote est une urgence produit.
+          Si Marie-Claire ne peut pas faire sa paie, la migration pilote échoue et
+          tous les autres clients TalentOS ne migreront pas. Impact maximal.
+          B ensuite : la pression CEO sur les nouvelles features mérite une réponse
+          structurée avec données (KPIs toujours sous objectif justifient de continuer la parité).
+          C en dernier : bonne opportunité commerciale mais pas urgente.
+        hint: "Quel problème, s'il n'est pas traité en premier, peut faire échouer toute la migration ?"
+    debrief: >
+      Un bug bloquant pour un client pilote est prioritaire sur les demandes stratégiques
+      de la direction. Si la migration pilote échoue à cause d'un bug non corrigé,
+      c'est tout le programme de migration qui s'arrête.
+
+  - id: release_communication
+    type: release_communication
+    title: "Module 11 — Communiquer la version unifiée TalentOS"
+    objectives:
+      - "Annoncer la version unifiée sans alarmer les clients inquiets"
+      - "Mettre en avant les bénéfices de la fusion pour chaque segment"
+    instructions: >
+      La version 4.0 (unifiée) est prête pour les clients pilotes.
+      Rédigez la communication pour les deux segments clients.
+    released_features:
+      - title: "Intégrations paie natives (Sage, ADP, Silae)"
+        description: "Vos exports paie fonctionnent exactement comme avant, maintenant accessibles à tous les clients."
+      - title: "Analytics RH temps réel"
+        description: "Tableaux de bord en temps réel avec 36 mois d'historique. Filtres personnalisables."
+      - title: "Application mobile managers"
+        description: "Approuvez les congés, consultez les plannings et recevez les alertes depuis votre téléphone."
+      - title: "Migration des données garantie"
+        description: "Toutes vos données historiques sont automatiquement disponibles dans la nouvelle version."
+
+    tasks:
+      - id: release_rh_communication
+        type: single_choice
+        label: "Pour les clients TalentOS anxieux face à la migration, quel message est le plus efficace ?"
+        points: 15
+        options:
+          - id: a
+            label: "TalentOS 4.0 — La fusion avec RHConnect : ce qui change pour vous"
+          - id: b
+            label: "TalentOS 4.0 — Tout ce que vous aviez, plus ce que vous n'aviez pas encore"
+          - id: c
+            label: "TalentOS 4.0 — Migration réussie pour 10 clients pilotes. Vous êtes les prochains."
+          - id: d
+            label: "TalentOS 4.0 — Nouvelle version disponible suite à notre acquisition de RHConnect"
+        expected: b
+        rationale: >
+          Option B : rassure ("tout ce que vous aviez") + crée de la curiosité ("plus ce que vous n'aviez pas").
+          Pour les clients anxieux, garantir que rien n'est perdu est le message #1.
+          Ensuite, ouvrir sur les nouveaux bénéfices crée l'envie sans créer la peur.
+          Option A : "ce qui change" déclenche l'anxiété chez les clients résistants.
+          Option C : "vous êtes les prochains" = légèrement menaçant pour des clients anxieux.
+          Option D : "suite à l'acquisition" = rappelle que leur produit a changé de main, peu rassurant.
+        hint: "Pour un client anxieux, quel est le message le plus rassurant avant de parler des nouveautés ?"
+    debrief: >
+      La communication de migration doit commencer par rassurer, puis créer l'envie.
+      Pour les clients résistants au changement, l'ordre est crucial :
+      "Rien ne change de ce que vous aviez" → "Et en plus, voici ce que vous allez gagner."
+
+events:
+  - id: client_resignation
+    title: "Client RHConnect — Demande de résiliation selon clause contractuelle"
+    description: >
+      Vous recevez une lettre recommandée : BioTechPME (client RHConnect, 45K€/an)
+      active la clause de résiliation sans pénalité. Leur argument :
+      "L'application mobile n'est pas disponible sur la nouvelle plateforme,
+      contrairement aux engagements de RHConnect."
+      Or, l'app mobile est planifiée au sprint suivant mais pas encore livrée.
+      Que faites-vous ?
+    trigger: "after_module:sprint_planning"
+    urgency: high
+    choices:
+      - id: accelerate_mobile
+        label: "Contacter BioTechPME immédiatement, présenter une démo de l'app mobile en cours de développement et proposer un accès bêta prioritaire"
+        points: 15
+        rationale: >
+          Bonne décision : montrer la démo prouve la bonne foi et que l'engagement sera tenu.
+          Un accès bêta prioritaire donne à BioTechPME un avantage concret.
+          Les clients qui reçoivent un traitement VIP restent même si la feature n'est pas encore parfaite.
+      - id: legal_response
+        label: "Transmettre au service juridique pour analyse de la clause contractuelle — peut-être que la résiliation n'est pas valide"
+        points: 5
+        rationale: >
+          Défendable mais risqué : une réponse juridique froide à un client qui part
+          peut accélérer son départ et nuire à la réputation.
+          La priorité devrait être de garder le client, pas de gagner un argument juridique.
+      - id: accept
+        label: "Accepter la résiliation — mieux vaut perdre ce compte que de s'engager sur une date non garantie"
+        points: 0
+        rationale: >
+          Mauvaise décision : l'app mobile est au prochain sprint.
+          Accepter la résiliation pour "ne pas s'engager" revient à perdre 45K€/an
+          pour une feature qui sera livrée dans 2 semaines.
+
+  - id: culture_clash
+    title: "Conflit culturel — Équipes produit TalentOS vs RHConnect"
+    description: >
+      Les deux équipes produit ne s'accordent pas sur les priorités.
+      L'équipe TalentOS veut continuer à patcher la codebase TalentOS.
+      L'équipe RHConnect veut tout reconstruire sur leur architecture.
+      La situation paralyse les sprints depuis 2 semaines.
+      Que faites-vous ?
+    trigger: "after_module:kpi_analysis"
+    urgency: medium
+    choices:
+      - id: architecture_decision_record
+        label: "Organiser une session de décision d'architecture avec le CTO, documenter la décision dans un ADR et la communiquer aux deux équipes"
+        points: 15
+        rationale: >
+          Excellente décision : une décision d'architecture formelle (ADR) met fin au débat.
+          Le CTO est la bonne personne pour arbitrer. Documenter évite de ré-ouvrir le débat.
+          La clarté sur la direction technique unbloque les équipes.
+      - id: let_both_work
+        label: "Laisser les deux équipes travailler en parallèle sur leurs codebases respectives jusqu'à ce qu'une approche prouve sa supériorité"
+        points: 5
+        rationale: >
+          Contre-productif : deux codebases en parallèle = 40% de budget gaspillé (comme le CTO l'avait dit).
+          "Laisser prouver" = retarder la décision indéfiniment sans résoudre le blocage.
+      - id: impose
+        label: "Imposer la codebase TalentOS par décision unilatérale car c'est l'entité acquéreuse"
+        points: 0
+        rationale: >
+          Très mauvaise décision : la codebase TalentOS est techniquement inférieure (tests 23% vs 78%).
+          Imposer la codebase de l'acquéreur pour des raisons politiques plutôt que techniques
+          est une erreur stratégique majeure. Et cela démotiveraient complètement l'équipe RHConnect.
+
+  - id: ceo_pressure_features
+    title: "CEO — Pression investisseurs pour accélérer les nouvelles features"
+    description: >
+      Sandra Petit vous appelle : les investisseurs menacent de réduire leur soutien
+      si TalentOS ne lance pas les nouvelles features (analytics avancés, recrutement)
+      avant la fin du trimestre. Mais les KPIs de parité ne sont pas encore à l'objectif
+      (8 comptes à risque vs 5 objectif, satisfaction 68-71% vs 85% objectif).
+      Que proposez-vous à Sandra ?
+    trigger: "after_module:stakeholder_mgmt"
+    urgency: high
+    choices:
+      - id: data_driven_response
+        label: "Présenter les données KPI à Sandra : lancer les nouvelles features maintenant risque 8 churns supplémentaires. Proposer de démarrer NF-1 (analytics avancés) en parallèle sans retarder la parité"
+        points: 15
+        rationale: >
+          Excellente décision : utiliser les données pour justifier la stratégie est le rôle du PO.
+          Proposer un compromis (démarrer NF-1 en parallèle) répond à la pression sans abandonner
+          les clients à risque. C'est une réponse orientée données, pas une résistance au changement.
+      - id: pivot_features
+        label: "Accéder à la demande de Sandra et basculer toute l'équipe sur les nouvelles features"
+        points: 0
+        rationale: >
+          Mauvaise décision : avec 8 comptes à risque de churn, baisser la garde sur la parité
+          peut déclencher des départs. Les investisseurs veulent de la croissance,
+          pas du churn visible sur leurs tableaux de bord.
+      - id: refuse
+        label: "Refuser catégoriquement — les nouvelles features attendent la parité complète"
+        points: 5
+        rationale: >
+          Trop rigide : dire non sans proposer une alternative ne résout pas la pression investisseurs.
+          Un PO efficace trouve des compromis intelligents, pas seulement des refus argumentés.
+
+feedback:
+  success_thresholds:
+    advanced:
+      min_percent: 75
+      message: >
+        Excellent ! Vous avez navigué dans la complexité d'une fusion post-acquisition
+        avec méthode. Arbitrer entre deux bases clients contradictoires tout en maintenant
+        la confiance des deux côtés est l'un des défis PO les plus difficiles.
+    intermediate:
+      min_percent: 40
+      message: >
+        Bon travail dans un contexte post-fusion difficile. Les points à améliorer :
+        la gestion des priorités en cas de conflit et la communication des données KPI
+        aux stakeholders sous pression.
+    junior:
+      min_percent: 0
+      message: >
+        Une fusion produit est l'un des scénarios les plus complexes pour un PO.
+        L'enjeu clé est de comprendre que "choisir un camp" (TalentOS vs RHConnect)
+        est la pire erreur possible. L'objectif est toujours de satisfaire les deux.

@@ -1,0 +1,1122 @@
+id: case-education
+title: "Learnify — Stopper la chute de rétention J30"
+difficulty: junior
+estimated_duration: 100
+
+context:
+  company: Learnify
+  industry: EdTech B2C — Plateforme d'apprentissage en ligne
+  role: Product Owner
+  logo: "🎓"
+  summary: >
+    Learnify est une plateforme d'apprentissage en ligne pour lycéens et étudiants avec
+    450 000 utilisateurs inscrits. La rétention J30 est tombée de 45% à 21% en 4 mois.
+    Les utilisateurs s'inscrivent mais n'apprennent pas. La direction donne 90 jours pour
+    inverser la tendance ou réduire les équipes. C'est votre mission.
+  business_goal: "Ramener la rétention J30 au-dessus de 35% dans les 90 jours"
+  constraints:
+    - "Équipe de 3 développeurs et 1 designer (budget contraint)"
+    - "Les utilisateurs gratuits représentent 85% des inscrits"
+    - "Les parents paient pour les abonnements premium (clients payants ≠ utilisateurs)"
+    - "La concurrence (Khan Academy, Duolingo, Brainly) est gratuite et bien financée"
+
+personas:
+  - id: lucas
+    name: "Lucas Dupré"
+    role: Lycéen, 16 ans
+    avatar: "🧑‍🎓"
+    personality: "Distrait, smartphone addictif, motive par les défis et les récompenses"
+    goals: "Améliorer ses notes sans passer des heures à travailler"
+    pain_points: "Les cours sur Learnify sont longs et ennuyeux, TikTok est plus fun"
+    communication_style: "Court, visuel, récompenses immédiates"
+    quote: "J'ai essayé Learnify mais les vidéos durent 20 minutes. J'ai pas la patience."
+
+  - id: emma_etud
+    name: "Emma Roussel"
+    role: Étudiante en BTS, 19 ans
+    avatar: "👩‍🎓"
+    personality: "Studieuse mais débordée, cherche l'efficacité maximale"
+    goals: "Réviser efficacement avant les examens, pas perdre de temps"
+    pain_points: "Difficile de savoir où en est dans son apprentissage"
+    communication_style: "Structurée, apprécie les indicateurs de progression"
+    quote: "Je me connecte, je fais un exercice, et après je sais pas si j'ai bien appris ou pas."
+
+  - id: parent_marie
+    name: "Marie Lambert"
+    role: Parent, abonnement premium pour son fils
+    avatar: "👩"
+    personality: "Inquiète des résultats scolaires, cliente payante, attend un retour sur investissement"
+    goals: "Voir son fils progresser et utiliser réellement la plateforme"
+    pain_points: "Paye 9€/mois et son fils ne se connecte jamais"
+    communication_style: "Formelle avec le support, compare aux apps concurrentes"
+    quote: "Je paye 9€ par mois. Mon fils s'est connecté 2 fois ce mois. Je vais résilier si ça ne change pas."
+
+  - id: prof_jean
+    name: "Jean Moreau"
+    role: Enseignant partenaire
+    avatar: "👨‍🏫"
+    personality: "Pédagogue, méfiant vis-à-vis de l'EdTech, attaché à la qualité du contenu"
+    goals: "Que ses élèves utilisent Learnify pour progresser réellement, pas juste pour s'amuser"
+    pain_points: "Les élèves cliquent vite sans lire, le score gamifié ne reflète pas l'apprentissage réel"
+    communication_style: "Formelle, exigeante sur la pédagogie"
+    quote: "Mes élèves ont tous Learnify mais personne n'apprend vraiment. Ils cherchent juste les badges."
+
+kpis:
+  - id: retention_j30
+    label: "Rétention J30"
+    value: 21
+    unit: "%"
+    target: 35
+    trend: down
+    description: "% d'utilisateurs actifs 30 jours après inscription"
+
+  - id: retention_j7
+    label: "Rétention J7"
+    value: 43
+    unit: "%"
+    target: 60
+    trend: down
+    description: "% d'utilisateurs actifs 7 jours après inscription"
+
+  - id: dau
+    label: "DAU (Daily Active Users)"
+    value: 12400
+    unit: "utilisateurs"
+    target: 25000
+    trend: down
+    description: "Utilisateurs actifs par jour"
+
+  - id: completion_rate
+    label: "Taux de complétion"
+    value: 18
+    unit: "%"
+    target: 45
+    trend: down
+    description: "% des cours commencés qui sont terminés"
+
+  - id: conversion_premium
+    label: "Conversion gratuit → premium"
+    value: 3.2
+    unit: "%"
+    target: 6
+    trend: stable
+    description: "% d'utilisateurs gratuits qui passent en premium"
+
+datasets:
+  interviews:
+    - persona_id: lucas
+      excerpt: >
+        "Learnify c'est cool au début. J'ai commencé un cours sur les maths,
+        c'était pas mal. Mais après j'ai eu des notifs de TikTok et j'ai oublié.
+        Les cours sont trop longs, je m'ennuie après 5 minutes.
+        Duolingo c'est bien parce que les leçons durent 3 minutes max.
+        Si Learnify faisait pareil je reviendrais peut-être. Et si j'avais des streaks
+        comme sur Snapchat, j'essaierai de pas les perdre."
+
+    - persona_id: emma_etud
+      excerpt: >
+        "Ce qui me manque c'est de savoir si j'ai bien compris.
+        Je fais un exercice, j'ai 7/10, mais je sais pas si c'est bien ou pas
+        et je sais pas ce que j'ai raté exactement.
+        Sur Kahn Academy j'avais un graphique qui me montrait mes progrès.
+        Ici j'ai juste un nombre de points qui monte mais ça veut rien dire pour moi."
+
+    - persona_id: parent_marie
+      excerpt: >
+        "Mon fils m'a dit qu'il utilise Learnify mais quand je regarde son téléphone
+        c'est surtout YouTube et Discord. Je reçois un rapport hebdomadaire mais
+        il dit juste 'Lucas a gagné 150 XP cette semaine' — ça ne me dit pas
+        s'il a progressé en maths ou en anglais.
+        Si j'avais un vrai rapport de progression par matière, je saurais si ça vaut la peine."
+
+  analytics:
+    - title: "Courbe de rétention (cohorte inscriptions mois dernier)"
+      type: line
+      data:
+        - label: "J0"
+          value: 100
+        - label: "J1"
+          value: 72
+        - label: "J3"
+          value: 54
+        - label: "J7"
+          value: 43
+        - label: "J14"
+          value: 31
+        - label: "J21"
+          value: 25
+        - label: "J30"
+          value: 21
+        - label: "J60"
+          value: 14
+        - label: "J90"
+          value: 11
+
+    - title: "Durée moyenne des sessions (minutes)"
+      type: bar
+      data:
+        - label: "Learnify actuel"
+          value: 4.2
+        - label: "Duolingo (référence)"
+          value: 7.8
+        - label: "Khan Academy (référence)"
+          value: 12.4
+        - label: "Objectif Learnify"
+          value: 8.0
+
+inbox:
+  - from: "Sarah Dubois (Head of Growth)"
+    subject: "Rétention en chute libre — Analyse des désabonnements premium"
+    body: >
+      Bonjour,
+
+      J'ai analysé les 250 résiliations premium du mois dernier.
+      Top 3 des raisons citées :
+      1. "Mon enfant ne l'utilise pas" — 67%
+      2. "Je ne vois pas de progrès" — 45%
+      3. "Trop d'autres apps gratuites" — 38%
+
+      Ces raisons pointent vers un problème d'engagement, pas de valeur perçue du contenu.
+      Si on résout l'engagement, les résiliations parent devraient baisser.
+
+  - from: "Thomas Garnier (Lead Dev)"
+    subject: "Analyse technique — Causes possibles de la chute de rétention"
+    body: >
+      Salut,
+
+      J'ai regardé les données côté serveur. Observations :
+      - 78% des utilisateurs quittent après le premier cours (session < 10 min)
+      - Les cours les plus courts (< 5 min) ont 3x plus de taux de retour
+      - Le module "notifications push" n'est pas utilisé (0 notification envoyée depuis 3 mois
+        à cause d'un bug non corrigé)
+      - Les "streaks" (séries de jours consécutifs) ont un taux de clic de 0% car la feature
+        n'existe pas encore
+
+  - from: "Julia (parent premium)"
+    subject: "Demande de résiliation — Pas de progrès visible"
+    body: >
+      Bonjour,
+
+      Je me connecte pour résilier mon abonnement.
+      Ma fille Emma a utilisé Learnify pendant 2 mois mais je ne vois pas de progrès.
+      Le rapport hebdomadaire n'est pas utile pour moi. Je ne comprends pas ce qu'elle a appris.
+
+      Si vous pouviez me montrer sa progression par matière, peut-être que je resterai.
+
+modules:
+  - id: okr_setting
+    type: okr_setting
+    title: "Module 1 — Définir les OKRs pour améliorer la rétention"
+    objectives:
+      - "Comprendre pourquoi la rétention est en chute"
+      - "Formuler des OKRs actionables et mesurables"
+    instructions: >
+      La rétention J30 est votre KPI principal. Mais pour l'améliorer,
+      vous devez d'abord comprendre ce qui la cause.
+      Vos OKRs doivent refléter les leviers d'action, pas seulement le résultat final.
+    artifacts:
+      - type: document
+        title: "Framework rétention EdTech"
+        content: |
+          FRAMEWORK RÉTENTION — APPLICATIONS ÉDUCATIVES
+
+          Les 3 leviers de rétention en EdTech :
+
+          1. ENGAGEMENT (court terme — J1 à J7)
+             Métriques : DAU, durée session, return rate J1
+             Leviers : notifications push, contenu court, gamification
+
+          2. PROGRESSION (moyen terme — J7 à J30)
+             Métriques : taux de complétion, streaks, badges
+             Leviers : feedback visible, progression par compétence, défis adaptatifs
+
+          3. VALEUR PERÇUE (long terme — J30+)
+             Métriques : NPS, conversion premium, résiliations
+             Leviers : rapport de progrès parents, certification, preuve de résultat scolaire
+
+          LA RÈGLE : Résoudre l'engagement avant la valeur perçue.
+          Si J1 return rate < 50%, inutile d'optimiser J30.
+
+    tasks:
+      - id: okr_edu_objective
+        type: single_choice
+        label: "Quel objectif OKR est le plus adapté pour les 90 jours ?"
+        points: 15
+        options:
+          - id: a
+            label: "Devenir la meilleure application éducative pour lycéens en France"
+          - id: b
+            label: "Rendre l'apprentissage quotidien suffisamment engageant pour que les utilisateurs reviennent chaque jour"
+          - id: c
+            label: "Augmenter le nombre d'utilisateurs inscrits"
+          - id: d
+            label: "Lancer une version premium plus complète avec plus de cours"
+        expected: b
+        rationale: >
+          L'option B cible directement le problème : l'engagement quotidien (DAU) est le levier
+          de la rétention J30. Les données montrent que 78% des utilisateurs quittent après la première session.
+          Option A : trop vague pour un OKR trimestriel.
+          Option C : acquérir plus d'utilisateurs sur une plateforme qui ne les retient pas = amplifier le problème.
+          Option D : plus de contenu ne résout pas le problème d'engagement des cours existants.
+        hint: "Regardez pourquoi les utilisateurs partent. Est-ce que le problème vient des nouveaux inscrits ou des anciens ?"
+
+      - id: okr_edu_kr
+        type: multi_select
+        label: "Quels KRs mesurent les bons leviers ? (choisissez 3)"
+        points: 15
+        options:
+          - id: a
+            label: "Améliorer la rétention J7 de 43% à 60%"
+          - id: b
+            label: "Atteindre 25 000 DAU (actuellement 12 400)"
+          - id: c
+            label: "Porter le taux de complétion des cours à 45% (actuellement 18%)"
+          - id: d
+            label: "Recruter 3 développeurs supplémentaires"
+          - id: e
+            label: "Atteindre une durée de session moyenne de 8 minutes"
+        expected:
+          - a
+          - c
+          - e
+        rationale: >
+          KR A (rétention J7) : levier direct sur la rétention J30 — si les utilisateurs reviennent à J7, ils ont plus de chances d'être là à J30.
+          KR C (complétion) : un cours complété = apprentissage perçu = motivation de revenir.
+          KR E (durée session) : 4.2 min → 8 min = objectif mesurable lié à l'engagement.
+          KR B est un dérivé des autres (plus d'engagement → plus de DAU).
+          KR D est une action, pas un résultat.
+    debrief: >
+      La rétention J30 est un résultat, pas un levier. Pour l'améliorer,
+      vous devez agir sur les leviers en amont : engagement J1-J7, complétion des cours,
+      durée des sessions. Mesurer seulement le J30 sans les leviers intermédiaires
+      ne vous dira jamais si vous êtes sur la bonne voie.
+
+  - id: competitive_analysis
+    type: competitive_analysis
+    title: "Module 2 — Analyser les meilleures pratiques d'engagement en EdTech"
+    objectives:
+      - "Identifier ce que font les leaders de rétention en EdTech"
+      - "Définir les mécaniques d'engagement à adopter"
+    instructions: >
+      Duolingo et Khan Academy ont des taux de rétention bien supérieurs.
+      Analysez leurs mécaniques et identifiez ce qui est adaptable à Learnify.
+    artifacts:
+      - type: document
+        title: "Benchmark EdTech — Mécaniques de rétention"
+        content: |
+          BENCHMARK RÉTENTION — TOP APPS ÉDUCATIVES
+
+          DUOLINGO
+          - Rétention J30 : ~55%
+          - Mécaniques clés :
+            * Leçons de 3-5 minutes maximum
+            * Streaks quotidiens (pression de ne pas perdre sa série)
+            * Lives (erreurs = vies perdues = pression)
+            * Ligues et classements (compétition sociale)
+            * Notifications push personnalisées (heure habituelle d'usage)
+          - Ce qui marche : pression de perte > plaisir de gain (économie comportementale)
+
+          KHAN ACADEMY
+          - Rétention J30 : ~38%
+          - Mécaniques clés :
+            * Graphique de maîtrise par compétence (progression visible)
+            * Exercices adaptatifs (difficulté ajustée au niveau)
+            * Rapport de progression hebdomadaire pour parents/enseignants
+            * Pas de gamification agressive — focus sur la vraie progression
+          - Ce qui marche : progression visible et crédible = sentiment d'efficacité
+
+          ANKI (flashcards)
+          - Rétention J30 : ~48%
+          - Mécaniques clés :
+            * Répétition espacée (algorithme de mémorisation optimal)
+            * Sessions très courtes (5-10 flashcards)
+            * Statistiques précises de mémorisation
+          - Ce qui marche : efficacité perçue = retour régulier
+
+          LEARNIFY (actuel)
+          - Rétention J30 : 21%
+          - Manque : cours courts, notifications push (bug), feedback de progression
+          - Présent : gamification basique (XP, badges), contenu riche
+
+    tasks:
+      - id: competitive_edu_mechanics
+        type: multi_select
+        label: "Quelles mécaniques de rétention sont prioritaires à implémenter pour Learnify ? (choisissez 3)"
+        points: 20
+        options:
+          - id: a
+            label: "Cours de moins de 5 minutes (découpe du contenu existant)"
+          - id: b
+            label: "Streaks quotidiens avec notification push"
+          - id: c
+            label: "Graphique de progression par matière/compétence"
+          - id: d
+            label: "Système de ligues et classements entre amis"
+          - id: e
+            label: "Répétition espacée algorithmique"
+        expected:
+          - a
+          - b
+          - c
+        rationale: >
+          A : Lucas a dit que les cours de 3 min de Duolingo lui conviendraient. Les données
+          montrent que les cours courts ont 3x plus de retour. C'est le levier le plus impactant.
+          B : Les streaks + notifications résolvent le bug des notifications et créent l'habitude quotidienne.
+          C : Emma veut voir sa progression par matière. Marie (parent) veut le même rapport.
+          C répond aux deux personas en même temps.
+          D : Les ligues sont fun mais non critiques pour le J30 — à faire après A, B, C.
+          E : Puissant mais complexe à implémenter. À faire en phase 2.
+        hint: "Regardez ce qui manque à Learnify vs ce qui fait le succès de Duolingo. Quel est l'écart le plus simple à combler ?"
+    competitors:
+      - id: duolingo
+        name: "Duolingo"
+        description: "Rétention J30 ~55%, leçons 3-5 min, streaks, vies — gamification aggressive"
+      - id: khan
+        name: "Khan Academy"
+        description: "Rétention J30 ~38%, graphiques de maîtrise, rapports parents — focus progression réelle"
+      - id: anki
+        name: "Anki"
+        description: "Rétention J30 ~48%, répétition espacée, sessions très courtes — pas de contenu inclus"
+      - id: brainly
+        name: "Brainly"
+        description: "Communauté d'entraide, 350M utilisateurs — réponses parfois peu fiables, social learning"
+    debrief: >
+      Le benchmark révèle une règle universelle en EdTech : sessions courtes + habitude quotidienne + progression visible.
+      Learnify a le contenu mais pas les mécaniques d'habitude. C'est ce gap qu'on doit combler.
+
+  - id: roadmap_planning
+    type: roadmap_planning
+    title: "Module 3 — Prioriser les initiatives pour la rétention"
+    objectives:
+      - "Séquencer les initiatives du plus impactant au moins impactant"
+      - "Livrer les premiers résultats de rétention dans les 30 premiers jours"
+    instructions: >
+      Avec 3 développeurs, vous ne pouvez pas tout faire en même temps.
+      Priorisez les initiatives selon l'impact sur la rétention J30 et la rapidité de livraison.
+    artifacts:
+      - type: document
+        title: "Initiatives disponibles et efforts estimés"
+        content: |
+          INITIATIVES PRODUIT — LEARNIFY
+
+          RAPIDES (< 1 semaine)
+          NOTIF: Corriger le bug des notifications push — 3 jours
+            → Impact direct sur le retour J1-J7 (notifications non envoyées depuis 3 mois)
+          SHORT: Découpe des cours existants en modules de 5 min — 1 semaine (contenu)
+            → Impact sur la durée de session et le taux de complétion
+
+          MOYENNES (2-4 semaines)
+          STREAK: Système de streaks quotidiens — 2 semaines
+            → Impact fort sur l'habitude quotidienne
+          PROGRESS: Graphique de progression par matière — 3 semaines
+            → Impact fort sur la rétention Emma + rapports parents
+
+          LONGUES (> 4 semaines)
+          ADAPTIVE: Exercices adaptatifs (algorithme) — 6 semaines
+          PARENT: Rapport parental avancé (par matière et compétence) — 4 semaines
+          SOCIAL: Ligues et classements entre amis — 5 semaines
+
+    tasks:
+      - id: roadmap_edu_sequence
+        type: ranking
+        label: "Classez ces 4 initiatives dans l'ordre de livraison optimal"
+        points: 20
+        options:
+          - id: a
+            label: "Corriger le bug notifications push (3 jours)"
+          - id: b
+            label: "Découpe des cours en modules 5 min (1 semaine)"
+          - id: c
+            label: "Système de streaks quotidiens (2 semaines)"
+          - id: d
+            label: "Graphique de progression par matière (3 semaines)"
+        expected_order:
+          - a
+          - b
+          - c
+          - d
+        rationale: >
+          A en premier : 3 jours pour corriger un bug qui bloque TOUTES les notifications depuis 3 mois.
+          Impact immédiat maximal pour l'effort minimal.
+          B ensuite : découpe des cours = levier d'engagement le plus direct (78% abandonnent à la première session).
+          C après : streaks nécessitent que les cours soient courts pour être faisables quotidiennement.
+          D en dernier : progression graphique est impactant mais plus long, et nécessite que les users reviennent d'abord.
+        hint: "Quel est le correctif le plus rapide qui aura l'impact le plus large dès demain ?"
+    features:
+      - id: notif
+        title: "NOTIF : Corriger bug notifications push"
+        theme: tech
+        effort: 1
+      - id: capsules
+        title: "SHORT : Capsules 5 min (découpe des cours)"
+        theme: ux
+        effort: 1
+      - id: streaks
+        title: "STREAK : Streaks quotidiens"
+        theme: strategy
+        effort: 2
+      - id: progress
+        title: "PROGRESS : Graphique progression par matière"
+        theme: strategy
+        effort: 3
+      - id: adaptive
+        title: "ADAPTIVE : Exercices adaptatifs (algorithme)"
+        theme: tech
+        effort: 6
+      - id: parent
+        title: "PARENT : Rapport parental avancé"
+        theme: growth
+        effort: 4
+      - id: social
+        title: "SOCIAL : Ligues et classements"
+        theme: growth
+        effort: 5
+    debrief: >
+      En rétention, la règle est : les correctifs rapides à fort impact d'abord.
+      3 jours pour corriger les notifications push = des milliers d'utilisateurs qui reçoivent
+      un rappel dès demain. C'est asymétrique : effort minimal, impact maximal.
+
+  - id: discovery
+    type: discovery
+    title: "Module 4 — Comprendre le moment de décrochage"
+    objectives:
+      - "Identifier précisément quand et pourquoi les utilisateurs partent"
+      - "Découvrir le moment magique (Aha moment) qui cause le retour"
+    instructions: >
+      La courbe de rétention montre une chute abrupte entre J0 et J7.
+      Analysez les données et les verbatims pour comprendre le moment exact du décrochage.
+    artifacts:
+      - type: email
+        title: "Analyse comportementale — Sessions des utilisateurs qui ne reviennent pas"
+        content: |
+          ANALYSE COHORTE — UTILISATEURS QUI QUITTENT AVANT J7
+
+          COMPORTEMENT TYPE D'UN NON-REVENANT :
+          J0 : Inscription. Démarre le cours "Introduction aux maths".
+          Durée : 3 min 20 sec (visionne 16% du cours de 20 min).
+          Quitte l'app. Ne revient jamais.
+
+          CE QUI SE PASSE PENDANT CES 3 MINUTES :
+          - 0:00 : Ouvre le cours
+          - 0:45 : Première notification externe (WhatsApp)
+          - 1:30 : Revient, continue le cours
+          - 2:15 : Deuxième notification (Instagram)
+          - 2:45 : Quitte Learnify pour Instagram
+          - Ne revient pas ce jour-là
+
+          ANALYSE UTILISATEURS QUI REVIENNENT À J7 :
+          - 89% ont complété au moins UN cours court (< 5 min) lors de la première session
+          - 76% ont reçu une notification push dans les 24h après l'inscription
+          - 71% ont vu leur score augmenter d'au moins 50 XP lors de la première session
+
+          CONCLUSION : Le moment magique de Learnify = compléter un cours court et voir sa progression.
+
+      - type: dashboard
+        title: "Heatmap des abandons selon la durée du premier cours"
+        content: |
+          RÉTENTION J7 SELON LA DURÉE DU PREMIER COURS VISIONNÉ
+
+          Premier cours > 15 min : rétention J7 = 12%
+          Premier cours 10-15 min : rétention J7 = 24%
+          Premier cours 5-10 min  : rétention J7 = 38%
+          Premier cours < 5 min   : rétention J7 = 61%
+
+          INSIGHT CLÉ : Les utilisateurs qui font un cours < 5 min ont 5x plus de chances
+          de revenir à J7 que ceux qui font un cours > 15 min.
+
+    tasks:
+      - id: discovery_edu_aha
+        type: single_choice
+        label: "Quel est le 'Aha Moment' de Learnify — l'action qui déclenche le retour ?"
+        points: 20
+        options:
+          - id: a
+            label: "S'inscrire et recevoir le mail de bienvenue"
+          - id: b
+            label: "Compléter un cours court et voir sa progression augmenter"
+          - id: c
+            label: "Gagner un badge après 3 jours consécutifs"
+          - id: d
+            label: "Recevoir le rapport hebdomadaire de progression"
+        expected: b
+        rationale: >
+          Les données le prouvent : les utilisateurs qui complètent un cours court (<5 min) ont 61% de rétention J7.
+          Ceux qui font un cours long n'ont que 12%. Le Aha Moment n'est pas l'inscription mais
+          la complétion + visualisation de la progression. Cette insight est cruciale pour la stratégie :
+          rendre le premier Aha Moment aussi rapide et certain que possible.
+        hint: "Quelle action unique distingue les utilisateurs qui reviennent de ceux qui ne reviennent pas ?"
+    debrief: >
+      Identifier le Aha Moment est l'insight produit le plus précieux.
+      Pour Learnify : "compléter un cours court = voir sa progression".
+      Toute la stratégie produit doit être optimisée pour que 100% des nouveaux inscrits
+      atteignent ce moment lors de leur première session.
+
+  - id: story_writing
+    type: story_writing
+    title: "Module 5 — Rédiger les stories pour l'engagement quotidien"
+    objectives:
+      - "Formuler des stories qui ciblent le Aha Moment identifié"
+      - "Écrire des critères d'acceptation mesurables sur la rétention"
+    instructions: >
+      Les stories doivent toutes viser le même objectif :
+      conduire l'utilisateur vers le Aha Moment (compléter un cours court et voir sa progression).
+    artifacts:
+      - type: document
+        title: "Principes de design pour l'engagement"
+        content: |
+          PRINCIPES DESIGN — ENGAGEMENT LEARNIFY
+
+          Principe 1 : PREMIER COURS = RÉCOMPENSE GARANTIE
+          Le premier cours doit être < 5 min et se terminer par une animation de succès visible.
+          Un nouvel utilisateur DOIT compléter son premier cours lors de la session d'inscription.
+
+          Principe 2 : PROGRESSION TOUJOURS VISIBLE
+          Le compteur de XP, le streak et la barre de progression matière doivent être
+          visibles en permanence sur l'écran principal.
+
+          Principe 3 : NOTIFICATION = INVITATION, PAS INTRUSION
+          Les notifications push doivent être envoyées à l'heure habituelle d'usage de l'utilisateur.
+          Format : "Tu as un streak de 5 jours ! Continue aujourd'hui. 1 cours t'attend."
+
+    tasks:
+      - id: story_edu_invest
+        type: multi_select
+        label: "Quelles stories respectent les principes et les critères INVEST ?"
+        points: 15
+        options:
+          - id: a
+            label: "En tant que nouvel utilisateur, je veux voir ma progression en maths augmenter après mon premier cours, afin de ressentir immédiatement la valeur de Learnify. [Critères : barre de progression visible après le cours, animation de célébration, XP gagné affiché]"
+          - id: b
+            label: "Implémenter un algorithme de notifications push avec machine learning pour prédire le meilleur moment d'envoi."
+          - id: c
+            label: "En tant qu'utilisateur régulier, je veux voir mon streak de jours consécutifs sur l'écran d'accueil, afin d'être motivé à ne pas le briser. [Critères : streak visible sur l'accueil, notification à l'heure habituelle si streak en danger, animation si streak battu]"
+          - id: d
+            label: "Créer un système de gamification complet avec ligues, badges, XP, streaks et classements."
+        expected:
+          - a
+          - c
+        rationale: >
+          Story A : cible directement le Aha Moment (progression visible), persona précis, critères mesurables.
+          Story C : streak = levier de rétention principale, critères d'acceptation concrets et mesurables.
+          Story B : technique (algorithme ML), pas de perspective utilisateur, trop complexe.
+          Story D : "système complet" = non-estimable, trop large, non INVEST.
+    debrief: >
+      Les stories qui ciblent le Aha Moment ont plus d'impact sur la rétention
+      que les stories de nouvelles fonctionnalités. Une bonne story d'engagement
+      doit être mesurable : "taux de retour J7 des utilisateurs ayant complété le cours."
+
+  - id: refinement
+    type: refinement
+    title: "Module 6 — Estimer les stories d'engagement"
+    objectives:
+      - "Évaluer la complexité des mécaniques d'engagement"
+      - "Identifier les stories faisables dans un sprint de 2 semaines"
+    instructions: >
+      Avec 3 développeurs, vous devez choisir les stories qui maximisent l'impact
+      sur la rétention dans le temps disponible.
+    artifacts:
+      - type: document
+        title: "Notes de refinement"
+        content: |
+          REFINEMENT NOTES — SESSIONS ÉQUIPE
+
+          BUG NOTIFICATIONS PUSH
+          Thomas : "Le bug est simple : le cron job de notifications a été désactivé
+          par erreur lors du dernier déploiement. 1 journée pour corriger et vérifier."
+
+          DÉCOUPE DES COURS EN 5 MIN
+          Anaëlle (content) : "On a 240 cours. Les découper manuellement prendrait des semaines.
+          Mais si on crée des 'Capsules' de 5 min en réutilisant les segments existants,
+          Thomas estime 3 jours pour l'outil de découpe automatique + interface."
+
+          STREAKS QUOTIDIENS
+          Thomas : "Streak = compteur de jours consécutifs + règle métier (activité quotidienne = 1 cours minimum).
+          Front + back + notification streak en danger = 2 semaines. Pas plus complexe que ça."
+
+          GRAPHIQUE PROGRESSION PAR MATIÈRE
+          Thomas : "On a les données en base. La visualisation = 3 semaines avec les tests.
+          Rapport parent par email = 1 semaine supplémentaire."
+
+    tasks:
+      - id: refinement_edu_sizing
+        type: match_pairs
+        label: "Associez chaque initiative à son estimation correcte"
+        points: 20
+        left:
+          - id: s1
+            label: "Corriger bug notifications push"
+          - id: s2
+            label: "Créer outil de découpe automatique des cours (Capsules 5min)"
+          - id: s3
+            label: "Système de streaks quotidiens"
+          - id: s4
+            label: "Graphique de progression par matière"
+        right:
+          - id: p1
+            label: "1 point (trivial)"
+          - id: p3
+            label: "3 points"
+          - id: p5
+            label: "5 points"
+          - id: p8
+            label: "8 points"
+        expected:
+          s1: p1
+          s2: p3
+          s3: p5
+          s4: p8
+        rationale: >
+          Bug notifications = 1pt : 1 journée pour réactiver un cron job désactivé.
+          Capsules 5min = 3pts : outil de découpe + interface. Contenu managé côté équipe content.
+          Streaks = 5pts : compteur + règle métier + notification + tests.
+          Graphique progression = 8pts : visualisation + tests + rapport email parents = plus complexe.
+    debrief: >
+      L'estimation révèle que les correctifs les plus impactants (bug notifications, capsules)
+      sont aussi les moins chers en points. Commencer par eux est la décision optimale :
+      on maximise le retour sur investissement de l'équipe dev.
+
+  - id: sprint_planning
+    type: sprint_planning
+    title: "Module 7 — Sprint planning pour la rétention"
+    objectives:
+      - "Composer un sprint qui maximise l'impact sur la rétention J7 dans 2 semaines"
+      - "Prouver l'amélioration avec des métriques mesurables"
+    instructions: >
+      Sprint de 2 semaines. Capacité : 18 points (3 développeurs × 6pts chacun).
+      Vous devez voir des résultats mesurables sur la rétention avant la fin du sprint.
+    stories:
+      - id: notif_bug
+        title: "Corriger bug notifications push"
+        points: 1
+        theme: ux
+      - id: capsules
+        title: "Capsules 5min (outil + premiers cours)"
+        points: 3
+        theme: ux
+      - id: streaks
+        title: "Système de streaks quotidiens"
+        points: 5
+        theme: strategy
+      - id: progression
+        title: "Graphique progression par matière"
+        points: 8
+        theme: strategy
+      - id: onboarding_flow
+        title: "Améliorer le flux d'onboarding (Capsule obligatoire)"
+        points: 3
+        theme: ux
+      - id: rapport_parent
+        title: "Rapport parental hebdomadaire (email)"
+        points: 5
+        theme: growth
+      - id: ligues
+        title: "Système de ligues entre amis"
+        points: 8
+        theme: growth
+    capacity: 18
+
+    tasks:
+      - id: sprint_edu_composition
+        type: multi_select
+        label: "Quelles stories composent le sprint optimal pour la rétention J7 ?"
+        points: 20
+        options:
+          - id: a
+            label: "Notif bug (1) + Capsules (3) + Streaks (5) + Onboarding (3) = 12pts — impact rétention direct"
+          - id: b
+            label: "Progression (8) + Rapport parent (5) + Notif bug (1) = 14pts — focus parents"
+          - id: c
+            label: "Streaks (5) + Ligues (8) + Notif bug (1) = 14pts — focus gamification"
+          - id: d
+            label: "Notif bug (1) + Capsules (3) + Streaks (5) + Onboarding (3) + Rapport parent (5) = 17pts"
+        expected:
+          - d
+        rationale: >
+          Option D (17pts) est optimale : corrige le bug (impact immédiat), crée les capsules courtes
+          (Aha Moment), crée les streaks (habitude quotidienne), améliore l'onboarding
+          (conduit au Aha Moment dès J0), ET livre le rapport parental (réduit les résiliations premium).
+          Option A : ignore le rapport parental alors qu'il est dans la capacité.
+          Option B : focus trop sur les parents, pas sur l'engagement des utilisateurs directs.
+          Option C : les ligues sont moins prioritaires que les capsules et l'onboarding.
+        hint: "Le rapport parental réduit les résiliations premium qui sont la source de revenus. Est-ce prioritaire ?"
+    debrief: >
+      Le sprint optimal combine les leviers d'engagement utilisateur (capsules, streaks)
+      ET la réduction des résiliations premium (rapport parental).
+      Les deux côtés du marché (apprenants et parents payants) doivent être adressés.
+
+  - id: sprint_review
+    type: sprint_review
+    title: "Module 8 — Valider les features d'engagement"
+    objectives:
+      - "Vérifier que les mécaniques d'engagement fonctionnent"
+      - "Valider avec des données comportementales, pas seulement des tests fonctionnels"
+    instructions: >
+      Sprint Review. L'équipe présente les features. Vous avez aussi des données de test
+      utilisateur à 2 jours de la release. Utilisez-les pour vos décisions d'acceptation.
+    delivered_stories:
+      - id: sr_capsules
+        title: "Capsules 5min"
+        acceptance_criteria:
+          - "Les capsules < 5 min sont disponibles pour au moins 50 cours"
+          - "Le player indique la durée avant de commencer"
+          - "Animation de célébration à la complétion"
+        demo_note: "60 capsules disponibles. Durée affichée. Animation OK. Test utilisateur (n=12 lycéens) : 83% ont complété leur première capsule. Durée session moyenne : 6.8 min (vs 4.2 avant)."
+
+      - id: sr_streaks
+        title: "Système de streaks quotidiens"
+        acceptance_criteria:
+          - "Le streak est visible sur l'écran d'accueil"
+          - "Notification envoyée si streak en danger (pas encore fait d'activité aujourd'hui)"
+          - "Animation quand le streak augmente"
+        demo_note: "Streak visible OK. Notification streak en danger : envoyée à 18h fixe pour tous les users. Animation OK. Marie (parent) dans le test : 'Mon fils a vu la notif et a ouvert l'app.' Mais Thomas note : 'L'heure fixe 18h n'est pas idéale — certains users préfèrent 8h ou 21h.'"
+
+      - id: sr_rapport_parent
+        title: "Rapport parental hebdomadaire"
+        acceptance_criteria:
+          - "Email envoyé chaque lundi avec progression de la semaine"
+          - "Inclut : matières étudiées, temps passé, XP gagné, cours complétés"
+          - "Testé sur 20 comptes parents premium"
+        demo_note: "Email envoyé OK. Contenu : matières, temps, XP, cours. Testé sur 20 parents : 15/20 ont ouvert l'email. 3 parents ont contacté le support pour dire 'enfin je comprends'. Mais 1 parent signal : 'Il manque la comparaison à la semaine précédente.'"
+
+    tasks:
+      - id: review_edu_decision
+        type: multi_select
+        label: "Quelles stories acceptez-vous ?"
+        points: 20
+        options:
+          - id: a
+            label: "Capsules 5min — ACCEPTER (tous critères remplis + résultats tests excellents)"
+          - id: b
+            label: "Streaks — ACCEPTER avec note (heure fixe 18h = pas optimal, amélioration future)"
+          - id: c
+            label: "Streaks — REFUSER (l'heure fixe n'est pas personnalisée)"
+          - id: d
+            label: "Rapport parental — ACCEPTER (critères remplis, comparaison semaine = nouvelle story)"
+          - id: e
+            label: "Rapport parental — REFUSER (comparaison semaine précédente manquante)"
+        expected:
+          - a
+          - b
+          - d
+        rationale: >
+          Capsules : tous les critères remplis + tests utilisateurs positifs → ACCEPTER.
+          Streaks : l'heure fixe n'était pas dans les critères d'acceptation.
+          Les critères sont remplis. L'heure personnalisée = amélioration pour un prochain sprint.
+          ACCEPTER avec une note d'amélioration.
+          Rapport parental : les critères sont remplis. La comparaison semaine précédente
+          n'était pas dans la story → nouvelle story, pas un refus.
+    debrief: >
+      Une bonne Sprint Review utilise les tests utilisateurs comme données d'acceptation.
+      83% de complétion sur les capsules = preuve que la feature fonctionne,
+      pas seulement qu'elle "marche techniquement".
+      La distinction entre "critère d'acceptation" et "amélioration future" est capitale.
+
+  - id: kpi_analysis
+    type: kpi_analysis
+    title: "Module 9 — Mesurer l'impact sur la rétention"
+    objectives:
+      - "Analyser l'évolution de la rétention après le sprint"
+      - "Décider si la stratégie est validée"
+    instructions: >
+      3 semaines après le sprint, les premières données de rétention sont disponibles.
+      Analysez-les et décidez de la suite.
+    charts:
+      - title: "Rétention J7 — Avant/Après les features"
+        type: line
+        context: "Mesure par cohorte hebdomadaire d'inscrits"
+        data:
+          - label: "Cohorte S-3"
+            value: 43
+          - label: "Cohorte S-2"
+            value: 42
+          - label: "Cohorte S-1 (avant)"
+            value: 41
+          - label: "Cohorte S0 (release)"
+            value: 43
+          - label: "Cohorte S+1"
+            value: 51
+          - label: "Cohorte S+2"
+            value: 54
+          - label: "Cohorte S+3"
+            value: 56
+
+      - title: "Durée moyenne de session (minutes)"
+        type: bar
+        context: "Évolution de la durée de session depuis la release"
+        data:
+          - label: "Avant release"
+            value: 4.2
+          - label: "Semaine 1"
+            value: 6.1
+          - label: "Semaine 2"
+            value: 7.3
+          - label: "Semaine 3"
+            value: 7.9
+
+    tasks:
+      - id: kpi_edu_interpretation
+        type: multi_select
+        label: "Quelles conclusions sont correctes ? (plusieurs réponses)"
+        points: 15
+        options:
+          - id: a
+            label: "La rétention J7 dépasse l'objectif de 60% — le sprint a surperformé"
+          - id: b
+            label: "La rétention J7 progresse fortement (41% → 56%) mais l'objectif 60% n'est pas encore atteint"
+          - id: c
+            label: "La durée de session est presque à l'objectif de 8 min — continuer dans cette direction"
+          - id: d
+            label: "Les résultats sont bons mais trop tôt pour en tirer des conclusions — attendre J30"
+        expected:
+          - b
+          - c
+        rationale: >
+          B est correcte : 56% est une forte amélioration (de 41%) mais l'objectif est 60%.
+          C est correcte : 7.9 min est proche de l'objectif 8 min, la tendance est validée.
+          A est fausse : 56% ≠ 60% objectif.
+          D est partiellement vraie (J30 donnera plus d'info) mais les tendances J7 sont déjà
+          un bon indicateur prédictif de J30 — on peut en tirer des conclusions.
+        hint: "Vérifiez chaque chiffre par rapport à son objectif spécifique."
+    debrief: >
+      La rétention J7 à 56% après un seul sprint de 2 semaines est un résultat remarquable.
+      La courbe de session à 7.9 min confirme que les capsules fonctionnent.
+      Il reste 4 points pour atteindre l'objectif J7. La stratégie est validée — continuez.
+
+  - id: stakeholder_mgmt
+    type: stakeholder_mgmt
+    title: "Module 10 — Communiquer les résultats et les prochaines étapes"
+    objectives:
+      - "Présenter les résultats aux stakeholders avec les données"
+      - "Gérer les demandes de nouvelles features vs la priorité rétention"
+    instructions: >
+      Les stakeholders réagissent aux premières données positives avec des demandes variées.
+    stakeholder_messages:
+      - from: "Sarah Dubois (Head of Growth)"
+        subject: "Résultats rétention — Demande d'accélérer sur l'acquisition"
+        priority: medium
+        body: >
+          Bonjour,
+
+          Les premiers chiffres sont excellents ! La rétention remonte.
+          Maintenant que le produit est meilleur, j'aimerais qu'on investisse
+          dans de nouvelles campagnes d'acquisition.
+          Est-ce que vous pouvez libérer des ressources pour la landing page et les A/B tests ?
+
+      - from: "Marie Lambert (parent premium)"
+        subject: "Je reste ! Merci pour le rapport hebdomadaire"
+        priority: low
+        body: >
+          Bonjour,
+
+          J'ai reçu le rapport de progression de mon fils ce matin.
+          C'est exactement ce qu'il me fallait ! Il a complété 8 cours cette semaine.
+          Je renouvelle mon abonnement.
+
+          Une suggestion : pourrait-on voir aussi les notes scolaires de mon fils
+          associées à ses progrès sur Learnify ?
+
+      - from: "Jean Moreau (enseignant)"
+        subject: "Proposition de partenariat scolaire"
+        priority: high
+        body: >
+          Bonjour,
+
+          J'ai entendu parler de Learnify par mes élèves.
+          Notre académie cherche une solution EdTech pour les lycées.
+          Si Learnify propose un tableau de bord enseignant (suivi de classe),
+          je pourrais proposer Learnify à 12 lycées de mon académie.
+          Cela représenterait ~3 000 nouveaux utilisateurs.
+
+    tasks:
+      - id: stakeholder_edu_priority
+        type: ranking
+        label: "Dans quel ordre traitez-vous ces messages ?"
+        points: 15
+        options:
+          - id: a
+            label: "Répondre à Jean (enseignant) : évaluer la faisabilité du tableau de bord enseignant"
+          - id: b
+            label: "Répondre à Sarah (Growth) : cadrer les besoins pour l'acquisition"
+          - id: c
+            label: "Répondre à Marie (parent) : remercier et évaluer la suggestion notes scolaires"
+        expected_order:
+          - a
+          - b
+          - c
+        rationale: >
+          A en premier : 3 000 utilisateurs via un partenariat académique est une opportunité transformante.
+          Un tableau de bord enseignant est une feature B2B (lycées) qui peut changer le modèle économique.
+          À évaluer rapidement avant que Jean cherche une autre solution.
+          B ensuite : l'acquisition est importante mais l'opportunité partenariat académique (A) est plus stratégique.
+          C en dernier : feedback positif d'un parent, pas urgent. La suggestion notes scolaires
+          est complexe (données sensibles) et peut être traitée plus tard.
+        hint: "3 000 utilisateurs via un partenariat institutionnel vs campagne d'acquisition ordinaire : quel impact est plus fort ?"
+    debrief: >
+      Un partenariat avec une académie scolaire change l'échelle du produit.
+      C'est une opportunité B2B (lycées) qui va au-delà des utilisateurs individuels.
+      Ce type d'opportunité mérite une réponse rapide car d'autres EdTech sont sur ce marché.
+
+  - id: release_communication
+    type: release_communication
+    title: "Module 11 — Communiquer les nouvelles features d'engagement"
+    objectives:
+      - "Rédiger une communication qui donne envie de revenir"
+      - "Adresser les bons messages aux bons audiences"
+    instructions: >
+      La version 2.1 est lancée. Communiquez sur les nouvelles features
+      en ciblant les deux audiences : les apprenants et les parents.
+    released_features:
+      - title: "Capsules d'apprentissage — 5 minutes maximum"
+        description: "Des leçons courtes et efficaces. Apprenez en 5 minutes, n'importe où, n'importe quand."
+      - title: "Streaks quotidiens"
+        description: "Maintenez votre série et progressez chaque jour. Ne brisez pas votre streak !"
+      - title: "Rapport hebdomadaire parents"
+        description: "Chaque lundi, recevez un rapport détaillé sur la progression de votre enfant par matière."
+      - title: "Bug fix notifications"
+        description: "Les rappels quotidiens fonctionnent à nouveau pour vous aider à garder l'habitude."
+
+    tasks:
+      - id: release_edu_message
+        type: single_choice
+        label: "Pour les apprenants (lycéens), quel message est le plus motivant ?"
+        points: 15
+        options:
+          - id: a
+            label: "Learnify 2.1 — Rapport de conformité pédagogique et nouveaux modules de révision"
+          - id: b
+            label: "Learnify 2.1 — Apprends en 5 min par jour. Ne brise pas ton streak."
+          - id: c
+            label: "Learnify 2.1 — Nouvelles fonctionnalités disponibles. Voir les détails dans l'application."
+          - id: d
+            label: "Learnify 2.1 — Amélioration de l'expérience utilisateur et correction de bugs"
+        expected: b
+        rationale: >
+          Option B : parle directement à Lucas (lycéen) — "5 min par jour" répond à sa principale objection
+          (les cours sont trop longs) et "streak" crée l'urgence et la motivation.
+          Option A : jargon pédagogique, aucun attrait pour un lycéen.
+          Option C : vague, pas d'appel à l'émotion.
+          Option D : "correction de bugs" est un anti-message pour des utilisateurs désengagés.
+        hint: "Relisez le verbatim de Lucas. Quel message aurait le plus de chance de le faire rouvrir l'app ?"
+    debrief: >
+      La communication produit pour les jeunes doit être ultra-courte, concrète et émotionnelle.
+      "5 min par jour. Ne brise pas ton streak." = bénéfice (5 min) + pression positive (streak).
+      Ces deux éléments sont exactement les mécaniques qui ont amélioré la rétention.
+
+events:
+  - id: viral_tiktok
+    title: "Video TikTok virale — Learnify mentionné négativement"
+    description: >
+      Une vidéo TikTok de 2.3M de vues montre un lycéen se moquer de Learnify :
+      "L'app la plus ennuyeuse de l'année, les cours durent 30 minutes non-stop."
+      Les commentaires sont majoritairement positifs pour la vidéo.
+      Le téléchargement de l'app chute de 40% en 24h.
+      Que faites-vous ?
+    trigger: "after_module:sprint_planning"
+    urgency: high
+    choices:
+      - id: respond_authentically
+        label: "Répondre avec humour sur TikTok : 'On a entendu le feedback ! Les capsules 5 min arrivent dans 3 jours.' + lancement anticipé des capsules si possible"
+        points: 15
+        rationale: >
+          Excellente réponse : la culture TikTok apprécie les marques qui savent s'auto-déprécier.
+          "On a entendu le feedback" = écoute. Lancement anticipé des capsules = action concrète.
+          Cette approche peut transformer un bad buzz en buzz positif.
+      - id: ignore
+        label: "Ignorer la vidéo — les réseaux sociaux sont volatils et ça passera"
+        points: 5
+        rationale: >
+          Risqué : ignorer un bad buzz avec 2.3M de vues laisse le narratif s'installer.
+          Si d'autres créateurs reprennent le mème, ça peut durer des semaines.
+          Une réponse rapide et authentique coupe l'élan.
+      - id: legal
+        label: "Contacter le créateur et demander de supprimer la vidéo via les conditions d'utilisation"
+        points: 0
+        rationale: >
+          Catastrophique : une marque qui cherche à censurer un créateur TikTok crée
+          un second bad buzz bien plus viral. "Streisand Effect" garanti.
+          Les jeunes audiences punissent sévèrement ce type de comportement.
+
+  - id: school_partnership
+    title: "Partenariat scolaire — Académie de Lyon intéressée"
+    description: >
+      Suite au contact de Jean Moreau, l'Académie de Lyon est intéressée par un pilote
+      dans 15 lycées (5 000 apprenants). Condition : un tableau de bord enseignant
+      pour suivre la progression de classe. L'équipe estime 6 semaines de développement.
+      Le directeur académique veut une réponse dans 48h.
+      Que proposez-vous ?
+    trigger: "after_module:kpi_analysis"
+    urgency: high
+    choices:
+      - id: mvp_dashboard
+        label: "Proposer un MVP tableau de bord enseignant (vue par classe, progression par élève) livrable en 4 semaines pour un pilote académique"
+        points: 15
+        rationale: >
+          Bonne décision : un MVP ciblé (vue classe + progression élève) répond au besoin essentiel
+          sans over-engineer. 4 semaines au lieu de 6 en réduisant le scope initial.
+          5 000 apprenants via un partenariat académique = changement d'échelle majeur pour Learnify.
+      - id: commit_full
+        label: "Promettre le tableau de bord complet en 6 semaines avec toutes les features demandées"
+        points: 5
+        rationale: >
+          Risqué : 6 semaines avec le scope complet peut déraper.
+          Un pilote académique avec un MVP livré à temps vaut mieux qu'un produit complet en retard.
+      - id: decline
+        label: "Décliner le partenariat pour se concentrer sur la rétention grand public"
+        points: 0
+        rationale: >
+          Mauvaise décision : 5 000 apprenants B2B (lycées) qui viennent directement via l'institution
+          ont une rétention naturellement plus forte que les apprenants B2C individuels.
+          Un partenariat académique renforce aussi la crédibilité pédagogique du produit.
+
+  - id: churn_premium
+    title: "Vague de résiliations premium — Retour dans les écoles après les vacances"
+    description: >
+      C'est septembre. 800 abonnés premium résilient en même temps : la rentrée scolaire.
+      Les parents avaient souscrit pendant l'été. Avec la rentrée, les enfants ont de vraies
+      devoirs et "n'ont plus besoin" de Learnify.
+      Comment réagissez-vous pour stopper cette vague ?
+    trigger: "after_module:stakeholder_mgmt"
+    urgency: high
+    choices:
+      - id: back_to_school
+        label: "Lancer une campagne 'Learnify rentrée' avec un message ciblé parents : rapport de progression lié aux matières du programme scolaire + offre de maintien tarifaire"
+        points: 15
+        rationale: >
+          Bonne décision : adapter le message à la rentrée (programme scolaire, devoirs)
+          repositionne Learnify comme outil de révision scolaire, pas de distraction.
+          L'offre de maintien tarifaire réduit la friction de résiliation.
+      - id: email_campaign
+        label: "Envoyer un email de rétention standard avec les nouvelles features disponibles"
+        points: 5
+        rationale: >
+          Trop générique : un email standard ne répond pas à la motivation spécifique
+          de la résiliation (retour à l'école). Le message doit être contextualisé
+          pour être efficace en période de rentrée.
+      - id: do_nothing
+        label: "C'est normal pour septembre, la saisonnalité existe en EdTech. Attendre que ça passe."
+        points: 0
+        rationale: >
+          Mauvaise décision : même si la saisonnalité est réelle, "ne rien faire" laisse partir
+          800 clients payants. Une intervention proactive, même avec 30% de succès, récupère
+          240 abonnés. Le coût d'action est très inférieur au coût de la perte.
+
+feedback:
+  success_thresholds:
+    advanced:
+      min_percent: 75
+      message: >
+        Excellent ! Vous avez su identifier les bons leviers de rétention et les livrer
+        dans le bon ordre. La maîtrise du framework Aha Moment + engagement quotidien
+        est la clé du succès en EdTech.
+    intermediate:
+      min_percent: 40
+      message: >
+        Bon travail ! Vous avez bien identifié les priorités principales.
+        Les points à améliorer : l'identification du Aha Moment et la gestion
+        des partenariats institutionnels qui changent l'échelle du produit.
+    junior:
+      min_percent: 0
+      message: >
+        Ce cas vous apprend la règle fondamentale : acquérir des utilisateurs sur
+        un produit peu engageant amplifie le problème. La rétention doit toujours
+        précéder l'acquisition. Résoudre le Aha Moment change tout.

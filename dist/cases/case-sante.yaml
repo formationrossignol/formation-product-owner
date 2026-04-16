@@ -1,0 +1,1107 @@
+id: case-sante
+title: "MediLink — Coordination soignants sous contraintes réglementaires"
+difficulty: advanced
+estimated_duration: 150
+
+context:
+  company: MediLink
+  industry: Santé numérique — Coordination des soins
+  role: Product Owner
+  logo: "🏥"
+  summary: >
+    MediLink est une plateforme de coordination entre médecins, infirmiers libéraux
+    et établissements de santé, certifiée HDS (Hébergeur de Données de Santé).
+    Après un audit RGPD, la CNIL impose des corrections sous 90 jours sous peine d'amende.
+    En parallèle, les médecins demandent une application mobile et les hôpitaux veulent
+    une intégration avec leurs systèmes d'information (DPI). Vous devez tout arbitrer.
+  business_goal: "Obtenir la mise en conformité CNIL dans les délais ET lancer la version mobile avant la rentrée médicale de septembre"
+  constraints:
+    - "Mise en conformité CNIL obligatoire sous 90 jours (pénalité jusqu'à 4% CA)"
+    - "Certification HDS doit être maintenue en permanence"
+    - "Toute donnée de santé doit rester sur des serveurs en France (souveraineté)"
+    - "Les médecins ne peuvent pas être perturbés pendant les consultations"
+
+personas:
+  - id: dr_martin
+    name: "Dr. Sophie Martin"
+    role: Médecin généraliste
+    avatar: "👩‍⚕️"
+    personality: "Pragmatique, peu de temps, exigeante sur la fiabilité"
+    goals: "Coordonner les soins de ses patients chroniques sans perte de temps"
+    pain_points: "Trop d'étapes pour partager un compte-rendu avec un infirmier"
+    communication_style: "Direct, veut des solutions simples, réfractaire aux formations longues"
+    quote: "Je ne peux pas perdre 3 minutes entre deux consultations à chercher comment partager un document."
+
+  - id: infirmier_pierre
+    name: "Pierre Lefort"
+    role: Infirmier libéral
+    avatar: "👨‍⚕️"
+    personality: "Mobile, terrain, utilise son smartphone toute la journée"
+    goals: "Accéder aux prescriptions et ordonnances directement sur le terrain"
+    pain_points: "Impossible de consulter MediLink sur mobile, interface non responsive"
+    communication_style: "Informel, feedback direct, utilisateur quotidien"
+    quote: "Je suis en déplacement toute la journée. L'application web ne fonctionne pas sur mon téléphone."
+
+  - id: dsi_hopital
+    name: "Marc Leblanc"
+    role: DSI Hôpital Saint-Louis"
+    avatar: "🧑‍💼"
+    personality: "Technique, processus rigoureux, exigeant sur la sécurité"
+    goals: "Intégrer MediLink au DPI hospitalier pour éviter la double saisie"
+    pain_points: "Absence d'API standardisée pour connecter MediLink à leur système HL7"
+    communication_style: "Technique, spécifications formelles, délais longs de validation"
+    quote: "Nos médecins saisissent les mêmes informations deux fois. Il faut une API HL7 FHIR."
+
+  - id: dpo
+    name: "Isabelle Roux"
+    role: Délégué·e à la Protection des Données (DPO)"
+    avatar: "⚖️"
+    personality: "Rigoureuse, juriste, ne négocie pas sur la conformité"
+    goals: "Obtenir la conformité CNIL dans les délais légaux"
+    pain_points: "Les développeurs minimisent les risques réglementaires"
+    communication_style: "Formelle, écrit beaucoup, chaque engagement est documenté"
+    quote: "On a 90 jours. Chaque jour de retard est un risque pénal pour la direction."
+
+kpis:
+  - id: compliance_score
+    label: "Score conformité CNIL"
+    value: 43
+    unit: "/100"
+    target: 95
+    trend: up
+    description: "Auto-évaluation basée sur les 14 exigences CNIL identifiées lors de l'audit"
+
+  - id: mobile_usage
+    label: "Utilisateurs mobile actifs"
+    value: 8
+    unit: "%"
+    target: 40
+    trend: up
+    description: "% d'utilisateurs qui accèdent à MediLink via mobile"
+
+  - id: mau
+    label: "Médecins actifs mensuels"
+    value: 1240
+    unit: "médecins"
+    target: 2000
+    trend: stable
+    description: "Médecins qui ont utilisé MediLink au moins une fois ce mois"
+
+  - id: coordination_time
+    label: "Temps moyen de coordination"
+    value: 18
+    unit: "minutes"
+    target: 8
+    trend: stable
+    description: "Temps moyen pour coordonner un soin entre deux professionnels"
+
+  - id: incident_security
+    label: "Incidents sécurité déclarés"
+    value: 3
+    unit: "incidents/mois"
+    target: 0
+    trend: up
+    description: "Incidents de sécurité liés aux accès aux données de santé"
+
+datasets:
+  interviews:
+    - persona_id: dr_martin
+      excerpt: >
+        "Ce qui m'agace le plus, c'est de devoir me connecter, chercher le patient,
+        puis chercher l'infirmier référent, puis créer un message, puis joindre le document.
+        Ça prend 4 minutes. Je n'ai pas 4 minutes entre deux patients.
+        Si une application me permettait de faire ça en 30 secondes depuis mes notes,
+        je passerais tous mes collègues à MediLink demain."
+
+    - persona_id: infirmier_pierre
+      excerpt: >
+        "Je commence à 7h du matin. À cette heure-là j'ai déjà 6 patients.
+        Je dois vérifier les ordonnances en route dans ma voiture.
+        Vous imaginez ? J'ouvre l'appli web sur mon téléphone, elle charge en 20 secondes,
+        l'interface est minuscule, je ne peux pas lire. Je prenais des photos des ordonnances
+        papier avec mon téléphone. C'est absurde en 2024."
+
+    - persona_id: dpo
+      excerpt: >
+        "L'audit a identifié 14 non-conformités. Les 3 critiques sont :
+        1) Les logs d'accès aux données de santé ne sont pas conservés 5 ans,
+        2) Les tokens de session n'expirent pas (violation article 5 RGPD),
+        3) Les pseudonymes patients ne sont pas correctement dissociés des données cliniques.
+        Si on n'a pas corrigé ces 3 points dans les 45 premiers jours,
+        l'auditeur recommandera des sanctions préventives."
+
+  analytics:
+    - title: "Répartition des accès par type d'appareil"
+      type: bar
+      data:
+        - label: "Desktop"
+          value: 92
+        - label: "Mobile"
+          value: 6
+        - label: "Tablette"
+          value: 2
+
+    - title: "Score conformité par exigence CNIL (sur 14)"
+      type: bar
+      data:
+        - label: "Logs d'accès"
+          value: 20
+        - label: "Consentements"
+          value: 65
+        - label: "Tokens session"
+          value: 10
+        - label: "Pseudonymisation"
+          value: 30
+        - label: "Droit effacement"
+          value: 70
+        - label: "Transferts hors UE"
+          value: 90
+        - label: "Formation DPO"
+          value: 80
+
+inbox:
+  - from: "Isabelle Roux (DPO)"
+    subject: "URGENT — Deadline CNIL : 45 jours pour les 3 points critiques"
+    body: >
+      Bonjour,
+
+      Je vous transmets le planning de mise en conformité validé par la CNIL.
+      Les 3 non-conformités critiques (logs, tokens, pseudonymisation) doivent être
+      corrigées sous 45 jours. Les 11 non-conformités mineures sous 90 jours.
+
+      En cas de retard sur les critiques, l'auditeur peut imposer une astreinte journalière.
+      Je vous demande un plan d'action par écrit avant vendredi.
+
+      Isabelle Roux, DPO
+
+  - from: "Dr. Sophie Martin"
+    subject: "Application mobile — Pétition de 340 médecins"
+    body: >
+      Bonjour,
+
+      340 médecins de notre réseau ont signé une pétition pour demander une application mobile.
+      Nous passons en moyenne 18 minutes par coordination alors que cela devrait prendre 5 minutes
+      avec une bonne app mobile.
+
+      Si MediLink n'a pas d'app mobile avant septembre, nous avons évalué Doctolib Coordination.
+
+  - from: "Marc Leblanc (DSI Hôpital Saint-Louis)"
+    subject: "Proposition de partenariat — Intégration DPI via HL7 FHIR"
+    body: >
+      Bonjour,
+
+      Hôpital Saint-Louis souhaite intégrer MediLink à notre DPI (Millennium de Cerner).
+      Notre DSI a validé l'utilisation de l'API HL7 FHIR standard.
+      Nous représentons potentiellement 80 établissements du réseau AP-HP.
+
+      Ce partenariat représenterait 3 000+ utilisateurs supplémentaires.
+      Êtes-vous en capacité de livrer l'intégration FHIR sous 6 mois ?
+
+modules:
+  - id: okr_setting
+    type: okr_setting
+    title: "Module 1 — Définir les OKRs dans un contexte réglementé"
+    objectives:
+      - "Intégrer les contraintes légales dans les OKRs"
+      - "Formuler des résultats clés mesurables et conformes"
+    instructions: >
+      Les OKRs de MediLink doivent refléter à la fois la croissance du produit
+      ET les obligations légales. Ignorer la conformité dans les OKRs est une faute de gouvernance.
+    artifacts:
+      - type: document
+        title: "Contexte réglementaire HDS/CNIL"
+        content: |
+          CADRE RÉGLEMENTAIRE — MEDILINK
+
+          CERTIFICATION HDS (Hébergeur de Données de Santé)
+          - Obligatoire pour tout service traitant des données de santé
+          - Audité annuellement
+          - Non-conformité = suspension d'activité possible
+
+          RGPD ARTICLE 9 — Données de santé
+          - Catégorie "sensible" : protection renforcée obligatoire
+          - Consentement explicite et traçable requis
+          - Délai de réponse aux demandes d'effacement : 72h max
+
+          CNIL — AUDIT EN COURS
+          - 14 non-conformités identifiées (3 critiques, 11 mineures)
+          - Délai : 45 jours pour les critiques, 90 jours pour les mineures
+          - Pénalité maximale : 4% du CA annuel
+
+    tasks:
+      - id: okr_health_objective
+        type: single_choice
+        label: "Quel objectif OKR est le plus adapté à la situation de MediLink ?"
+        points: 15
+        options:
+          - id: a
+            label: "Devenir la référence de coordination soignants en France en 2 ans"
+          - id: b
+            label: "Obtenir la conformité CNIL et lancer une expérience mobile irréprochable"
+          - id: c
+            label: "Livrer l'intégration FHIR pour décrocher le partenariat AP-HP"
+          - id: d
+            label: "Augmenter le nombre de médecins actifs de 1240 à 2000"
+        expected: b
+        rationale: >
+          L'objectif B est le seul qui capture les deux urgences réelles du trimestre :
+          la conformité légale (non-négociable) ET l'expérience mobile (risque de churn).
+          L'option A est trop vague pour un OKR trimestriel.
+          L'option C est une opportunité mais pas une urgence.
+          L'option D est un KR, pas un objectif qualitatif.
+        hint: "Un OKR doit refléter les priorités réelles du trimestre, pas les ambitions à long terme."
+
+      - id: okr_health_kr
+        type: multi_select
+        label: "Quels KRs sont adaptés à cet objectif ? (choisissez 3)"
+        points: 15
+        options:
+          - id: a
+            label: "Corriger les 3 non-conformités critiques CNIL sous 45 jours"
+          - id: b
+            label: "Recruter un DPO supplémentaire"
+          - id: c
+            label: "Lancer une application mobile iOS/Android avec 3 fonctions clés avant septembre"
+          - id: d
+            label: "Atteindre un score conformité CNIL de 90/100 sous 90 jours"
+          - id: e
+            label: "Obtenir la certification ISO 27001"
+        expected:
+          - a
+          - c
+          - d
+        rationale: >
+          KR A : mesure la résolution des points critiques dans les délais légaux.
+          KR C : mesure le lancement mobile avec un scope limité (3 fonctions = livrable réaliste).
+          KR D : mesure la conformité globale (11 non-conformités mineures restantes).
+          KR B est une action, pas un résultat.
+          KR E est un projet séparé, hors scope trimestre.
+    debrief: >
+      Dans un secteur réglementé, les OKRs doivent intégrer les contraintes légales
+      comme des priorités de premier rang, pas des contraintes de second plan.
+      La conformité est une feature qui conditionne la survie du produit.
+
+  - id: competitive_analysis
+    type: competitive_analysis
+    title: "Module 2 — Analyse concurrentielle en santé numérique"
+    objectives:
+      - "Positionner MediLink face aux acteurs de la e-santé"
+      - "Identifier les avantages réglementaires comme différenciateurs"
+    instructions: >
+      Le marché de la coordination soins est dominé par quelques acteurs.
+      Positionnez-les sur la matrice et identifiez le positionnement optimal de MediLink.
+    artifacts:
+      - type: document
+        title: "Benchmark e-santé"
+        content: |
+          CONCURRENTS — COORDINATION SOINS FRANCE
+
+          DOCTOLIB COORDINATION
+          - Points forts : notoriété, interface mobile native, 70k médecins
+          - Points faibles : data hébergée hors France pour certains modules
+          - Certification HDS : partielle (certaines données sur AWS US)
+          - Prix : gratuit pour les médecins, monétisé côté établissements
+
+          LIFEN
+          - Points forts : intégrations DPI, standards HL7 FHIR natifs
+          - Points faibles : focus établissements, peu accessible aux libéraux
+          - Certification HDS : complète
+          - Prix : tarif B2B établissements uniquement
+
+          MSSANTÉ (Service public)
+          - Points forts : gratuit, messagerie sécurisée certifiée, interopérabilité
+          - Points faibles : interface vieillissante, pas d'application mobile
+          - Certification HDS : garantie État
+          - Usage : 200k professionnels (mais usage limité aux messageries)
+
+          MEDILINK (actuel)
+          - Points forts : coordination pluridisciplinaire, conformité RGPD, data France
+          - Points faibles : pas d'application mobile, interface web complexe
+          - Certification HDS : complète, hébergement 100% France
+
+    tasks:
+      - id: competitive_differentiators
+        type: ranking
+        label: "Classez ces avantages de MediLink par ordre d'importance différenciatrice"
+        points: 20
+        options:
+          - id: a
+            label: "Hébergement 100% France + certification HDS complète"
+          - id: b
+            label: "Coordination pluridisciplinaire (médecins + infirmiers + établissements)"
+          - id: c
+            label: "Conformité RGPD article 9 (données de santé sensibles)"
+          - id: d
+            label: "Support en français avec équipe spécialisée santé"
+          - id: e
+            label: "Prix accessible aux libéraux"
+        expected_order:
+          - a
+          - c
+          - b
+          - d
+          - e
+        rationale: >
+          Le différenciateur #1 est l'hébergement France + HDS complet — Doctolib (concurrent principal)
+          n'a pas de HDS complète, ce qui devient un critère discriminant avec les nouvelles
+          réglementations des hôpitaux. La conformité RGPD article 9 renforce ce point.
+          La coordination pluridisciplinaire est unique mais peut être copiée.
+          Le support FR et le prix sont des hygiènes, pas des différenciateurs.
+        hint: "Dans la santé, la conformité réglementaire n'est pas optionnelle — c'est le premier filtre d'achat."
+    competitors:
+      - id: doctolib
+        name: "Doctolib Coordination"
+        description: "Notoriété forte, 70k médecins — HDS partielle, données hors France pour certains modules"
+      - id: lifen
+        name: "Lifen"
+        description: "Intégrations DPI et HL7 FHIR — focus établissements, peu accessible aux libéraux"
+      - id: mssante
+        name: "MSSanté"
+        description: "Service public gratuit, interopérabilité — interface vieillissante, pas de mobile"
+      - id: bamboohr
+        name: "Cegedim Coordination"
+        description: "Ancienneté, intégrations ERP — interface vieillissante, pas d'app mobile"
+    debrief: >
+      Dans la santé, la conformité n'est pas un différenciateur "sympa" — c'est le prérequis
+      à l'achat pour les établissements et un argument décisif post-CNIL.
+      MediLink doit capitaliser sur son avantage HDS+RGPD avant que les concurrents le rattrapent.
+
+  - id: roadmap_planning
+    type: roadmap_planning
+    title: "Module 3 — Roadmap dans un contexte multi-contraintes"
+    objectives:
+      - "Séquencer les initiatives en respectant les délais légaux"
+      - "Arbitrer entre conformité, mobile et nouvelles opportunités"
+    instructions: >
+      Quatre initiatives majeures se disputent la priorité.
+      La conformité CNIL n'est pas négociable en termes de timing.
+      Séquencez les initiatives sur 4 trimestres.
+    artifacts:
+      - type: document
+        title: "Initiatives disponibles"
+        content: |
+          INITIATIVES PRODUIT — MEDILINK
+
+          CONFORMITÉ (Non-négociable)
+          CNIL-1: Logs d'accès 5 ans (2 semaines) — CRITIQUE J+45
+          CNIL-2: Expiration tokens session (1 semaine) — CRITIQUE J+45
+          CNIL-3: Pseudonymisation renforcée (3 semaines) — CRITIQUE J+45
+          CNIL-4: 11 non-conformités mineures (6 semaines) — J+90
+
+          MOBILE
+          MOB-1: Application mobile iOS (8 semaines, PRÉREQUIS: CNIL-1,2,3)
+          MOB-2: Application mobile Android (6 semaines, PRÉREQUIS: MOB-1)
+
+          INTÉGRATION
+          FHIR-1: API HL7 FHIR basique (10 semaines)
+          FHIR-2: Intégration DPI Hôpital (8 semaines, PRÉREQUIS: FHIR-1)
+
+          UX
+          UX-1: Refonte interface coordination (4 semaines)
+
+    tasks:
+      - id: roadmap_health_q1
+        type: multi_select
+        label: "Quelles initiatives doivent absolument être dans les 45 premiers jours ?"
+        points: 20
+        options:
+          - id: a
+            label: "CNIL-1 : Logs d'accès"
+          - id: b
+            label: "CNIL-2 : Expiration tokens"
+          - id: c
+            label: "CNIL-3 : Pseudonymisation"
+          - id: d
+            label: "MOB-1 : Application mobile iOS"
+          - id: e
+            label: "FHIR-1 : API HL7 FHIR"
+        expected:
+          - a
+          - b
+          - c
+        rationale: >
+          Les non-conformités critiques CNIL (1, 2, 3) ont une deadline légale à J+45.
+          Elles sont les seules initiatives avec une contrainte temporelle non-négociable.
+          MOB-1 dépend des CNIL critiques (les données mobiles doivent être conformes).
+          FHIR-1 est une opportunité commerciale importante mais pas urgente légalement.
+        hint: "Qu'est-ce qui a une deadline légale ferme dans les 45 jours ?"
+    features:
+      - id: cnil1
+        title: "CNIL-1 : Logs d'accès 5 ans"
+        theme: tech
+        effort: 2
+      - id: cnil2
+        title: "CNIL-2 : Expiration tokens session"
+        theme: tech
+        effort: 1
+      - id: cnil3
+        title: "CNIL-3 : Pseudonymisation renforcée"
+        theme: tech
+        effort: 3
+      - id: cnil4
+        title: "CNIL-4 : Non-conformités mineures (lot)"
+        theme: tech
+        effort: 6
+      - id: mob1
+        title: "MOB-1 : Application mobile iOS"
+        theme: ux
+        effort: 8
+      - id: mob2
+        title: "MOB-2 : Application mobile Android"
+        theme: ux
+        effort: 6
+      - id: fhir1
+        title: "FHIR-1 : API HL7 FHIR basique"
+        theme: strategy
+        effort: 10
+      - id: ux1
+        title: "UX-1 : Refonte interface coordination"
+        theme: ux
+        effort: 4
+    debrief: >
+      Dans un contexte réglementé, les obligations légales structurent la roadmap.
+      La règle est simple : les contraintes réglementaires critiques passent avant tout —
+      même avant les features qui génèrent du revenu.
+
+  - id: discovery
+    type: discovery
+    title: "Module 4 — Discovery : comprendre l'expérience terrain des soignants"
+    objectives:
+      - "Comprendre les workflows réels des infirmiers libéraux"
+      - "Identifier les moments de friction critiques"
+    instructions: >
+      L'équipe Discovery a mené des entretiens et des observations sur le terrain.
+      Analysez les verbatims pour identifier le problème principal à résoudre.
+    artifacts:
+      - type: email
+        title: "Observation terrain — Tournée avec Pierre Lefort (infirmier)"
+        content: |
+          RAPPORT OBSERVATION TERRAIN — Pierre Lefort, Infirmier Libéral
+          Date : Mardi 14h-18h
+
+          14h05 : Pierre arrive chez patient M. Dupont (diabétique type 2).
+          Il sort son téléphone pour vérifier le protocole du Dr. Martin.
+          Connexion MediLink web : 23 secondes de chargement.
+          Interface non adaptée mobile, doit zoomer avec 3 doigts pour lire.
+          Note dans le carnet papier pour ne pas oublier.
+
+          14h32 : Chez Mme Renard. Problème de dosage insulin. Veut contacter Dr. Martin.
+          Ouvre MediLink → recherche patient → trouve médecin → compose message.
+          Durée : 4 minutes 17 secondes. "Normalement j'appelle directement."
+
+          15h48 : Manque une ordonnance pour M. Girard. L'ordonnance est sur MediLink.
+          Impossible de l'ouvrir correctement sur mobile (PDF non adapté).
+          Pierre repart sans les informations. "Je rappellerai la secrétaire."
+
+          FRICTION PRINCIPALE OBSERVÉE : L'infirmier abandonne MediLink en situation d'urgence
+          et revient aux canaux non-sécurisés (téléphone, WhatsApp).
+
+      - type: dashboard
+        title: "Analyse des abandons de session mobile"
+        content: |
+          ANALYTICS — SESSIONS MOBILES MEDILINK
+
+          Taux d'abandon par étape (sessions mobile) :
+          - Page de connexion : 12% abandonnent (chargement > 8s)
+          - Recherche patient : 34% abandonnent (interface non adaptée)
+          - Consultation document : 67% abandonnent (PDF non responsive)
+          - Envoi message : 78% abandonnent (formulaire trop long)
+
+          Usage non-sécurisé observé en sortie d'abandon :
+          - 45% utilisent WhatsApp pour partager infos patient (violation RGPD)
+          - 23% envoient des SMS non chiffrés
+
+    tasks:
+      - id: discovery_mobile_jtbd
+        type: single_choice
+        label: "Quel est le vrai besoin des infirmiers libéraux sur mobile ?"
+        points: 20
+        options:
+          - id: a
+            label: "Accéder à toutes les fonctionnalités de MediLink depuis leur téléphone"
+          - id: b
+            label: "Consulter rapidement une information critique et envoyer un message sécurisé en moins de 30 secondes"
+          - id: c
+            label: "Remplacer complètement le carnet papier par une solution digitale"
+          - id: d
+            label: "Synchroniser automatiquement les informations avec le cabinet médical"
+        expected: b
+        rationale: >
+          L'observation terrain révèle que les infirmiers abandonnent MediLink face à l'urgence
+          et reviennent à des canaux non-sécurisés. Le JTBD est la rapidité d'accès (< 30s)
+          pour l'information critique et la messagerie sécurisée. Pas besoin de toutes les features —
+          juste 2 ou 3 actions hyper-rapides. L'impact RGPD du canal non-sécurisé (WhatsApp) est aussi un argument légal.
+        hint: "Observez ce qui se passe quand l'infirmier abandonne MediLink. Qu'est-ce qu'il fait à la place ?"
+    debrief: >
+      La discovery terrain révèle que les utilisateurs utilisent des canaux non-sécurisés
+      quand l'outil principal est trop lent. Ce n'est pas qu'un problème UX — c'est un risque
+      RGPD majeur. L'app mobile ne doit pas tout faire, elle doit faire 2 choses très vite.
+
+  - id: story_writing
+    type: story_writing
+    title: "Module 5 — Stories pour l'application mobile soignants"
+    objectives:
+      - "Rédiger des stories orientées vers la rapidité d'usage terrain"
+      - "Intégrer les contraintes sécurité dans les critères d'acceptation"
+    instructions: >
+      Les stories de l'app mobile doivent refléter les contraintes terrain (rapidité)
+      ET les contraintes légales (données de santé, RGPD, chiffrement).
+    artifacts:
+      - type: document
+        title: "Contraintes techniques sécurité"
+        content: |
+          CONTRAINTES TECHNIQUES — APP MOBILE MEDILINK
+
+          OBLIGATOIRES (certification HDS) :
+          - Authentification à 2 facteurs sur mobile
+          - Chiffrement end-to-end des messages
+          - Timeout de session : 15 minutes d'inactivité
+          - Aucune donnée de santé stockée localement (cache interdit)
+          - Logs de toutes les consultations de documents patients
+
+          RECOMMANDÉES :
+          - Biométrie (FaceID/TouchID) pour accélérer la reconnexion
+          - Mode hors-ligne limité aux métadonnées non-sensibles
+
+    tasks:
+      - id: story_health_quality
+        type: multi_select
+        label: "Quelles stories sont conformes aux contraintes HDS et INVEST ? (plusieurs réponses)"
+        points: 15
+        options:
+          - id: a
+            label: "En tant qu'infirmier, je veux me reconnecter avec mon empreinte digitale après timeout, afin de reprendre le travail en moins de 5 secondes."
+          - id: b
+            label: "Implémenter le chiffrement TLS 1.3 pour toutes les communications mobiles."
+          - id: c
+            label: "En tant qu'infirmier, je veux consulter le protocole de soin d'un patient en moins de 3 taps, afin de l'avoir à disposition lors de mes soins."
+          - id: d
+            label: "Créer une application mobile complète qui reproduit toutes les fonctionnalités web."
+        expected:
+          - a
+          - c
+        rationale: >
+          Story A : biométrie + timeout < 5s = INVEST, conforme HDS (reconnexion rapide sans stocker données).
+          Story C : 3 taps max = mesurable, petite, valeur claire (consultation rapide terrain).
+          Story B : technique, pas de perspective utilisateur (pas INVEST, même si nécessaire techniquement).
+          Story D : trop grande, pas de critères d'acceptation, "toutes les fonctionnalités" est non-estimable.
+    debrief: >
+      Dans un secteur réglementé, les stories doivent intégrer les contraintes de conformité
+      dans leurs critères d'acceptation. Une feature mobile sans le chiffrement requis
+      par HDS n'est pas livrable — même si techniquement ça "marche".
+
+  - id: refinement
+    type: refinement
+    title: "Module 6 — Refinement des stories mobile"
+    objectives:
+      - "Estimer les stories en tenant compte des contraintes sécurité"
+      - "Identifier les stories bloquées par la conformité CNIL"
+    instructions: >
+      Certaines stories mobile ne peuvent pas être livrées avant la conformité CNIL.
+      Estimez correctement en intégrant ces dépendances.
+    artifacts:
+      - type: document
+        title: "Dépendances conformité → features mobiles"
+        content: |
+          DÉPENDANCES CONFORMITÉ → MOBILE
+
+          Toutes les features mobile qui accèdent à des données de santé
+          DÉPENDENT de CNIL-1 (logs d'accès) et CNIL-3 (pseudonymisation).
+
+          Sans ces conformités, une feature mobile qui accède à des données de santé
+          serait elle-même non-conforme et créerait un nouveau risque CNIL.
+
+          Features mobiles BLOQUÉES avant conformité critique :
+          - Consultation protocoles de soin
+          - Messagerie sécurisée patient
+          - Accès ordonnances
+
+          Features mobiles NON-BLOQUÉES (pas de données de santé) :
+          - Authentification / biométrie
+          - Agenda et rendez-vous (métadonnées uniquement)
+
+    tasks:
+      - id: refinement_health_sizing
+        type: match_pairs
+        label: "Associez chaque story mobile à sa bonne estimation"
+        points: 20
+        left:
+          - id: s1
+            label: "Authentification biométrique (FaceID/TouchID)"
+          - id: s2
+            label: "Consultation protocoles de soin (après CNIL-1,3)"
+          - id: s3
+            label: "Messagerie sécurisée chiffrée (après CNIL-1,2,3)"
+          - id: s4
+            label: "Application mobile complète (toutes features)"
+        right:
+          - id: p2
+            label: "2 points (simple)"
+          - id: p5
+            label: "5 points (moyen)"
+          - id: p8
+            label: "8 points (complexe)"
+          - id: p21
+            label: "21 points (trop grande)"
+        expected:
+          s1: p2
+          s2: p5
+          s3: p8
+          s4: p21
+        rationale: >
+          Biométrie = 2pts (SDK natif iOS/Android, cas standard).
+          Consultation protocoles = 5pts (après le refacto CNIL, la partie data est prête).
+          Messagerie chiffrée = 8pts (chiffrement E2E, audit logs, cas edge nombreux).
+          Application complète = 21pts (trop grande, non-estimable, à découper).
+    debrief: >
+      L'estimation révèle que certaines stories sont impossibles à découper correctement
+      sans les prérequis de conformité. Le refinement doit intégrer l'ordre des livraisons
+      imposé par les contraintes réglementaires.
+
+  - id: sprint_planning
+    type: sprint_planning
+    title: "Module 7 — Sprint planning avec contraintes légales"
+    objectives:
+      - "Composer un sprint priorisant la conformité"
+      - "Préparer la première release mobile livrable"
+    instructions: >
+      Sprint de 2 semaines. Capacité : 25 points.
+      La conformité critique doit être livrée en J+45. Ce sprint est à J+30.
+      Il reste 15 jours pour livrer les points CNIL critiques restants.
+    stories:
+      - id: cnil2
+        title: "CNIL-2 : Expiration tokens (déjà fait)"
+        points: 0
+        theme: tech
+      - id: cnil1
+        title: "CNIL-1 : Logs d'accès 5 ans"
+        points: 5
+        theme: tech
+      - id: cnil3
+        title: "CNIL-3 : Pseudonymisation renforcée"
+        points: 8
+        theme: tech
+      - id: mob_auth
+        title: "Mobile : Authentification biométrique"
+        points: 2
+        theme: strategy
+      - id: mob_agenda
+        title: "Mobile : Agenda et rendez-vous"
+        points: 3
+        theme: ux
+      - id: mob_msg
+        title: "Mobile : Messagerie sécurisée (dépend CNIL-1,3)"
+        points: 8
+        theme: growth
+      - id: ux1
+        title: "UX : Refonte page coordination"
+        points: 5
+        theme: ux
+      - id: cnil4
+        title: "CNIL-4 : Non-conformités mineures (lot 1)"
+        points: 5
+        theme: tech
+    capacity: 25
+
+    tasks:
+      - id: sprint_health_composition
+        type: single_choice
+        label: "Quelle composition de sprint est la plus appropriée ?"
+        points: 20
+        options:
+          - id: a
+            label: "CNIL-1 (5pts) + CNIL-3 (8pts) + Mobile Auth (2pts) + Mobile Agenda (3pts) + CNIL-4 lot1 (5pts) = 23pts"
+          - id: b
+            label: "CNIL-1 (5pts) + CNIL-3 (8pts) + Mobile Messagerie (8pts) = 21pts"
+          - id: c
+            label: "UX Refonte (5pts) + Mobile Auth (2pts) + Mobile Agenda (3pts) + Mobile Messagerie (8pts) = 18pts"
+          - id: d
+            label: "CNIL-1 (5pts) + CNIL-3 (8pts) + UX Refonte (5pts) + Mobile Messagerie (8pts) = 26pts — dépasse capacité"
+        expected: a
+        rationale: >
+          Option A est optimale : finalise les CNIL critiques (J+45 respecté),
+          ajoute les premières features mobiles non-bloquées (Auth + Agenda),
+          ET avance sur les CNIL mineures. 23pts < 25pts, réaliste.
+          Option B : Mobile Messagerie dépend de CNIL-1 et CNIL-3 qui sont dans le même sprint
+          — risque de ne pas respecter l'ordre (la messagerie ne peut pas être livrée avant les CNIL).
+          Option C : ignore complètement la conformité — inadmissible avec J+45 dans 15 jours.
+          Option D : dépasse la capacité.
+        hint: "Les stories qui dépendent de CNIL-1 et CNIL-3 ne peuvent pas être livrées dans le même sprint."
+    debrief: >
+      Dans un sprint avec des contraintes légales, les stories réglementaires sont non-négociables.
+      Les features peuvent s'ajouter autour, mais jamais au détriment des obligations légales.
+
+  - id: sprint_review
+    type: sprint_review
+    title: "Module 8 — Sprint Review conformité + mobile"
+    objectives:
+      - "Valider la conformité avec des critères d'acceptation légaux"
+      - "Accepter uniquement ce qui respecte les exigences HDS"
+    instructions: >
+      La Sprint Review inclut Isabelle (DPO) qui vérifie chaque story CNIL.
+      Ses critères d'acceptation sont les exigences légales — pas négociables.
+    delivered_stories:
+      - id: sr_cnil1
+        title: "CNIL-1 : Logs d'accès aux données de santé"
+        acceptance_criteria:
+          - "Chaque accès à une donnée de santé génère un log horodaté"
+          - "Logs conservés en base dédiée pendant 5 ans minimum"
+          - "Logs non modifiables (immuables)"
+          - "Rapport de test fourni à la DPO"
+        demo_note: "Isabelle a vérifié les logs sur 50 accès de test. Conservation 5 ans confirmée, immuabilité vérifiée. Rapport fourni."
+
+      - id: sr_cnil3
+        title: "CNIL-3 : Pseudonymisation renforcée"
+        acceptance_criteria:
+          - "Identité patient dissociée des données cliniques en base"
+          - "Aucune donnée nominative dans les logs"
+          - "Test de dissociation documenté"
+        demo_note: "Implémentation partielle : données dissociées en base MAIS les logs contiennent encore le nom du médecin accédant. Isabelle : 'Le nom du médecin dans les logs n'est pas une donnée patient, c'est acceptable.'"
+
+      - id: sr_mob_auth
+        title: "Mobile : Authentification biométrique"
+        acceptance_criteria:
+          - "FaceID/TouchID disponible sur iOS 14+ et Android 10+"
+          - "Timeout 15 minutes maintenu après reconnexion biométrique"
+          - "Fallback PIN si biométrie indisponible"
+        demo_note: "iOS OK. Android : FaceID fonctionne, PIN fallback manquant. Léa : 'Le PIN Android sera livré au prochain sprint.'"
+
+    tasks:
+      - id: review_health_decision
+        type: multi_select
+        label: "Quelles stories acceptez-vous en Sprint Review ?"
+        points: 20
+        options:
+          - id: a
+            label: "CNIL-1 — ACCEPTER (tous les critères remplis)"
+          - id: b
+            label: "CNIL-3 — ACCEPTER (la DPO valide les logs médecin)"
+          - id: c
+            label: "CNIL-3 — REFUSER (critères non remplis selon la lettre)"
+          - id: d
+            label: "Mobile Auth — ACCEPTER avec note (PIN Android manquant)"
+          - id: e
+            label: "Mobile Auth — REFUSER (fallback PIN manquant sur Android)"
+        expected:
+          - a
+          - b
+          - e
+        rationale: >
+          CNIL-1 : tous les critères remplis → ACCEPTER.
+          CNIL-3 : la DPO (expert légal) valide que les logs médecin ne constituent pas une
+          donnée patient → son jugement fait autorité → ACCEPTER.
+          Mobile Auth : le critère "Fallback PIN" n'est pas rempli sur Android.
+          L'accepter avec note crée de l'ambiguïté sur ce qui est "fini".
+          REFUSER et le reprogrammer au prochain sprint est plus propre.
+    debrief: >
+      Dans la santé, les critères d'acceptation légaux sont validés par la DPO, pas le PO.
+      Le PO facilite la décision et s'assure que chaque story a été testée selon les critères.
+      Refuser Mobile Auth (PIN manquant) est la bonne décision : une story partiellement
+      conforme n'est pas conforme.
+
+  - id: kpi_analysis
+    type: kpi_analysis
+    title: "Module 9 — Mesurer l'impact de la conformité et du mobile"
+    objectives:
+      - "Analyser l'évolution des KPIs post-conformité"
+      - "Identifier les indicateurs qui nécessitent une action"
+    instructions: >
+      Deux mois après le début du programme conformité, les KPIs ont évolué.
+      Analysez les données et identifiez les prochaines actions.
+    charts:
+      - title: "Score conformité CNIL (évolution sur 8 semaines)"
+        type: line
+        context: "Score calculé sur 14 exigences CNIL"
+        data:
+          - label: "Sem 1"
+            value: 43
+          - label: "Sem 2"
+            value: 43
+          - label: "Sem 3"
+            value: 55
+          - label: "Sem 4"
+            value: 65
+          - label: "Sem 5"
+            value: 72
+          - label: "Sem 6"
+            value: 78
+          - label: "Sem 7"
+            value: 82
+          - label: "Sem 8"
+            value: 87
+
+      - title: "Usage mobile post-lancement iOS (semaines post-release)"
+        type: bar
+        context: "% d'utilisateurs actifs sur mobile"
+        data:
+          - label: "Pré-lancement"
+            value: 8
+          - label: "Sem 1"
+            value: 18
+          - label: "Sem 2"
+            value: 24
+          - label: "Sem 3"
+            value: 29
+          - label: "Sem 4"
+            value: 33
+
+    tasks:
+      - id: kpi_health_interpretation
+        type: multi_select
+        label: "Quelles conclusions sont correctes ? (plusieurs réponses possibles)"
+        points: 15
+        options:
+          - id: a
+            label: "Le score conformité atteint 87/100 — l'objectif 90/100 est en voie d'être atteint"
+          - id: b
+            label: "L'adoption mobile dépasse déjà l'objectif de 40% — lancement réussi"
+          - id: c
+            label: "L'adoption mobile progresse bien mais reste sous les 40% — continuer d'investir dans l'onboarding"
+          - id: d
+            label: "La conformité est terminée, on peut passer à autre chose"
+        expected:
+          - a
+          - c
+        rationale: >
+          A est correcte : 87/100 en 8 semaines, la trajectoire vise l'objectif 90/100.
+          C est correcte : 33% à 4 semaines du lancement = progression, mais pas encore à 40%.
+          B est fausse : 33% ≠ 40%.
+          D est fausse : 87/100 ≠ 100/100, il reste des non-conformités mineures à corriger.
+        hint: "Comparez chaque KPI à l'objectif défini, pas seulement à la tendance."
+    debrief: >
+      Un PO data-driven ne célèbre pas "en voie d'atteindre l'objectif" comme "objectif atteint".
+      L'objectif 90/100 de conformité n'est pas arbitraire — c'est le seuil en dessous duquel
+      la CNIL peut encore intervenir. Rester vigilant jusqu'à l'atteinte complète.
+
+  - id: stakeholder_mgmt
+    type: stakeholder_mgmt
+    title: "Module 10 — Arbitrer entre DPO, médecins et DSI hospitalier"
+    objectives:
+      - "Gérer les demandes contradictoires dans un contexte multi-parties"
+      - "Communiquer les contraintes légales sans paralyser l'organisation"
+    instructions: >
+      Trois parties prenantes ont des demandes simultanées urgentes.
+      Gérez les priorités et communiquez les arbitrages avec clarté.
+    stakeholder_messages:
+      - from: "Isabelle Roux (DPO)"
+        subject: "Audit de suivi CNIL — Visite dans 2 semaines"
+        priority: high
+        body: >
+          Bonjour,
+
+          La CNIL effectue une visite de contrôle dans 2 semaines.
+          Je dois présenter le plan de clôture des 11 non-conformités mineures.
+          Pouvez-vous me confirmer lesquelles seront closes avant la visite ?
+          J'en ai besoin par écrit demain matin.
+
+      - from: "Dr. Sophie Martin"
+        subject: "Application mobile — Retours utilisateurs après 4 semaines"
+        priority: medium
+        body: >
+          Bonjour,
+
+          L'app mobile est bien accueillie. Mais les infirmiers signalent un problème :
+          la messagerie est absente. C'est la feature la plus demandée.
+          Quand sera-t-elle disponible ? Je dois leur répondre avant notre prochaine réunion réseau.
+
+      - from: "Marc Leblanc (DSI AP-HP)"
+        subject: "Proposition FHIR — Décision avant fin de mois"
+        priority: high
+        body: >
+          Bonjour,
+
+          La direction de l'AP-HP doit valider le budget FHIR avant fin de mois.
+          Si MediLink ne peut pas s'engager sur une date de livraison de l'API HL7 FHIR,
+          ils partiront sur une solution interne. C'est 80 établissements et 3000 utilisateurs.
+
+    tasks:
+      - id: stakeholder_health_priority
+        type: ranking
+        label: "Dans quel ordre traitez-vous ces demandes ?"
+        points: 15
+        options:
+          - id: a
+            label: "Répondre à Isabelle (DPO) : liste des non-conformités closes avant la visite CNIL"
+          - id: b
+            label: "Répondre à Dr. Martin : roadmap messagerie mobile"
+          - id: c
+            label: "Répondre à Marc (DSI AP-HP) : engagement sur la date FHIR"
+        expected_order:
+          - a
+          - c
+          - b
+        rationale: >
+          A en premier : la visite CNIL est dans 2 semaines, la réponse est demandée pour demain matin.
+          C'est légalement urgent et bloquant. C en second : fin de mois = deadline courte,
+          80 établissements = impact business majeur, et une non-réponse = opportunité perdue.
+          B en dernier : La messagerie est importante mais Dr. Martin a "sa prochaine réunion réseau"
+          (délai moins précis que les deux autres).
+        hint: "Comparez les délais réels de chaque demande avant de décider de l'ordre."
+    debrief: >
+      Dans la gestion des parties prenantes, le critère de priorité n'est pas "qui est le plus fort"
+      mais "quelle demande a la deadline la plus contraignante et l'impact le plus fort si non traitée".
+      La DPO win car sa deadline est demain matin et le risque est légal.
+
+  - id: release_communication
+    type: release_communication
+    title: "Module 11 — Communiquer la mise en conformité CNIL"
+    objectives:
+      - "Rédiger une communication rassurante sur la conformité"
+      - "Transformer une contrainte légale en argument de confiance"
+    instructions: >
+      La version 3.1 inclut les corrections CNIL et le lancement mobile.
+      Rédigez la communication pour deux audiences : les médecins utilisateurs
+      et les hôpitaux prospects.
+    released_features:
+      - title: "Certification CNIL renouvelée"
+        description: "MediLink a obtenu la validation de conformité CNIL sur 100% des exigences applicables."
+      - title: "Application mobile iOS — v1"
+        description: "Accès sécurisé aux protocoles de soins et à l'agenda depuis votre smartphone."
+      - title: "Authentification biométrique"
+        description: "Reconnexion instantanée avec FaceID ou empreinte digitale, sans compromis sécurité."
+      - title: "Logs d'accès certifiés 5 ans"
+        description: "Traçabilité complète et immuable de tous les accès aux données de santé."
+
+    tasks:
+      - id: release_health_communication
+        type: single_choice
+        label: "Pour les médecins utilisateurs, quel titre de release note est le plus efficace ?"
+        points: 15
+        options:
+          - id: a
+            label: "MediLink 3.1 — Conformité RGPD Article 9 et pseudonymisation renforcée"
+          - id: b
+            label: "MediLink 3.1 — Vos données de santé sont encore mieux protégées, et maintenant mobile"
+          - id: c
+            label: "MediLink 3.1 — Correction de 14 non-conformités CNIL et lancement iOS"
+          - id: d
+            label: "MediLink 3.1 — Nouvelle version disponible. Voir changelog complet."
+        expected: b
+        rationale: >
+          Option B : double bénéfice clair — protection des données (rassure) + mobile (nouveau).
+          "Vos données sont mieux protégées" est un bénéfice utilisateur, pas un jargon légal.
+          Option A : jargon RGPD incompréhensible pour les médecins praticiens.
+          Option C : "14 non-conformités" = communication sur les problèmes passés, pas la valeur.
+          Option D : vague, pas d'appel à l'action.
+        hint: "Un médecin veut savoir ce que ça change pour lui et ses patients, pas les détails légaux."
+    debrief: >
+      La conformité est souvent perçue comme une contrainte interne. En la présentant
+      comme un bénéfice utilisateur ("vos données mieux protégées"), MediLink transforme
+      une obligation légale en argument de confiance et de différenciation.
+
+events:
+  - id: incident_rgpd
+    title: "Incident RGPD — Fuite de données signalée"
+    description: >
+      Un journaliste d'un magazine médical vous contacte : un infirmier lui aurait envoyé
+      une capture d'écran de MediLink contenant des données de santé d'un patient.
+      La capture est visible sur les réseaux sociaux. Vous devez réagir dans l'heure.
+      Que faites-vous en premier ?
+    trigger: "after_module:sprint_planning"
+    urgency: high
+    choices:
+      - id: notify_cnil
+        label: "Contacter immédiatement la DPO pour enclencher le processus de notification CNIL obligatoire sous 72h"
+        points: 15
+        rationale: >
+          Bonne décision : le RGPD impose une notification à la CNIL sous 72h pour tout incident
+          de violation de données de santé. La DPO est la première personne à contacter.
+          Agir vite limite l'amende et démontre la bonne foi.
+      - id: investigate_first
+        label: "Lancer une investigation interne pour comprendre ce qui s'est passé avant de notifier"
+        points: 5
+        rationale: >
+          Partiellement acceptable mais risqué : l'investigation est nécessaire mais ne doit pas
+          retarder la notification CNIL. Le RGPD impose 72h — pas "72h après avoir tout compris".
+          Une investigation trop longue avant notification peut aggraver les sanctions.
+      - id: deny
+        label: "Nier publiquement tout incident en attendant d'en savoir plus"
+        points: 0
+        rationale: >
+          Très mauvaise décision : nier un incident RGPD avéré est une faute aggravante.
+          La CNIL pénalise plus sévèrement les organisations qui tardent à notifier
+          ou qui minimisent l'incident.
+
+  - id: hospital_pressure
+    title: "AP-HP — Ultimatum sur l'intégration FHIR"
+    description: >
+      Marc Leblanc (DSI AP-HP) vous rappelle : le comité de direction vote dans 48h.
+      Sans engagement ferme de MediLink sur une date de livraison de l'API FHIR,
+      ils valident le développement interne. C'est 80 hôpitaux et 3000 médecins.
+      L'équipe estime la livraison à 5 mois. Que faites-vous ?
+    trigger: "after_module:kpi_analysis"
+    urgency: high
+    choices:
+      - id: commit_with_scope
+        label: "Proposer une API FHIR basique (lecture seule, 5 ressources clés) livrable en 3 mois, avec la version complète à 5 mois"
+        points: 15
+        rationale: >
+          Excellente décision : proposer un MVP FHIR livrable en 3 mois permet de débloquer
+          la décision de l'AP-HP tout en gérant réalistically la contrainte technique.
+          Une intégration partielle mais fonctionnelle est souvent suffisante pour signer.
+      - id: commit_full
+        label: "S'engager sur 5 mois avec périmètre complet pour convaincre l'AP-HP"
+        points: 5
+        rationale: >
+          Risqué : 5 mois est une longue durée pour garder la décision en attente.
+          L'AP-HP peut partir sur une autre solution entretemps. Et si on dépasse 5 mois,
+          on perd la relation.
+      - id: decline
+        label: "Refuser l'engagement — la conformité CNIL et le mobile sont les vraies priorités"
+        points: 0
+        rationale: >
+          Mauvaise décision : 3000 utilisateurs supplémentaires est une opportunité transformante.
+          Décliner sans contre-proposition ferme la porte définitivement.
+
+  - id: mobile_bug
+    title: "Bug critique — Données patient visibles entre utilisateurs"
+    description: >
+      3 jours après le lancement de l'app mobile, Pierre (infirmier) signale un bug grave :
+      en changeant rapidement de patient dans l'app, les données du patient précédent
+      restent visibles une fraction de seconde. Léa confirme : c'est un problème de cache.
+      L'app mobile est utilisée par 800 infirmiers. Que décidez-vous ?
+    trigger: "after_module:stakeholder_mgmt"
+    urgency: high
+    choices:
+      - id: immediate_rollback
+        label: "Retirer l'app mobile des stores immédiatement et notifier la DPO — sécurité avant disponibilité"
+        points: 15
+        rationale: >
+          Bonne décision difficile : une fuite de données de santé, même brève, est une violation RGPD.
+          Retirer l'app évite d'aggraver l'incident. La DPO doit être informée pour évaluer
+          si une notification CNIL est nécessaire. La sécurité des données prime sur la disponibilité.
+      - id: hotfix_quick
+        label: "Déployer un hotfix en urgence sans retirer l'app pour minimiser l'impact utilisateur"
+        points: 5
+        rationale: >
+          Intention louable mais risqué : un hotfix mal testé peut introduire de nouveaux bugs.
+          Et si le bug se reproduit pendant le hotfix, la responsabilité est aggravée.
+          Dans la santé, le principe de précaution justifie le retrait préventif.
+      - id: monitor
+        label: "Surveiller le bug sans action immédiate — l'exposition est brève et peu probable"
+        points: 0
+        rationale: >
+          Inacceptable : "peu probable" n'est pas une défense légale devant la CNIL
+          pour une violation de données de santé de catégorie 9 (sensibles).
+          Ignorer un bug de sécurité connu = faute grave.
+
+feedback:
+  success_thresholds:
+    advanced:
+      min_percent: 75
+      message: >
+        Excellente maîtrise ! Vous avez navigué dans la complexité réglementaire
+        avec rigueur et pris les bonnes décisions sous pression. Vous êtes prêt(e)
+        pour un rôle PO dans un secteur réglementé.
+    intermediate:
+      min_percent: 40
+      message: >
+        Bon travail dans un contexte difficile. Quelques arbitrages sur les priorités
+        légales méritent d'être revisités. La santé est un secteur où la conformité
+        n'est pas optionnelle — chaque décision technique a des implications légales.
+    junior:
+      min_percent: 0
+      message: >
+        Ce cas est particulièrement exigeant car il combine les responsabilités PO
+        avec des obligations légales non-négociables. Dans la santé, la conformité
+        est une compétence produit à part entière, pas seulement un sujet pour les juristes.

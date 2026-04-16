@@ -1,0 +1,1124 @@
+id: case-saas-b2b
+title: "OpsFlow — Dette technique vs croissance"
+difficulty: advanced
+estimated_duration: 150
+
+context:
+  company: OpsFlow
+  industry: SaaS B2B — Gestion de projets pour PME
+  role: Product Owner
+  logo: "⚙️"
+  summary: >
+    OpsFlow est un SaaS de gestion de projets utilisé par 1 200 PME en France.
+    La plateforme accumule depuis 3 ans une dette technique critique qui ralentit
+    chaque livraison. Pendant ce temps, 4 clients stratégiques menacent de ne pas
+    renouveler leur contrat si de nouvelles fonctionnalités ne sont pas livrées avant Q3.
+    Vous devez arbitrer entre rembourser la dette technique et satisfaire les clients.
+  business_goal: "Maintenir un NRR > 110% tout en réduisant le lead time de livraison de 40% d'ici fin d'année"
+  constraints:
+    - "Budget tech gelé : pas de recrutement possible avant Q4"
+    - "4 clients représentant 35% du MRR menacent de churner"
+    - "L'équipe dev estime la dette technique à 6 mois-homme"
+    - "Investisseurs attendent une démo de la nouvelle version en Q3"
+
+personas:
+  - id: thomas
+    name: Thomas Renard
+    role: CTO
+    avatar: "👨‍💻"
+    personality: "Pragmatique, orienté qualité, frustré par les compromis constants"
+    goals: "Rembourser la dette technique avant que ça explose en production"
+    pain_points: "Les features demandées par les clients ralentissent le cleanup"
+    communication_style: "Direct, chiffres à l'appui, peu de patience pour le flou"
+    quote: "Chaque feature livrée sur du code legacy nous coûte 3x plus cher la prochaine fois."
+
+  - id: camille
+    name: Camille Moreau
+    role: Customer Success Manager
+    avatar: "👩‍💼"
+    personality: "Empathique, proche des clients, inquiète pour les renouvellements"
+    goals: "Sécuriser les 4 renouvellements critiques d'ici Q3"
+    pain_points: "Les promesses faites aux clients ne sont pas tenues par l'équipe prod"
+    communication_style: "Relationnel, urgences fréquentes, escalade rapide"
+    quote: "Textilpro m'a appelée hier. Ils vont partir chez Asana si on n'a pas les sous-tâches en juin."
+
+  - id: jerome
+    name: Jérôme Fabre
+    role: CEO
+    avatar: "🧑‍💼"
+    personality: "Vision long terme, sous pression des investisseurs"
+    goals: "Démontrer la traction produit pour la levée de fonds Serie A"
+    pain_points: "Tension entre roadmap investisseurs et besoins clients immédiats"
+    communication_style: "Stratégique, préfère les KPIs aux détails techniques"
+    quote: "Les investisseurs veulent voir l'IA intégrée dans la démo Q3. C'est non-négociable."
+
+  - id: lea
+    name: Léa Dupont
+    role: Lead Developer
+    avatar: "👩‍🔧"
+    personality: "Perfectionniste, burn-out latent, défend l'équipe"
+    goals: "Refactoriser le module core avant d'ajouter quoi que ce soit"
+    pain_points: "Les estimations explosent à cause du code legacy"
+    communication_style: "Technique, prudente sur les engagements, apprécie la transparence"
+    quote: "On ne peut plus estimer correctement. Le module tasks est un château de cartes."
+
+kpis:
+  - id: nrr
+    label: "NRR (Net Revenue Retention)"
+    value: 104
+    unit: "%"
+    target: 110
+    trend: down
+    description: "Expansion + renouvellements / ARR de départ"
+
+  - id: lead_time
+    label: "Lead Time moyen"
+    value: 24
+    unit: "jours"
+    target: 14
+    trend: up
+    description: "Temps entre story ready et déploiement production"
+
+  - id: churn_risk
+    label: "Clients à risque de churn"
+    value: 4
+    unit: "comptes"
+    target: 0
+    trend: up
+    description: "Comptes avec probabilité de départ > 70%"
+
+  - id: tech_debt_score
+    label: "Score dette technique"
+    value: 67
+    unit: "/100"
+    target: 30
+    trend: up
+    description: "Score calculé par SonarQube (100 = critique)"
+
+  - id: csat
+    label: "CSAT"
+    value: 62
+    unit: "%"
+    target: 80
+    trend: down
+    description: "Satisfaction client mesurée post-support"
+
+datasets:
+  interviews:
+    - persona_id: thomas
+      excerpt: >
+        "Le module 'tasks' a été écrit en 2021 par un dev qui est parti.
+        Il n'y a aucun test, les méthodes font 400 lignes, et chaque fois qu'on touche quelque chose
+        on casse trois autres trucs. La semaine dernière on a mis 3 jours à livrer un bug fix
+        qui aurait dû prendre 2 heures. Sans refacto, on ne peut pas accélérer."
+
+    - persona_id: camille
+      excerpt: >
+        "Textilpro, BatiPlus, LogiCorp et MédiaGroup — ce sont nos 4 plus gros comptes.
+        Ensemble ils représentent 420K€ d'ARR. Ils ont tous la même demande :
+        les sous-tâches imbriquées et les rapports d'avancement automatiques.
+        Ça fait 18 mois qu'on leur promet ça. Si c'est pas dispo en juin, ils partent."
+
+    - persona_id: lea
+      excerpt: >
+        "J'ai fait l'audit la semaine dernière. Pour livrer les sous-tâches correctement
+        il faut d'abord refactoriser le modèle de données tasks — sinon on crée 6 mois de dette
+        en plus. Le bon chemin c'est : refacto data model (3 semaines), puis sous-tâches (4 semaines).
+        Le mauvais chemin c'est : sous-tâches en 2 semaines sur du code pourri,
+        et on passe les 6 prochains mois à gérer les incidents."
+
+  analytics:
+    - title: "Évolution du Lead Time (12 derniers mois)"
+      type: line
+      data:
+        - label: "Avr"
+          value: 14
+        - label: "Mai"
+          value: 15
+        - label: "Jun"
+          value: 16
+        - label: "Jul"
+          value: 17
+        - label: "Aoû"
+          value: 18
+        - label: "Sep"
+          value: 19
+        - label: "Oct"
+          value: 21
+        - label: "Nov"
+          value: 22
+        - label: "Déc"
+          value: 22
+        - label: "Jan"
+          value: 23
+        - label: "Fév"
+          value: 23
+        - label: "Mar"
+          value: 24
+
+    - title: "Tickets de support par module (mois dernier)"
+      type: bar
+      data:
+        - label: "Tasks"
+          value: 47
+        - label: "Projects"
+          value: 12
+        - label: "Reports"
+          value: 31
+        - label: "Users"
+          value: 8
+        - label: "Billing"
+          value: 5
+
+inbox:
+  - from: "Camille Moreau (CS)"
+    subject: "URGENT — Textilpro demande une réponse avant vendredi"
+    body: >
+      Bonjour,
+
+      Textilpro veut une réponse formelle sur les sous-tâches avant vendredi 17h.
+      Leur décision de renouvellement (120K€/an) est conditionnée à ça.
+      J'ai besoin d'un engagement daté de ta part.
+
+      Camille
+
+  - from: "Jérôme Fabre (CEO)"
+    subject: "Démo investisseurs — IA dans la roadmap Q3"
+    body: >
+      Hey,
+
+      Meeting avec Northstar Capital le 15 juin. Ils veulent voir l'intégration IA
+      (suggestions de tâches automatiques, résumés de sprint).
+      Je sais que c'est ambitieux mais c'est ce qui fera la différence pour la Serie A.
+
+      On peut bloquer du temps cette semaine pour en parler ?
+
+      Jérôme
+
+  - from: "Léa Dupont (Lead Dev)"
+    subject: "Rapport SonarQube — Situation critique"
+    body: >
+      Salut,
+
+      Le dernier rapport SonarQube est alarmant.
+      Module tasks : 847 code smells, 23 bugs bloquants, 0 test coverage.
+      À ce rythme on va avoir un incident prod majeur d'ici 2-3 mois.
+
+      J'ai préparé un plan de refacto. Tu as 30 minutes cette semaine ?
+
+      Léa
+
+modules:
+  - id: okr_setting
+    type: okr_setting
+    title: "Module 1 — Définir les OKRs de l'équipe"
+    objectives:
+      - "Comprendre les tensions entre dette technique et croissance"
+      - "Formuler des OKRs équilibrés et mesurables"
+    instructions: >
+      Vous devez définir les OKRs pour le prochain trimestre. L'objectif est d'arbitrer
+      intelligemment entre les impératifs clients (NRR) et la santé technique (lead time, stabilité).
+      Attention : un OKR trop orienté feature risque de sacrifier la qualité.
+      Un OKR trop technique laissera partir vos clients.
+    artifacts:
+      - type: document
+        title: "Contexte investisseurs"
+        content: |
+          BRIEF SÉRIE A — NORTHSTAR CAPITAL
+
+          Métriques attendues pour la levée :
+          - NRR > 115% (actuellement 104%)
+          - Lead Time < 14j (actuellement 24j)
+          - Net Promoter Score > 50 (actuellement 32)
+
+          Points d'attention identifiés :
+          - Dette technique mentionnée comme risque dans le data room
+          - 4 comptes churn risk = signal négatif pour les investisseurs
+
+          Prochaine étape : démo produit le 15 juin (J+45)
+
+      - type: table
+        title: "Renouvellements critiques"
+        content: |
+          CLIENT      | ARR      | DATE RENOU | FEATURE DEMANDÉE
+          ------------|----------|------------|------------------
+          Textilpro   | 120K€    | 15 juin    | Sous-tâches imbriquées
+          BatiPlus    | 98K€     | 30 juin    | Sous-tâches + rapports
+          LogiCorp    | 112K€    | 15 juillet | Rapports automatiques
+          MédiaGroup  | 90K€     | 31 juillet | Intégration Slack + rapports
+
+    tasks:
+      - id: okr_saas_objective
+        type: single_choice
+        label: "Quel objectif qualitatif reflète le mieux la priorité d'OpsFlow pour ce trimestre ?"
+        points: 15
+        options:
+          - id: a
+            label: "Livrer toutes les features demandées par les 4 clients à risque"
+          - id: b
+            label: "Devenir la plateforme SaaS B2B la plus fiable et la plus rapide à livrer"
+          - id: c
+            label: "Maximiser les nouvelles fonctionnalités pour la démo investisseurs"
+          - id: d
+            label: "Éliminer entièrement la dette technique avant toute nouvelle feature"
+        expected: b
+        rationale: >
+          L'objectif B est le seul qui réconcilie fiabilité (dette technique) et vélocité
+          (satisfaction clients). Les options A et C sacrifient la santé technique.
+          L'option D est irréaliste et sacrifie les clients.
+        hint: "Un bon OKR doit réconcilier les tensions, pas en ignorer une."
+
+      - id: okr_saas_kr1
+        type: multi_select
+        label: "Quels Key Results sont adaptés à l'objectif OpsFlow ? (choisissez 3)"
+        points: 15
+        options:
+          - id: a
+            label: "Réduire le Lead Time de 24j à 14j d'ici fin Q2"
+          - id: b
+            label: "Livrer 100% des features demandées par les clients"
+          - id: c
+            label: "Sécuriser 100% des renouvellements à risque (4/4 comptes)"
+          - id: d
+            label: "Réduire le score de dette technique de 67 à 40"
+          - id: e
+            label: "Recruter 2 développeurs supplémentaires"
+        expected:
+          - a
+          - c
+          - d
+        rationale: >
+          KR A (lead time) mesure la santé technique. KR C (renouvellements) mesure
+          la satisfaction client. KR D (dette technique) mesure le progrès technique.
+          KR B est trop prescriptif (le comment, pas le résultat).
+          KR E est hors périmètre (budget gelé).
+    debrief: >
+      La clé d'OKRs en situation de tension est de trouver des résultats clés qui
+      mesurent à la fois la valeur livrée aux clients ET la santé de l'équipe.
+      Un NRR > 110% avec un lead time de 14j est atteignable si on adresse la dette
+      technique de manière stratégique plutôt que tout ou rien.
+
+  - id: competitive_analysis
+    type: competitive_analysis
+    title: "Module 2 — Analyse concurrentielle"
+    objectives:
+      - "Positionner OpsFlow face à Asana, Monday et Notion"
+      - "Identifier les avantages différenciants à défendre"
+    instructions: >
+      Quatre concurrents menacent OpsFlow sur son segment PME.
+      Positionnez-les sur la matrice coût vs richesse fonctionnelle,
+      puis identifiez le positionnement idéal pour OpsFlow.
+    artifacts:
+      - type: document
+        title: "Benchmark concurrents"
+        content: |
+          ANALYSE CONCURRENTIELLE — SAAS GESTION DE PROJETS PME
+
+          ASANA (Premium)
+          - Prix : 24€/user/mois
+          - Points forts : intégrations (200+), reporting avancé, automatisations
+          - Points faibles : complexe pour PME, onboarding long
+          - Part de marché : 28% (entreprises 50-500 salariés)
+
+          MONDAY.COM
+          - Prix : 20€/user/mois
+          - Points forts : interface visuelle, personnalisation, templates
+          - Points faibles : prix élevé pour PME, performance dégradée sur grands volumes
+          - Part de marché : 21%
+
+          NOTION
+          - Prix : 10€/user/mois
+          - Points forts : flexibilité totale, all-in-one, prix
+          - Points faibles : courbe d'apprentissage, pas de Gantt natif
+          - Part de marché : 15% (en forte croissance)
+
+          TRELLO (Atlassian)
+          - Prix : 6€/user/mois
+          - Points forts : simplicité, prix, familiarité
+          - Points faibles : limité pour projets complexes, roadmap stagnante
+          - Part de marché : 18%
+
+          OPSFLOW (actuel)
+          - Prix : 15€/user/mois
+          - Points forts : focus PME françaises, support FR, intégrations ERP
+          - Points faibles : dette technique, lead time élevé, peu de features récentes
+
+    tasks:
+      - id: competitive_positioning
+        type: ranking
+        label: "Classez ces différenciateurs OpsFlow par ordre de priorité stratégique (du plus au moins important)"
+        points: 20
+        options:
+          - id: a
+            label: "Support client en français avec SLA garanti"
+          - id: b
+            label: "Intégrations ERP françaises (Sage, Cegid)"
+          - id: c
+            label: "Conformité RGPD et hébergement données en France"
+          - id: d
+            label: "Prix adapté aux PME françaises"
+          - id: e
+            label: "Interface simplifiée vs Asana/Monday"
+        expected_order:
+          - c
+          - b
+          - a
+          - e
+          - d
+        rationale: >
+          Pour les PME françaises, la conformité RGPD/hébergement France est le critère
+          différenciant #1 face aux acteurs américains. Les intégrations ERP locaux (Sage, Cegid)
+          sont un avantage concurrentiel unique. Le support FR et la simplicité sont appréciés
+          mais aussi proposés par d'autres. Le prix seul n'est pas un différenciateur durable.
+        hint: "Pensez aux critères décisifs pour une PME française qui doit justifier le choix à sa direction."
+    competitors:
+      - id: asana
+        name: "Asana"
+        description: "Leader enterprise, 200+ intégrations, reporting avancé — complexe pour PME"
+      - id: monday
+        name: "Monday.com"
+        description: "Interface visuelle, très personnalisable — prix élevé en PME"
+      - id: notion
+        name: "Notion"
+        description: "All-in-one flexible, prix attractif — courbe d'apprentissage longue"
+      - id: trello
+        name: "Trello"
+        description: "Simplicité maximale, prix bas — fonctionnalités limitées pour projets complexes"
+    debrief: >
+      OpsFlow a des avantages concurrentiels réels mais sous-exploités.
+      La dette technique érode ces avantages car les concurrents livrent plus vite.
+      La stratégie est de capitaliser sur les différenciateurs locaux tout en réduisant
+      le lead time pour rester compétitif sur la vélocité.
+
+  - id: roadmap_planning
+    type: roadmap_planning
+    title: "Module 3 — Construction de la roadmap"
+    objectives:
+      - "Arbitrer entre dette technique et nouvelles fonctionnalités"
+      - "Séquencer la roadmap pour sécuriser NRR et réduire la dette"
+    instructions: >
+      Vous avez 4 trimestres pour atteindre vos OKRs.
+      Placez chaque initiative sur la roadmap en tenant compte des dépendances
+      (le refacto doit précéder les sous-tâches) et des deadlines clients.
+    artifacts:
+      - type: document
+        title: "Initiatives disponibles"
+        content: |
+          INITIATIVES PRODUCT — Q1-Q4
+
+          DETTE TECHNIQUE
+          DT-1: Refacto module Tasks (3 semaines, prérequis pour ST-1)
+          DT-2: Migration base de données (2 semaines, améliore performances)
+          DT-3: Test coverage critique (2 semaines, réduit incidents)
+
+          FEATURES CLIENTS
+          ST-1: Sous-tâches imbriquées (4 semaines, PRÉREQUIS: DT-1)
+          RP-1: Rapports automatiques PDF (3 semaines)
+          SL-1: Intégration Slack (2 semaines)
+
+          CROISSANCE
+          AI-1: Suggestions IA de tâches (8 semaines, démo investisseurs)
+          MB-1: Application mobile iOS (10 semaines)
+
+          INFRASTRUCTURE
+          INF-1: Migration infrastructure cloud (4 semaines)
+
+    tasks:
+      - id: roadmap_q1_priority
+        type: single_choice
+        label: "Quelle initiative devez-vous absolument placer en Q1 pour respecter les contraintes ?"
+        points: 20
+        options:
+          - id: a
+            label: "ST-1 : Sous-tâches imbriquées (livrer vite pour Textilpro)"
+          - id: b
+            label: "DT-1 : Refacto module Tasks (prérequis technique)"
+          - id: c
+            label: "AI-1 : Suggestions IA (préparer la démo investisseurs)"
+          - id: d
+            label: "MB-1 : Application mobile (nouvelle opportunité marché)"
+        expected: b
+        rationale: >
+          DT-1 est le prérequis obligatoire de ST-1. Sans refacto, livrer les sous-tâches
+          crée 6 mois de dette supplémentaire. La contrainte de Textilpro (15 juin) est
+          atteignable si DT-1 est en Q1 et ST-1 en Q2. Prioriser AI-1 ou MB-1 en Q1
+          sacrifie les renouvellements critiques.
+        hint: "Regardez les dépendances techniques avant de placer les features clients."
+    features:
+      - id: dt1
+        title: "DT-1 : Refacto module Tasks"
+        theme: tech
+        effort: 3
+      - id: dt2
+        title: "DT-2 : Migration base de données"
+        theme: tech
+        effort: 2
+      - id: dt3
+        title: "DT-3 : Test coverage critique"
+        theme: tech
+        effort: 2
+      - id: st1
+        title: "ST-1 : Sous-tâches imbriquées"
+        theme: strategy
+        effort: 4
+      - id: rp1
+        title: "RP-1 : Rapports automatiques PDF"
+        theme: ux
+        effort: 3
+      - id: sl1
+        title: "SL-1 : Intégration Slack"
+        theme: growth
+        effort: 2
+      - id: ai1
+        title: "AI-1 : Suggestions IA de tâches"
+        theme: growth
+        effort: 8
+      - id: mb1
+        title: "MB-1 : Application mobile iOS"
+        theme: growth
+        effort: 10
+    debrief: >
+      Une roadmap efficace respecte les dépendances techniques.
+      Livrer sur du code legacy génère plus de dette et rallonge les futurs délais.
+      La roadmap optimale : Q1 (DT-1 + DT-3), Q2 (ST-1 + RP-1), Q3 (SL-1 + début AI-1), Q4 (AI-1 fin + INF-1).
+
+  - id: discovery
+    type: discovery
+    title: "Module 4 — Discovery : comprendre la vraie douleur"
+    objectives:
+      - "Analyser les verbatims clients pour comprendre le besoin réel"
+      - "Distinguer le problème des solutions proposées"
+    instructions: >
+      Les clients demandent des "sous-tâches imbriquées". Mais est-ce vraiment ce dont ils ont besoin ?
+      Analysez les interviews et données d'usage pour identifier le vrai Job-to-be-Done.
+    artifacts:
+      - type: email
+        title: "Interview Textilpro (Christine Borg, Directrice Opérations)"
+        content: |
+          VERBATIM — INTERVIEW CLIENT TEXTILPRO
+
+          "On a des projets de fabrication complexes. Un projet = 50 tâches,
+          et chaque tâche peut avoir 10 sous-tâches. Aujourd'hui on gère tout
+          dans Excel en parallèle parce qu'OpsFlow ne peut pas gérer cette hiérarchie.
+
+          Ce qui me coûte vraiment du temps c'est pas les sous-tâches en elles-mêmes —
+          c'est que je ne peux pas voir l'avancement global d'un projet en un coup d'œil.
+          Si une sous-tâche est en retard, je le découvre trop tard.
+
+          Ce qu'on veut vraiment : voir immédiatement si un projet va dans le mur."
+
+      - type: dashboard
+        title: "Analytics : comportement utilisateurs avancés"
+        content: |
+          ANALYSE COMPORTEMENTALE — SEGMENT COMPTES 50+ USERS
+
+          Comportements observés chez les churners potentiels :
+          - 87% créent des projets "miroir" dans Excel pour suivre l'avancement
+          - 73% exportent les données manuellement chaque semaine
+          - 64% ont créé des tags personnalisés pour simuler des sous-tâches
+          - 41% ont un ticket support actif sur "visibilité projet"
+
+          Temps moyen passé hors OpsFlow sur des tâches de suivi : 4h/semaine/manager
+
+    tasks:
+      - id: discovery_jtbd
+        type: single_choice
+        label: "Quel est le vrai Job-to-be-Done (JTBD) des clients qui demandent des sous-tâches ?"
+        points: 20
+        options:
+          - id: a
+            label: "Créer des hiérarchies de tâches infiniment imbriquées"
+          - id: b
+            label: "Avoir une visibilité instantanée sur l'avancement global de leurs projets complexes"
+          - id: c
+            label: "Migrer leurs workflows Excel vers OpsFlow sans perte de données"
+          - id: d
+            label: "Partager les tâches entre équipes sans confusion"
+        expected: b
+        rationale: >
+          L'interview Textilpro le dit clairement : "Ce qui me coûte vraiment du temps c'est
+          de ne pas voir l'avancement global." Les analytics confirment : 87% maintiennent
+          un Excel parallèle pour le suivi. Le JTBD est la visibilité, pas la structure
+          hiérarchique en elle-même. Cette nuance change la solution optimale.
+        hint: "Relisez le verbatim. Quelle douleur est mentionnée en premier ?"
+    debrief: >
+      Le JTBD révèle que la solution optimale n'est peut-être pas les sous-tâches imbriquées
+      mais un dashboard d'avancement en temps réel. Cette découverte permet de livrer plus vite
+      (dashboard = 2 semaines vs sous-tâches = 7 semaines) tout en satisfaisant le vrai besoin.
+
+  - id: story_writing
+    type: story_writing
+    title: "Module 5 — Rédiger des User Stories de qualité"
+    objectives:
+      - "Formuler des stories centrées sur la valeur utilisateur"
+      - "Appliquer les critères INVEST"
+    instructions: >
+      Rédigez des User Stories pour la fonctionnalité de visibilité projet découverte en Discovery.
+      Appliquez la structure As a / I want / So that et vérifiez les critères INVEST.
+    artifacts:
+      - type: document
+        title: "Exemples de stories OpsFlow"
+        content: |
+          EXEMPLES STORIES EXISTANTES (ANTI-PATTERNS)
+
+          ❌ Story mal rédigée :
+          "Implémenter le module de sous-tâches avec support des niveaux imbriqués,
+          gestion des dépendances, vue Gantt et export Excel."
+          → Trop grande, pas de perspective utilisateur, solution prescrite
+
+          ❌ Story technique :
+          "Refactoriser le modèle de données tasks pour supporter les relations parent-enfant."
+          → Pas de valeur utilisateur visible, pas testable par le business
+
+          ✅ Story de référence :
+          "En tant que chef de projet, je veux voir le pourcentage d'avancement
+          de chaque projet en un coup d'œil, afin de prioriser mes interventions
+          sans ouvrir chaque projet individuellement."
+
+    tasks:
+      - id: story_invest_check
+        type: multi_select
+        label: "Quelle(s) story(ies) respectent les critères INVEST ? (plusieurs réponses possibles)"
+        points: 15
+        options:
+          - id: a
+            label: "En tant que manager, je veux une alerte quand un projet a du retard, afin d'intervenir à temps."
+          - id: b
+            label: "Faire une migration de base de données pour améliorer les performances."
+          - id: c
+            label: "En tant que directrice opérations, je veux voir l'avancement en temps réel de tous mes projets, afin de prendre des décisions rapidement."
+          - id: d
+            label: "Implémenter un système de notification multi-canal avec escalade automatique et configuration par rôle."
+        expected:
+          - a
+          - c
+        rationale: >
+          Story A : centrée utilisateur, petite, testable, valeur claire.
+          Story C : persona réel (directrice opérations), besoin précis, valeur mesurable.
+          Story B : technique, pas de perspective utilisateur (pas INVEST).
+          Story D : solution prescrite, trop grande, plusieurs stories en une (pas INVEST).
+    debrief: >
+      Les stories INVEST permettent d'estimer précisément et de livrer incrementalement.
+      Une story trop grande = risque de ne jamais être livrée.
+      Une story technique = pas de critère d'acceptation business vérifiable.
+
+  - id: refinement
+    type: refinement
+    title: "Module 6 — Refinement et estimation"
+    objectives:
+      - "Estimer les stories en points de complexité"
+      - "Identifier les stories nécessitant une clarification"
+    instructions: >
+      Estimez les stories du prochain sprint en T-shirt sizing.
+      Certaines stories cachent une complexité technique importante liée à la dette technique.
+    artifacts:
+      - type: document
+        title: "Notes de refinement — Session précédente"
+        content: |
+          REFINEMENT SESSION — NOTES
+
+          Stories discutées et blocages identifiés :
+
+          STORY : "Voir % avancement projet en temps réel"
+          Discussion : Nécessite agrégation des statuts de toutes les sous-tâches.
+          Léa : "Si on n'a pas refactorisé le modèle tasks, il faut calculer ça côté client.
+          Ce serait fragile et lent. Avec le refacto, c'est 2 jours de dev."
+          → BLOQUÉE sur DT-1
+
+          STORY : "Recevoir une alerte si projet en retard"
+          Discussion : Dépend du calcul d'avancement.
+          Léa : "Impossible d'avoir des alertes fiables sans l'avancement fiable d'abord."
+          → DÉPEND de la story avancement
+
+          STORY : "Exporter un rapport PDF hebdomadaire"
+          Discussion : Bibliothèque PDF déjà intégrée pour les factures.
+          Léa : "Réutilisable, estimation 3 jours max."
+          → INDÉPENDANTE, estimable
+
+    tasks:
+      - id: refinement_sizing
+        type: match_pairs
+        label: "Associez chaque story à sa bonne estimation (en points de complexité)"
+        points: 20
+        left:
+          - id: s1
+            label: "Voir % avancement projet (après DT-1)"
+          - id: s2
+            label: "Exporter rapport PDF hebdomadaire"
+          - id: s3
+            label: "Sous-tâches avec 5 niveaux d'imbrication"
+          - id: s4
+            label: "Alerte quand projet en retard"
+        right:
+          - id: p2
+            label: "2 points (très simple)"
+          - id: p3
+            label: "3 points (simple)"
+          - id: p8
+            label: "8 points (complexe)"
+          - id: p13
+            label: "13 points (très complexe)"
+        expected:
+          s1: p3
+          s2: p2
+          s3: p13
+          s4: p8
+        rationale: >
+          Avancement projet après refacto = 3 points (données structurées disponibles).
+          Export PDF = 2 points (bibliothèque réutilisable, cas simple).
+          Sous-tâches 5 niveaux = 13 points (modèle récursif, UI complexe, impacts multiples).
+          Alertes retard = 8 points (calculs temporels, notifications, edge cases nombreux).
+    debrief: >
+      L'estimation révèle que la solution "sous-tâches 5 niveaux" coûte 4x plus cher
+      que les solutions alternatives qui répondent au même JTBD.
+      Un bon refinement permet de découvrir ces alternatives avant d'engager l'équipe.
+
+  - id: sprint_planning
+    type: sprint_planning
+    title: "Module 7 — Planification du sprint"
+    objectives:
+      - "Composer un sprint équilibré dette/features"
+      - "Respecter la vélocité et les dépendances"
+    instructions: >
+      Composez un sprint de 2 semaines. Capacité : 30 points.
+      Intégrez la dette technique obligatoire ET livrez de la valeur aux clients.
+      Attention aux dépendances : certaines stories ne peuvent pas être incluses sans leur prérequis.
+    artifacts:
+      - type: table
+        title: "Backlog priorisé"
+        content: |
+          BACKLOG SPRINT — STORIES ET TÂCHES TECHNIQUES
+
+          ID   | TITRE                              | POINTS | PRÉREQUIS  | VALEUR
+          -----|------------------------------------|--------|------------|--------
+          DT-1 | Refacto module Tasks               | 8      | aucun      | Technique
+          DT-3 | Test coverage critique (80%)       | 5      | aucun      | Technique
+          AV-1 | Vue avancement projet temps réel   | 3      | DT-1       | Client
+          AL-1 | Alerte retard projet               | 8      | AV-1       | Client
+          EX-1 | Export rapport PDF                 | 2      | aucun      | Client
+          BG-1 | Fix bug filtre date (P1)           | 1      | aucun      | Stabilité
+          BG-2 | Fix bug import CSV (P2)            | 2      | aucun      | Stabilité
+          SL-1 | Intégration Slack (notifications)  | 13     | AL-1       | Client
+    stories:
+      - id: dt1
+        title: "DT-1 : Refacto module Tasks"
+        points: 8
+        theme: tech
+      - id: dt3
+        title: "DT-3 : Test coverage 80%"
+        points: 5
+        theme: tech
+      - id: av1
+        title: "AV-1 : Avancement temps réel"
+        points: 3
+        theme: strategy
+      - id: al1
+        title: "AL-1 : Alertes retard projet"
+        points: 8
+        theme: growth
+      - id: ex1
+        title: "EX-1 : Export rapport PDF"
+        points: 2
+        theme: ux
+      - id: bg1
+        title: "BG-1 : Fix bug filtre date"
+        points: 1
+        theme: ux
+      - id: bg2
+        title: "BG-2 : Fix bug import CSV"
+        points: 2
+        theme: tech
+      - id: sl1
+        title: "SL-1 : Intégration Slack"
+        points: 13
+        theme: growth
+    capacity: 30
+
+    tasks:
+      - id: sprint_composition
+        type: multi_select
+        label: "Quelles stories constituent le sprint optimal pour ce cycle ? (capacité : 30 points)"
+        points: 20
+        options:
+          - id: a
+            label: "DT-1 (8pts) + DT-3 (5pts) + AV-1 (3pts) + EX-1 (2pts) + BG-1 (1pt) + BG-2 (2pts) = 21pts"
+          - id: b
+            label: "DT-1 (8pts) + AV-1 (3pts) + AL-1 (8pts) + EX-1 (2pts) + BG-1 (1pt) = 22pts"
+          - id: c
+            label: "SL-1 (13pts) + EX-1 (2pts) + BG-1 (1pt) + BG-2 (2pts) + DT-3 (5pts) = 23pts"
+          - id: d
+            label: "DT-1 (8pts) + DT-3 (5pts) + AV-1 (3pts) + AL-1 (8pts) + EX-1 (2pts) + BG-1 (1pt) = 27pts"
+        expected:
+          - d
+        rationale: >
+          L'option D (27pts) est optimale : DT-1 est la fondation technique, AV-1 dépend de DT-1
+          et livre la valeur aux clients, AL-1 dépend de AV-1 et répond au besoin d'alertes,
+          EX-1 est indépendant et simple, BG-1 améliore la stabilité.
+          Option A : trop conservatrice, ne livre pas AL-1 qui répond au besoin client critique.
+          Option B : AL-1 dépend d'AV-1 qui dépend de DT-1 — les dépendances sont respectées.
+          Option C : SL-1 dépend d'AL-1 qui n'est pas dans le sprint — dépendance violée.
+    debrief: >
+      Un sprint équilibré inclut de la dette technique, de la valeur client et de la stabilité.
+      La contrainte de capacité (30pts) force des choix explicites.
+      Le respect des dépendances évite de livrer des features sur des fondations instables.
+
+  - id: sprint_review
+    type: sprint_review
+    title: "Module 8 — Sprint Review"
+    objectives:
+      - "Évaluer les livrables selon les critères d'acceptation"
+      - "Décider d'accepter ou de refuser chaque story"
+    instructions: >
+      La sprint review est le moment de vérité. Évaluez chaque story livrée
+      selon ses critères d'acceptation. Camille (CS) et Thomas (CTO) sont présents.
+    delivered_stories:
+      - id: sr_dt1
+        title: "DT-1 : Refacto module Tasks"
+        acceptance_criteria:
+          - "Aucune régression sur les tests existants"
+          - "Coverage > 60% sur le module tasks"
+          - "Lead time estimé divisé par 2 sur ce module"
+        demo_note: "Léa présente le nouveau modèle de données. Les tests passent. Coverage : 71%."
+
+      - id: sr_av1
+        title: "AV-1 : Vue avancement projet temps réel"
+        acceptance_criteria:
+          - "Le % d'avancement est visible sur la liste des projets"
+          - "Mise à jour automatique sans rechargement de page"
+          - "Fonctionne avec des projets de 0 à 200+ tâches"
+        demo_note: "Démo sur le compte Textilpro (simulation). Mise à jour temps réel confirmée. Testé jusqu'à 500 tâches."
+
+      - id: sr_al1
+        title: "AL-1 : Alertes retard projet"
+        acceptance_criteria:
+          - "Notification envoyée si date de fin dépassée"
+          - "Configurable par projet (on/off)"
+          - "Visible dans l'interface ET par email"
+        demo_note: "Alertes dans l'interface OK. Email non implémenté par manque de temps — livré en v1 sans email."
+
+    tasks:
+      - id: review_decision
+        type: multi_select
+        label: "Quelles stories acceptez-vous telles quelles ? (les autres seront renvoyées en backlog)"
+        points: 20
+        options:
+          - id: a
+            label: "DT-1 : Refacto module Tasks — ACCEPTER"
+          - id: b
+            label: "AV-1 : Vue avancement projet — ACCEPTER"
+          - id: c
+            label: "AL-1 : Alertes retard — ACCEPTER malgré l'email manquant"
+          - id: d
+            label: "AL-1 : Alertes retard — REFUSER, retour en backlog"
+        expected:
+          - a
+          - b
+          - d
+        rationale: >
+          DT-1 et AV-1 remplissent tous leurs critères d'acceptation → ACCEPTER.
+          AL-1 a un critère non rempli (email absent) → REFUSER selon les critères d'acceptation.
+          Le PO ne doit pas accepter des stories partielles sous pression :
+          ça crée de la confusion sur ce qui est "fini" et de la dette de livraison.
+    debrief: >
+      Refuser une story partiellement livrée n'est pas un échec — c'est respecter
+      les critères d'acceptation définis. L'email sera livré au prochain sprint
+      avec la story complète, ce qui est plus propre que d'accepter une feature à moitié.
+
+  - id: kpi_analysis
+    type: kpi_analysis
+    title: "Module 9 — Analyse des KPIs post-sprint"
+    objectives:
+      - "Mesurer l'impact du sprint sur les KPIs"
+      - "Décider de pivoter ou de continuer"
+    instructions: >
+      Deux semaines ont passé depuis la Sprint Review. Les KPIs ont évolué.
+      Analysez les données et déterminez si votre stratégie produit est sur la bonne voie.
+    charts:
+      - title: "Lead Time — Évolution post-refacto (semaines)"
+        type: line
+        context: "Mesure hebdomadaire du temps moyen entre 'story ready' et déploiement"
+        data:
+          - label: "S-8"
+            value: 24
+          - label: "S-7"
+            value: 24
+          - label: "S-6"
+            value: 23
+          - label: "S-5"
+            value: 24
+          - label: "S-4"
+            value: 22
+          - label: "S-3"
+            value: 21
+          - label: "S-2"
+            value: 19
+          - label: "S-1"
+            value: 16
+          - label: "S0 (sprint)"
+            value: 14
+          - label: "S+1"
+            value: 13
+
+      - title: "NRR par segment client (trimestre en cours)"
+        type: bar
+        context: "Net Revenue Retention segmenté par taille de compte"
+        data:
+          - label: "Comptes 1-10 users"
+            value: 98
+          - label: "Comptes 11-50 users"
+            value: 107
+          - label: "Comptes 51-200 users"
+            value: 114
+          - label: "Comptes 200+ users"
+            value: 89
+
+    tasks:
+      - id: kpi_interpretation
+        type: single_choice
+        label: "Quelle conclusion principale tirez-vous de ces données KPI ?"
+        points: 15
+        options:
+          - id: a
+            label: "Le refacto n'a pas eu d'impact sur le lead time, il faut continuer sans"
+          - id: b
+            label: "Le lead time s'améliore significativement post-refacto, la stratégie est validée"
+          - id: c
+            label: "Le NRR est bon partout, on peut arrêter de se concentrer sur les grands comptes"
+          - id: d
+            label: "Les résultats sont trop récents pour tirer des conclusions"
+        expected: b
+        rationale: >
+          Le lead time est passé de 24j (S-8) à 13j (S+1) soit -46% — l'OKR de -40% est dépassé.
+          La corrélation avec le refacto est claire (baisse s'accélère après S-4 = début du refacto).
+          Par contre, le NRR des comptes 200+ est à 89% (en-dessous du seuil) — c'est une alerte.
+          La stratégie est validée sur le lead time mais révèle un risque sur les grands comptes.
+        hint: "Regardez la tendance du lead time semaine par semaine."
+    debrief: >
+      Les données valident le pari du refacto technique : le lead time atteint l'OKR en 2 sprints.
+      Mais les données révèlent aussi un angle mort : les grands comptes (200+ users) ont un NRR
+      sous la barre. Un PO data-driven sait lire à la fois les succès ET les nouvelles alertes.
+
+  - id: stakeholder_mgmt
+    type: stakeholder_mgmt
+    title: "Module 10 — Gestion des parties prenantes"
+    objectives:
+      - "Gérer les demandes contradictoires des stakeholders"
+      - "Communiquer les arbitrages avec transparence"
+    instructions: >
+      Trois parties prenantes ont des demandes urgentes suite aux résultats du sprint.
+      Analysez chaque message et décidez comment répondre.
+    stakeholder_messages:
+      - from: "Camille Moreau (CS)"
+        subject: "Textilpro — Réaction à la démo avancement"
+        priority: high
+        body: >
+          Christine de Textilpro a adoré la démo de la vue d'avancement !
+          Elle veut signer pour 3 ans si on lui confirme que les alertes email
+          seront disponibles le mois prochain. Est-ce qu'on peut s'engager sur ça ?
+
+      - from: "Jérôme Fabre (CEO)"
+        subject: "Changer de priorité — Les investisseurs veulent voir l'IA maintenant"
+        priority: high
+        body: >
+          J'ai eu Northstar Capital ce matin. Ils veulent voir l'IA dans 6 semaines.
+          Je sais qu'on avait prévu Q3 mais ils insistent.
+          Est-ce qu'on peut décaler les features clients pour accélérer sur l'IA ?
+
+      - from: "Léa Dupont (Lead Dev)"
+        subject: "Succès du refacto — Propositions pour continuer"
+        priority: medium
+        body: >
+          Le refacto module Tasks a eu un effet immédiat sur le lead time.
+          Je voudrais proposer de continuer sur le module Reports (même niveau de dette).
+          Ça prendrait 2 sprints et permettrait de livrer les rapports PDF 3x plus vite ensuite.
+
+    tasks:
+      - id: stakeholder_priority
+        type: ranking
+        label: "Dans quel ordre traitez-vous ces demandes en priorité ?"
+        points: 15
+        options:
+          - id: a
+            label: "Répondre à Camille : confirmer la date des alertes email"
+          - id: b
+            label: "Répondre à Jérôme : expliquer l'impact d'accélérer l'IA"
+          - id: c
+            label: "Répondre à Léa : évaluer la proposition de refacto Reports"
+        expected_order:
+          - a
+          - b
+          - c
+        rationale: >
+          A en premier : il y a une opportunité de renouvellement 3 ans avec Textilpro —
+          répondre vite maximise la probabilité de closing (il faut juste vérifier la faisabilité
+          avec Léa avant de s'engager).
+          B ensuite : la demande du CEO est stratégique mais décaler l'IA de 6 semaines
+          n'est pas irréversible — l'expliquer avec des données est important.
+          C en dernier : bonne initiative de Léa mais non urgente.
+        hint: "Quel message a un impact irréversible si on le laisse sans réponse trop longtemps ?"
+    debrief: >
+      La gestion des stakeholders n'est pas du tout ou rien.
+      L'art est de donner des réponses factuelles (faisabilité, trade-offs, dates réalistes)
+      plutôt que de promettre l'impossible ou de refuser sans explication.
+
+  - id: release_communication
+    type: release_communication
+    title: "Module 11 — Communication de release"
+    objectives:
+      - "Rédiger un release note orienté valeur (pas technique)"
+      - "Adapter le message selon l'audience"
+    instructions: >
+      La version 2.4 d'OpsFlow est prête à être déployée.
+      Rédigez les éléments clés de communication pour deux audiences différentes.
+    released_features:
+      - title: "Vue d'avancement projet en temps réel"
+        description: "Chaque projet affiche maintenant son pourcentage d'avancement mis à jour automatiquement."
+      - title: "Alertes retard projet (interface)"
+        description: "Recevez une notification dans OpsFlow dès qu'un projet dépasse sa date prévue."
+      - title: "Export rapport PDF"
+        description: "Générez un rapport d'avancement hebdomadaire en PDF en un clic depuis n'importe quel projet."
+      - title: "Refacto architecture interne"
+        description: "Refactorisation majeure du module tâches pour améliorer la stabilité et la vélocité de livraison."
+
+    tasks:
+      - id: release_audience
+        type: single_choice
+        label: "Pour le release note destiné aux clients (non-technique), quelle formulation est la plus appropriée ?"
+        points: 15
+        options:
+          - id: a
+            label: "OpsFlow 2.4 — Refactorisation du module tasks et migration vers une architecture événementielle"
+          - id: b
+            label: "OpsFlow 2.4 — Gagnez 4h par semaine grâce à une visibilité projet instantanée et des alertes automatiques"
+          - id: c
+            label: "OpsFlow 2.4 — Nouvelles fonctionnalités : avancement, alertes, PDF. Plus de détails sur notre blog."
+          - id: d
+            label: "OpsFlow 2.4 — Cette version corrige des problèmes techniques qui causaient des ralentissements"
+        expected: b
+        rationale: >
+          L'option B parle le langage des clients : bénéfice mesurable (4h/semaine économisées),
+          pas de jargon technique.
+          Option A : jargon technique incompréhensible pour les clients.
+          Option C : trop vague, ne crée pas d'envie.
+          Option D : accent sur les problèmes passés, pas la valeur créée.
+        hint: "Le client veut savoir ce que ça change pour lui, pas comment c'est fait."
+    debrief: >
+      La communication de release est un moment de marketing produit.
+      Chaque release note devrait répondre à : "Qu'est-ce que ça change concrètement pour moi ?"
+      Les améliorations techniques méritent d'être traduites en bénéfices business.
+
+events:
+  - id: incident_prod
+    title: "Incident production — Module tasks planté"
+    description: >
+      18h30, un vendredi. Le module tasks est inaccessible pour 30% des utilisateurs.
+      Léa vous contacte : un bug dans le code legacy (celui qu'on n'a pas encore refactorisé)
+      cause des timeouts en cascade. Textilpro est impacté. L'astreinte est mobilisée.
+      Que faites-vous en tant que PO ?
+    trigger: "after_module:sprint_planning"
+    urgency: high
+    choices:
+      - id: hotfix
+        label: "Demander un hotfix immédiat, même partiel, pour débloquer Textilpro ce soir"
+        points: 10
+        rationale: >
+          Bonne décision d'urgence : un hotfix partiel en urgence est le bon arbitrage.
+          Ça montre la réactivité, protège le renouvellement Textilpro,
+          et la cause racine sera traitée lors du prochain refacto planifié.
+      - id: rollback
+        label: "Rollback sur la version précédente stable et communiquer un délai de 24h"
+        points: 5
+        rationale: >
+          Acceptable mais non optimal : le rollback prend du temps et 24h d'indisponibilité
+          peut fragiliser Textilpro. Un hotfix ciblé est préférable si c'est faisable.
+      - id: wait
+        label: "Attendre lundi pour traiter avec l'équipe complète, l'incident n'est pas critique"
+        points: 0
+        rationale: >
+          Mauvaise décision : Textilpro est impacté un vendredi soir.
+          "Attendre lundi" pour un client à risque de churn peut coûter le renouvellement.
+          Les incidents prod doivent toujours avoir une réponse rapide.
+
+  - id: concurrent_raise
+    title: "Concurrent — Asana annonce une offre PME à 8€/user"
+    description: >
+      Asana vient d'annoncer une offre "Asana for SMB" à 8€/user/mois,
+      soit moitié moins qu'OpsFlow. 3 prospects en cours de signature vous contactent
+      pour renegocier ou délai leur décision. Camille est en panique.
+      Comment réagissez-vous en tant que PO ?
+    trigger: "after_module:kpi_analysis"
+    urgency: medium
+    choices:
+      - id: differentiate
+        label: "Préparer une réponse différenciatrice : mettre en avant RGPD, intégrations ERP, support FR, et les nouvelles features livrées"
+        points: 15
+        rationale: >
+          Excellente réponse : OpsFlow ne peut pas gagner sur le prix face à Asana.
+          La contre-attaque doit être sur les différenciateurs réels :
+          hébergement France, RGPD, intégrations ERP, support en français, et maintenant
+          la vélocité de livraison retrouvée.
+      - id: price_cut
+        label: "Baisser le prix à 10€/user pour les 3 prospects en cours"
+        points: 5
+        rationale: >
+          Risqué : baisser le prix crée un précédent, réduit les marges,
+          et ne répond pas aux vrais différenciateurs.
+          Les prospects pourraient toujours partir si Asana baisse encore.
+      - id: panic_features
+        label: "Promettre de livrer des features supplémentaires pour retenir les prospects"
+        points: 0
+        rationale: >
+          Mauvaise décision : promettre des features pour contrer une crise commerciale
+          crée de la pression irréaliste sur l'équipe et nuit à la roadmap.
+          Les features promises risquent d'arriver trop tard ou mal faites.
+
+  - id: ceo_ai_pressure
+    title: "CEO — Northstar Capital exige l'IA dans 4 semaines"
+    description: >
+      Jérôme vous appelle : Northstar Capital menace de réduire leur engagement
+      dans la Serie A si l'intégration IA n'est pas démontrée dans 4 semaines.
+      L'équipe estime que ça prendrait 8 semaines en conditions normales.
+      Que faites-vous ?
+    trigger: "after_module:stakeholder_mgmt"
+    urgency: high
+    choices:
+      - id: scope_reduce
+        label: "Proposer une démo d'un MVP IA limité (suggestions de tâches uniquement) livrable en 3 semaines"
+        points: 15
+        rationale: >
+          Excellente décision : réduire le scope pour tenir la date est la bonne approche PO.
+          Un MVP convaincant (suggestions de tâches) peut impressionner les investisseurs
+          sans engager l'équipe sur 8 semaines de travail.
+      - id: commit_full
+        label: "S'engager sur les 8 semaines de features IA complètes et repousser le meeting investisseurs"
+        points: 5
+        rationale: >
+          Risqué : repousser le meeting fragilise la relation avec Northstar.
+          S'engager sur 8 semaines complets compromet la qualité et la roadmap clients.
+      - id: refuse
+        label: "Refuser catégoriquement : la roadmap client est prioritaire, l'IA attendra Q4"
+        points: 0
+        rationale: >
+          Mauvaise décision : ignorer la contrainte investisseur peut compromettre
+          le financement de toute l'équipe. Un PO doit savoir négocier le scope,
+          pas juste dire non.
+
+feedback:
+  success_thresholds:
+    advanced:
+      min_percent: 75
+      message: >
+        Excellent travail ! Vous avez navigué avec maestria entre la dette technique
+        et les impératifs clients. Vous maîtrisez l'art de l'arbitrage dans un contexte sous pression.
+    intermediate:
+      min_percent: 40
+      message: >
+        Bon travail. Vous avez bien géré les tensions principales.
+        Quelques décisions sur les dépendances techniques et la gestion de crise méritent
+        d'être approfondies.
+    junior:
+      min_percent: 0
+      message: >
+        Ce cas est difficile car il n'y a pas de réponse facile.
+        L'enjeu clé est de comprendre que la dette technique n'est pas un problème technique —
+        c'est un problème business qui impacte directement la vitesse de livraison de valeur.

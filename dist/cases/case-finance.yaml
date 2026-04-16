@@ -1,0 +1,1104 @@
+id: case-finance
+title: "Finio — Lancer l'épargne programmée malgré une faille UX critique"
+difficulty: intermediate
+estimated_duration: 120
+
+context:
+  company: Finio
+  industry: Fintech — Application d'épargne personnelle
+  role: Product Owner
+  logo: "💰"
+  summary: >
+    Finio est une application d'épargne pour les 25-40 ans avec 180 000 utilisateurs actifs.
+    L'équipe a découvert une faille UX critique dans le parcours d'onboarding qui fait chuter
+    le taux d'activation de 52% à 31% depuis la dernière mise à jour.
+    En parallèle, la direction veut lancer "l'épargne programmée" (prélèvements automatiques)
+    avant fin Q2 pour attaquer un nouveau segment de marché. Vous devez arbitrer.
+  business_goal: "Restaurer le taux d'activation à 50%+ ET lancer l'épargne programmée avant le 30 juin"
+  constraints:
+    - "Budget limité : pas de designer disponible avant 3 semaines"
+    - "L'autorité de régulation AMF doit valider tout nouveau produit financier (+6 semaines)"
+    - "Les utilisateurs existants ne peuvent pas voir leur expérience dégradée"
+    - "L'équipe dev est composée de 4 personnes (2 front, 2 back)"
+
+personas:
+  - id: emma
+    name: "Emma Thibaut"
+    role: Jeune active, 28 ans
+    avatar: "👩"
+    personality: "Impatiente, mobile-first, compare plusieurs apps d'épargne"
+    goals: "Épargner sans y penser, voir son argent fructifier"
+    pain_points: "Trop d'étapes pour créer un premier virement, abandonne après 2 minutes"
+    communication_style: "Usage impulsif, lit peu, fait confiance aux reviews App Store"
+    quote: "J'ai essayé de créer un compte mais j'ai abandonné après l'étape 3. C'était trop long."
+
+  - id: robert
+    name: "Robert Dumont"
+    role: Retraité, 63 ans
+    avatar: "👴"
+    personality: "Prudent, besoin de sécurité, appelle le support facilement"
+    goals: "Placer son épargne de manière sécurisée, comprendre les frais"
+    pain_points: "Interface trop complexe, peur de faire une erreur irréversible"
+    communication_style: "Lit tout, pose beaucoup de questions, réfractaire aux changements"
+    quote: "J'aimerais bien utiliser l'épargne automatique mais j'ai peur de ne pas comprendre comment l'arrêter."
+
+  - id: compliance
+    name: "Nathalie Perrin"
+    role: Responsable Conformité AMF
+    avatar: "⚖️"
+    personality: "Rigoureuse, processus formels, aucune tolérance pour les raccourcis"
+    goals: "Garantir la conformité de tous les produits financiers avec la réglementation AMF"
+    pain_points: "Les équipes produit sous-estiment les délais réglementaires"
+    communication_style: "Formelle, dossiers complets requis, timeline non-négociable"
+    quote: "L'épargne programmée est un mandat de prélèvement SEPA. Dossier AMF complet requis. 6 semaines minimum."
+
+  - id: cmo
+    name: "Lucas Bernard"
+    role: CMO (Directeur Marketing)
+    avatar: "📣"
+    personality: "Ambitieux, orienté croissance, sous pression des investisseurs"
+    goals: "Lancer l'épargne programmée pour la campagne marketing de printemps"
+    pain_points: "Les contraintes tech et conformité ralentissent toujours le go-to-market"
+    communication_style: "Énergie haute, urgences fréquentes, focus acquisition"
+    quote: "La campagne est bookée pour le 15 juin. Si l'épargne programmée n'est pas prête, on perd 200K€ de media achetée."
+
+kpis:
+  - id: activation_rate
+    label: "Taux d'activation"
+    value: 31
+    unit: "%"
+    target: 50
+    trend: down
+    description: "% d'utilisateurs qui effectuent leur premier virement dans les 7 jours"
+
+  - id: aum
+    label: "Encours sous gestion (AUM)"
+    value: 42
+    unit: "M€"
+    target: 60
+    trend: stable
+    description: "Total des fonds gérés par Finio"
+
+  - id: churn_m1
+    label: "Churn Mois 1"
+    value: 38
+    unit: "%"
+    target: 20
+    trend: up
+    description: "% d'utilisateurs inactifs après leur premier mois"
+
+  - id: nps
+    label: "NPS"
+    value: 24
+    unit: "score"
+    target: 45
+    trend: down
+    description: "Net Promoter Score mesuré trimestriellement"
+
+  - id: arpu
+    label: "ARPU"
+    value: 18
+    unit: "€/mois"
+    target: 28
+    trend: stable
+    description: "Average Revenue Per User mensuel"
+
+datasets:
+  interviews:
+    - persona_id: emma
+      excerpt: >
+        "À l'étape où on me demande mon IBAN, j'ai dû chercher mon RIB dans mes mails pendant 10 minutes.
+        Et après ça m'a dit que mon document d'identité n'était pas lisible et j'ai dû recommencer.
+        J'avais commencé le processus dans le métro, j'ai abandonné à la sortie.
+        Une amie m'a dit que Lydia c'est beaucoup plus rapide. J'ai pas encore testé mais..."
+
+    - persona_id: robert
+      excerpt: >
+        "J'ai réussi à ouvrir le compte mais j'ai mis 45 minutes.
+        Ce qui m'a bloqué c'est qu'il y avait trop de choix d'enveloppes d'épargne dès le départ.
+        Je ne savais pas quelle option choisir. J'ai appelé le support, ils ont été très patients.
+        Si l'épargne automatique était simple et qu'on pouvait l'arrêter facilement, je l'activerais."
+
+    - persona_id: compliance
+      excerpt: >
+        "L'épargne programmée implique un mandat SEPA de prélèvement récurrent.
+        Réglementairement, cela nécessite : un contrat cadre MIF II, une information pré-contractuelle,
+        un délai de rétractation de 14 jours, et la notification de chaque prélèvement 2 jours avant.
+        Le dossier AMF doit être déposé avant toute commercialisation. Comptez 6 semaines de validation."
+
+  analytics:
+    - title: "Entonnoir d'onboarding — Taux de completion par étape"
+      type: bar
+      data:
+        - label: "Étape 1 : Email"
+          value: 100
+        - label: "Étape 2 : Infos perso"
+          value: 87
+        - label: "Étape 3 : Pièce identité"
+          value: 64
+        - label: "Étape 4 : IBAN"
+          value: 42
+        - label: "Étape 5 : Choix produit"
+          value: 36
+        - label: "Activation complète"
+          value: 31
+
+    - title: "Évolution taux d'activation (12 semaines)"
+      type: line
+      data:
+        - label: "S1"
+          value: 52
+        - label: "S2"
+          value: 52
+        - label: "S3"
+          value: 50
+        - label: "S4"
+          value: 48
+        - label: "S5"
+          value: 45
+        - label: "S6"
+          value: 41
+        - label: "S7"
+          value: 38
+        - label: "S8"
+          value: 35
+        - label: "S9"
+          value: 33
+        - label: "S10"
+          value: 32
+        - label: "S11"
+          value: 31
+        - label: "S12"
+          value: 31
+
+inbox:
+  - from: "Lucas Bernard (CMO)"
+    subject: "URGENT — Campaign deadline 15 juin"
+    body: >
+      Hey,
+
+      On a booké 200K€ de media pour le 15 juin sur l'épargne programmée.
+      La campagne est en cours de production. J'ai besoin d'une confirmation
+      que la feature sera disponible avant cette date.
+
+      Lucas
+
+  - from: "Nathalie Perrin (Conformité)"
+    subject: "Épargne programmée — Dossier AMF requis"
+    body: >
+      Bonjour,
+
+      J'ai analysé le spec de l'épargne programmée.
+      Il s'agit d'un mandat SEPA : obligation de dossier AMF complet avant commercialisation.
+      Délai minimum de validation : 6 semaines après dépôt du dossier.
+      Le dossier doit être déposé au plus tard le 1er mai pour un lancement le 15 juin.
+
+      Je suis disponible pour un call cette semaine pour passer en revue les prérequis.
+
+      Nathalie
+
+  - from: "Équipe Data"
+    subject: "Rapport : chute du taux d'activation depuis mise à jour onboarding"
+    body: >
+      Bonjour,
+
+      Analyse du drop d'activation post mise à jour 2.3 :
+
+      Cause identifiée : l'étape "Choix du produit" a été déplacée de l'étape 6 à l'étape 5
+      (avant la confirmation IBAN). Les utilisateurs sont perdus avant d'avoir finalisé
+      la partie administrative.
+
+      Correction estimée : 2-3 jours de développement pour réordonner les étapes.
+      Impact estimé : retour à 48-52% d'activation.
+
+      Équipe Data
+
+modules:
+  - id: okr_setting
+    type: okr_setting
+    title: "Module 1 — Définir les OKRs dans un contexte de double urgence"
+    objectives:
+      - "Articuler un objectif qui réconcilie la faille UX et le nouveau produit"
+      - "Définir des KRs mesurables avec des dates réalistes"
+    instructions: >
+      Vous faites face à deux urgences : une faille UX qui fait fuir les utilisateurs
+      ET une deadline marketing pour le nouveau produit. Vos OKRs doivent les deux refléter.
+    artifacts:
+      - type: document
+        title: "Analyse business impact"
+        content: |
+          ANALYSE IMPACT BUSINESS — FINIO
+
+          IMPACT DE LA FAILLE UX (activation 31% vs 52%) :
+          - Chaque point de taux d'activation = ~300 utilisateurs/mois supprimés
+          - Perte estimée : 6 300 utilisateurs actifs non-captés par mois
+          - Impact AUM à 6 mois : -3.5M€ d'encours si non corrigé
+
+          IMPACT ÉPARGNE PROGRAMMÉE (si lancée à temps) :
+          - Lucas estime 8 000 nouveaux utilisateurs via la campagne
+          - ARPU épargne programmée : 32€/mois vs 18€ actuel
+          - Impact AUM à 12 mois : +15M€ si conversion 30%
+
+          CONTRAINTE CRITIQUE :
+          - Dépôt dossier AMF doit être fait AVANT LE 1ER MAI
+          - Aujourd'hui : 15 avril — Il reste 16 jours pour préparer le dossier
+
+    tasks:
+      - id: okr_finance_objective
+        type: single_choice
+        label: "Quel objectif OKR est le plus pertinent pour ce trimestre ?"
+        points: 15
+        options:
+          - id: a
+            label: "Lancer l'épargne programmée et maximiser l'acquisition de nouveaux utilisateurs"
+          - id: b
+            label: "Réparer la faille UX pour restaurer la santé du produit de base"
+          - id: c
+            label: "Devenir l'app d'épargne préférée des 25-40 ans en France"
+          - id: d
+            label: "Restaurer l'expérience d'activation ET lancer l'épargne programmée en conformité"
+        expected: d
+        rationale: >
+          L'option D est la seule qui intègre les deux urgences réelles.
+          Ignorer la faille UX (option A) = continuer à perdre des utilisateurs.
+          Ignorer l'épargne programmée (option B) = manquer une opportunité business.
+          L'option C est trop vague pour un OKR trimestriel.
+        hint: "Un bon OKR reflète toutes les priorités réelles du trimestre, pas seulement les plus visibles."
+
+      - id: okr_finance_kr
+        type: ranking
+        label: "Classez ces KRs par ordre d'importance (du plus au moins urgent)"
+        points: 15
+        options:
+          - id: a
+            label: "Déposer le dossier AMF épargne programmée avant le 1er mai"
+          - id: b
+            label: "Restaurer le taux d'activation à 48%+ avant fin avril"
+          - id: c
+            label: "Lancer l'épargne programmée le 15 juin au plus tard"
+          - id: d
+            label: "Atteindre un NPS de 35+ à fin Q2"
+        expected_order:
+          - a
+          - b
+          - c
+          - d
+        rationale: >
+          A est le plus urgent : il expire dans 16 jours et conditionne C.
+          B est urgent car chaque semaine avec 31% d'activation coûte 300 utilisateurs.
+          C est l'objectif final mais dépend de A.
+          D est important mais dérivé des autres.
+    debrief: >
+      Dans un contexte multi-urgences, l'ordre des priorités doit refléter les dépendances.
+      Le dossier AMF (A) doit être déposé avant le lancement (C).
+      La faille UX (B) doit être corrigée pour que les utilisateurs acquis via la campagne (C) restent.
+
+  - id: competitive_analysis
+    type: competitive_analysis
+    title: "Module 2 — Positionnement concurrentiel en fintech épargne"
+    objectives:
+      - "Positionner Finio face aux neobanques et apps d'épargne"
+      - "Identifier les avantages différenciants à défendre"
+    instructions: >
+      Le marché de l'épargne digitale est très concurrentiel.
+      Analysez les concurrents et positionnez Finio sur la matrice.
+    artifacts:
+      - type: document
+        title: "Benchmark concurrents épargne digitale"
+        content: |
+          BENCHMARK — APPS ÉPARGNE FRANCE
+
+          LYDIA / SUMERIA
+          - Points forts : viral, paiement entre amis, onboarding < 3 min
+          - Points faibles : peu de produits d'épargne structurée
+          - Avantage clé : UX de référence, 7M utilisateurs
+
+          YOMONI
+          - Points forts : gestion pilotée, rendements affichés, confiance
+          - Points faibles : minimum d'investissement 1000€, pas pour les petits épargnants
+          - Avantage clé : performance, clientèle aisée
+
+          LIVRET+
+          - Points forts : zéro frais, taux garanti, simplicité
+          - Points faibles : taux réglementé (plafonné), pas de gestion dynamique
+          - Avantage clé : sécurité, simplicité maximale
+
+          REVOLUT SAVINGS
+          - Points forts : intégré à l'usage quotidien, ronds épargne automatique
+          - Points faibles : réglementé hors France, support limité
+          - Avantage clé : automatisation invisible
+
+          FINIO (actuel)
+          - Points forts : produits structurés (SCPI, obligations), conseiller IA
+          - Points faibles : onboarding complexe, activation faible
+          - Avantage clé : produits plus sophistiqués pour profils intermédiaires
+
+    tasks:
+      - id: competitive_finance_positioning
+        type: single_choice
+        label: "Quel positionnement est le plus défendable pour Finio ?"
+        points: 20
+        options:
+          - id: a
+            label: "L'app d'épargne la moins chère du marché"
+          - id: b
+            label: "L'app qui automatise l'épargne pour ceux qui n'y pensent pas"
+          - id: c
+            label: "La gestion d'actifs premium accessible dès 1€ avec conseil IA"
+          - id: d
+            label: "La neobanque complète avec épargne intégrée"
+        expected: c
+        rationale: >
+          Finio se différencie par ses produits structurés (SCPI, obligations) et son conseiller IA
+          — un positionnement "premium accessible" unique sur le marché.
+          Le positionnement A (prix) n'est pas défendable face aux acteurs gratuits.
+          Le positionnement B (automatisation) est déjà occupé par Revolut et n'est pas un avantage unique.
+          Le positionnement D (neobanque) est hors du périmètre produit actuel.
+        hint: "Quel avantage Finio a-t-il qu'aucun concurrent direct n'offre vraiment ?"
+    competitors:
+      - id: lydia
+        name: "Lydia / Sumeria"
+        description: "Leader mobile, viral, onboarding < 3 min — peu de produits d'épargne structurée"
+      - id: yomoni
+        name: "Yomoni"
+        description: "Gestion pilotée, rendements affichés — minimum 1000€, pas pour les petits épargnants"
+      - id: livretplus
+        name: "Livret+"
+        description: "Zéro frais, taux garanti, simplicité — taux plafonné, pas de gestion dynamique"
+      - id: revolut
+        name: "Revolut Savings"
+        description: "Automatisation invisible, intégré à l'usage quotidien — réglementé hors France"
+    debrief: >
+      Un positionnement clair guide les décisions produit.
+      Si Finio se positionne "premium accessible", la correction de l'onboarding devient
+      encore plus urgente : les nouveaux utilisateurs doivent pouvoir accéder rapidement
+      aux produits sophistiqués, pas être bloqués à l'étape IBAN.
+
+  - id: roadmap_planning
+    type: roadmap_planning
+    title: "Module 3 — Construire la roadmap avec contraintes AMF"
+    objectives:
+      - "Intégrer les délais réglementaires AMF dans la roadmap"
+      - "Séquencer les initiatives pour respecter toutes les deadlines"
+    instructions: >
+      La roadmap doit intégrer une contrainte ferme : le dossier AMF doit être déposé
+      dans 16 jours. Séquencez les initiatives correctement.
+    artifacts:
+      - type: document
+        title: "Initiatives disponibles"
+        content: |
+          INITIATIVES PRODUIT — FINIO
+
+          CORRECTIONS URGENTES
+          UX-FIX: Correction entonnoir onboarding (3 jours)
+            → Réordonner étape "Choix produit" après confirmation IBAN
+
+          CONFORMITÉ
+          AMF-DOC: Préparer dossier AMF épargne programmée (2 semaines)
+            → Doit être déposé avant le 1er mai
+          AMF-VALID: Validation AMF (6 semaines, externe, non contrôlable)
+            → Démarre après dépôt du dossier
+
+          ÉPARGNE PROGRAMMÉE
+          EP-1: Backend mandats SEPA (3 semaines, PRÉREQUIS: AMF-VALID)
+          EP-2: Interface configuration épargne programmée (2 semaines, PRÉREQUIS: EP-1)
+          EP-3: Notifications et confirmations SEPA (1 semaine, PRÉREQUIS: EP-1)
+
+          FONCTIONNALITÉS GROWTH
+          ONBOARD-V2: Refonte onboarding complet (5 semaines)
+          REFERRAL: Programme parrainage (3 semaines)
+
+    tasks:
+      - id: roadmap_finance_sequence
+        type: single_choice
+        label: "Quelle séquence permet de respecter la deadline du 15 juin ?"
+        points: 20
+        options:
+          - id: a
+            label: "Semaine 1-2 : UX-FIX + AMF-DOC → Semaine 3-8 : AMF-VALID → Semaine 9-11 : EP-1 → Semaine 12-13 : EP-2+EP-3"
+          - id: b
+            label: "Semaine 1-3 : EP-1 → Semaine 4-5 : EP-2 → Semaine 6 : EP-3 → Semaine 7 : UX-FIX → Semaine 8-14 : AMF"
+          - id: c
+            label: "Semaine 1-5 : ONBOARD-V2 → Semaine 6-7 : AMF-DOC → puis EP-1, EP-2, EP-3"
+          - id: d
+            label: "Semaine 1 : UX-FIX → Semaine 2-8 : AMF-DOC + AMF-VALID → Semaine 9-14 : EP-1, EP-2, EP-3"
+        expected: a
+        rationale: >
+          L'option A est la seule qui : 1) dépose le dossier AMF avant le 1er mai,
+          2) corrige la faille UX en parallèle dès la semaine 1,
+          3) démarre EP-1 après la validation AMF (conformément à la réglementation),
+          4) livre EP-2 et EP-3 vers la semaine 13 (avant le 15 juin).
+          L'option B commence par le développement avant la validation AMF — illégal.
+          L'option C reporte trop la soumission AMF (semaine 6 = trop tard).
+          L'option D sous-estime la durée de validation AMF (6 semaines ne donnent pas le bon timing).
+        hint: "La validation AMF (6 semaines) est une boîte noire qui ne peut pas être accélérée."
+    features:
+      - id: uxfix
+        title: "UX-FIX : Correction entonnoir onboarding"
+        theme: ux
+        effort: 1
+      - id: amfdoc
+        title: "AMF-DOC : Dossier AMF épargne programmée"
+        theme: strategy
+        effort: 2
+      - id: amfvalid
+        title: "AMF-VALID : Validation AMF (6 semaines)"
+        theme: tech
+        effort: 6
+      - id: ep1
+        title: "EP-1 : Backend mandats SEPA"
+        theme: tech
+        effort: 3
+      - id: ep2
+        title: "EP-2 : Interface épargne programmée"
+        theme: ux
+        effort: 2
+      - id: ep3
+        title: "EP-3 : Notifications J-2 prélèvement"
+        theme: growth
+        effort: 1
+      - id: onboard2
+        title: "ONBOARD-V2 : Refonte onboarding complète"
+        theme: ux
+        effort: 5
+      - id: referral
+        title: "REFERRAL : Programme parrainage"
+        theme: growth
+        effort: 3
+    debrief: >
+      Les contraintes réglementaires ne sont pas des obstacles à contourner mais des
+      prérequis à intégrer dans la roadmap. L'erreur classique est de commencer
+      à développer avant d'avoir la validation, ce qui peut imposer une refonte complète.
+
+  - id: discovery
+    type: discovery
+    title: "Module 4 — Comprendre pourquoi les utilisateurs abandonnent"
+    objectives:
+      - "Identifier le point de friction principal dans l'onboarding"
+      - "Définir la correction minimale à fort impact"
+    instructions: >
+      L'équipe data a identifié la cause probable du drop d'activation.
+      Confirmez l'hypothèse avec les données qualitatives et définissez la solution.
+    artifacts:
+      - type: email
+        title: "Retours utilisateurs — Formulaire d'abandon"
+        content: |
+          ANALYSE VERBATIMS FORMULAIRE D'ABANDON (120 réponses)
+
+          Question : "Pourquoi avez-vous arrêté le processus de création de compte ?"
+
+          TOP 3 DES RAISONS :
+          1. "Je n'avais pas mon RIB sous la main" — 41%
+          2. "Je ne savais pas quel type d'épargne choisir sans plus d'informations" — 29%
+          3. "Trop d'étapes, j'ai manqué de temps" — 18%
+          4. "J'ai eu une erreur technique" — 12%
+
+          VERBATIMS CLÉS :
+          "Le choix entre SCPI, obligations et livret avant même d'avoir confirmé mon identité,
+          c'est bizarre. Je voulais juste ouvrir un compte."
+
+          "Pourquoi vous avez besoin de mon IBAN maintenant ? Je pensais pouvoir voir l'app avant."
+
+          "J'ai abandonné à l'étape 5 parce que je n'avais pas mes documents avec moi.
+          Je suis revenu le lendemain mais j'ai eu la flemme de tout recommencer."
+
+      - type: dashboard
+        title: "Heatmap des abandons par device et heure"
+        content: |
+          ANALYSE ABANDONS — DEVICE ET CONTEXTE
+
+          Abandons par device :
+          - Mobile : 71% des abandons (vs 45% des sessions)
+          - Desktop : 29% des abandons (vs 55% des sessions)
+
+          Pic d'abandon : 8h-9h (trajet) et 12h-13h (pause déjeuner)
+          → Contexte "en mouvement" = abandons 3x plus fréquents
+
+          Temps avant abandon :
+          - Étape 3 (pièce identité) : abandon en moyenne après 4 min 32s
+          - Étape 4 (IBAN) : abandon en moyenne après 2 min 18s
+          → L'IBAN crée un abandon plus rapide (manque du document)
+
+    tasks:
+      - id: discovery_finance_insight
+        type: single_choice
+        label: "Quelle est la correction prioritaire à apporter à l'onboarding ?"
+        points: 20
+        options:
+          - id: a
+            label: "Supprimer l'étape de choix du produit — trop complexe pour les nouveaux utilisateurs"
+          - id: b
+            label: "Déplacer l'IBAN en dernière étape ET permettre la sauvegarde de progression"
+          - id: c
+            label: "Réduire le nombre d'étapes de 5 à 3"
+          - id: d
+            label: "Ajouter plus d'explications sur chaque type de produit d'épargne"
+        expected: b
+        rationale: >
+          Les données montrent deux problèmes : 1) l'IBAN crée un abandon rapide car les gens
+          n'ont pas leur RIB "en route", 2) les abandons temporaires (sortie + retour) sont
+          perdus car pas de sauvegarde. Déplacer l'IBAN en dernier + sauvegarde = correction
+          ciblée des deux frictions principales sans refonte complète.
+          Option A : supprimer le choix produit réduit la valeur perçue.
+          Option C : réduire à 3 étapes nécessite une refonte complète (5 semaines, pas 3 jours).
+          Option D : plus d'explications = plus long, aggrave le problème.
+        hint: "Quel est le moment exact où les utilisateurs abandonnent et pourquoi ?"
+    debrief: >
+      La bonne correction n'est pas toujours la plus radicale. Déplacer l'IBAN en dernière
+      position et sauvegarder la progression = 3 jours de développement pour +17 points
+      de taux d'activation. La refonte complète attendrait Q3 avec le bon design.
+
+  - id: story_writing
+    type: story_writing
+    title: "Module 5 — Rédiger les stories pour la correction UX et l'épargne programmée"
+    objectives:
+      - "Formuler des stories précises avec des critères d'acceptation mesurables"
+      - "Distinguer les stories MVP des améliorations futures"
+    instructions: >
+      Rédigez les stories pour les deux initiatives en cours :
+      la correction UX (urgente) et l'épargne programmée (soumise à conformité).
+    artifacts:
+      - type: document
+        title: "Exigences réglementaires épargne programmée"
+        content: |
+          EXIGENCES AMF — ÉPARGNE PROGRAMMÉE (MANDAT SEPA)
+
+          OBLIGATOIRES AVANT COMMERCIALISATION :
+          1. Information pré-contractuelle téléchargeable (PDF)
+          2. Confirmation explicite et traçable du consentement utilisateur
+          3. Délai de rétractation de 14 jours visible et fonctionnel
+          4. Notification email 2 jours avant chaque prélèvement
+          5. Arrêt du mandat possible en 1 clic dans l'application
+
+          CES CRITÈRES SONT DES CRITÈRES D'ACCEPTATION OBLIGATOIRES
+          pour toute story liée à l'épargne programmée.
+
+    tasks:
+      - id: story_finance_compliance
+        type: multi_select
+        label: "Quelles stories pour l'épargne programmée sont conformes AMF et INVEST ?"
+        points: 15
+        options:
+          - id: a
+            label: "En tant qu'utilisateur, je veux activer l'épargne automatique de 50€/mois, afin d'épargner sans y penser. [Critères : information pré-contractuelle affichée, consentement tracé, notification J-2 active]"
+          - id: b
+            label: "Implémenter le backend SEPA pour les mandats de prélèvement récurrents."
+          - id: c
+            label: "En tant qu'utilisateur, je veux annuler mon épargne programmée en un clic, afin de reprendre le contrôle si ma situation change. [Critères : annulation effective en < 3 taps, email de confirmation envoyé, délai légal affiché]"
+          - id: d
+            label: "Créer une interface d'épargne programmée complète avec toutes les options de configuration."
+        expected:
+          - a
+          - c
+        rationale: >
+          Story A : perspective utilisateur, critères d'acceptation incluent les exigences AMF = conforme INVEST + réglementaire.
+          Story C : droit de rétractation AMF inclus dans les critères d'acceptation = conforme.
+          Story B : technique, pas de perspective utilisateur (non INVEST).
+          Story D : "toutes les options" = non-estimable, pas INVEST.
+    debrief: >
+      Dans la fintech, les critères d'acceptation doivent intégrer les exigences réglementaires.
+      Une story qui "fonctionne" techniquement mais ne respecte pas les obligations AMF
+      n'est pas livrable — le PO doit l'exiger dans chaque story dès l'écriture.
+
+  - id: refinement
+    type: refinement
+    title: "Module 6 — Estimer et séquencer"
+    objectives:
+      - "Estimer correctement les stories en tenant compte de la réglementation"
+      - "Identifier les stories épargne programmée bloquées avant validation AMF"
+    instructions: >
+      Les stories épargne programmée ne peuvent pas être livrées avant la validation AMF.
+      Tenez compte de cette contrainte dans les estimations et la planification.
+    artifacts:
+      - type: table
+        title: "Backlog résumé"
+        content: |
+          BACKLOG FINIO — STORIES ESTIMÉES
+
+          CORRECTIFS UX (NON-BLOQUÉS)
+          UX-1 : Déplacer IBAN en étape finale — 2 points
+          UX-2 : Sauvegarde progression onboarding — 3 points
+          UX-3 : Simplifier le choix produit initial — 5 points
+
+          ÉPARGNE PROGRAMMÉE (BLOQUÉS avant AMF-VALID)
+          EP-1 : Activation épargne programmée (mandat SEPA) — 8 points
+          EP-2 : Annulation épargne programmée — 3 points
+          EP-3 : Notifications J-2 avant prélèvement — 5 points
+          EP-4 : Information pré-contractuelle PDF — 2 points
+
+    tasks:
+      - id: refinement_finance_sizing
+        type: match_pairs
+        label: "Associez chaque story à sa bonne estimation"
+        points: 20
+        left:
+          - id: s1
+            label: "UX-1 : Déplacer IBAN en étape finale"
+          - id: s2
+            label: "EP-1 : Activation épargne programmée (mandat SEPA)"
+          - id: s3
+            label: "EP-2 : Annulation épargne programmée (1 clic)"
+          - id: s4
+            label: "UX-3 : Simplifier choix produit initial"
+        right:
+          - id: p2
+            label: "2 points"
+          - id: p3
+            label: "3 points"
+          - id: p5
+            label: "5 points"
+          - id: p8
+            label: "8 points"
+        expected:
+          s1: p2
+          s2: p8
+          s3: p3
+          s4: p5
+        rationale: >
+          UX-1 = 2pts : simple réorganisation d'étapes, pas de logique métier.
+          EP-1 = 8pts : intégration SEPA, conformité AMF, tests de sécurité bancaire, nombreux edge cases.
+          EP-2 = 3pts : interface simple, logique métier limitée.
+          UX-3 = 5pts : implique de revoir le design de l'étape, tests A/B recommandés.
+    debrief: >
+      L'estimation révèle que les corrections UX sont rapides (2-5 pts) et débloquables immédiatement.
+      L'épargne programmée est complexe (EP-1 à 8pts) et bloquée par la conformité.
+      Cette différence justifie la stratégie : corriger l'UX maintenant, livrer EP en Q2.
+
+  - id: sprint_planning
+    type: sprint_planning
+    title: "Module 7 — Planification du sprint de correction UX"
+    objectives:
+      - "Corriger la faille UX le plus vite possible"
+      - "Préparer le terrain pour l'épargne programmée"
+    instructions: >
+      Sprint urgent de 1 semaine. Capacité : 12 points.
+      Objectif : corriger la faille UX avant toute autre chose.
+    stories:
+      - id: ux1
+        title: "UX-1 : Déplacer IBAN en étape finale"
+        points: 2
+        theme: ux
+      - id: ux2
+        title: "UX-2 : Sauvegarde progression onboarding"
+        points: 3
+        theme: ux
+      - id: ep4
+        title: "EP-4 : Information pré-contractuelle PDF (prépare AMF)"
+        points: 2
+        theme: strategy
+      - id: ux3
+        title: "UX-3 : Simplifier choix produit"
+        points: 5
+        theme: ux
+      - id: ep2
+        title: "EP-2 : Annulation épargne programmée"
+        points: 3
+        theme: growth
+      - id: ep3
+        title: "EP-3 : Notifications J-2 prélèvement"
+        points: 5
+        theme: growth
+      - id: referral
+        title: "Parrainage : landing page"
+        points: 3
+        theme: growth
+    capacity: 12
+
+    tasks:
+      - id: sprint_finance_composition
+        type: multi_select
+        label: "Quelles stories composent le sprint optimal ? (capacité : 12 points)"
+        points: 20
+        options:
+          - id: a
+            label: "UX-1 (2pts) + UX-2 (3pts) + EP-4 (2pts) + Parrainage (3pts) = 10pts"
+          - id: b
+            label: "UX-1 (2pts) + UX-2 (3pts) + UX-3 (5pts) = 10pts"
+          - id: c
+            label: "UX-1 (2pts) + UX-2 (3pts) + EP-4 (2pts) + UX-3 (5pts) = 12pts"
+          - id: d
+            label: "EP-2 (3pts) + EP-3 (5pts) + UX-1 (2pts) = 10pts"
+        expected:
+          - c
+        rationale: >
+          Option C = 12pts exactement (capacité max) et combine les 3 corrections UX (UX-1, UX-2, UX-3)
+          + la préparation AMF (EP-4 = document PDF qui doit être dans le dossier AMF).
+          Toutes les stories sont non-bloquées (contrairement à EP-2 et EP-3 qui dépendent d'AMF).
+          Option A : inclut le parrainage au lieu d'UX-3 — mauvaise priorité.
+          Option B : n'inclut pas EP-4 qui est nécessaire pour le dossier AMF imminentGu.
+          Option D : EP-2 et EP-3 sont bloquées par AMF — ne peuvent pas être livrées.
+    debrief: >
+      Ce sprint a un objectif clair : corriger la faille UX ET préparer le dossier AMF.
+      Les stories épargne programmée qui dépendent de l'AMF restent en backlog.
+      Un sprint avec un focus clair est plus efficace qu'un sprint qui essaie tout faire.
+
+  - id: sprint_review
+    type: sprint_review
+    title: "Module 8 — Valider les corrections UX"
+    objectives:
+      - "Vérifier que les corrections ont un impact mesurable"
+      - "Définir les critères de succès de la correction UX"
+    instructions: >
+      Sprint Review des corrections UX. L'équipe data présente les premiers chiffres.
+    delivered_stories:
+      - id: sr_ux1
+        title: "UX-1 : Déplacer IBAN en étape finale"
+        acceptance_criteria:
+          - "L'IBAN est demandé en dernier (après confirmation identité et choix produit)"
+          - "Aucune régression sur le taux de completion des étapes précédentes"
+          - "Testé sur iOS, Android et desktop"
+        demo_note: "Démo effectuée. IBAN en dernière position. Tests cross-platform OK. Analytics à J+3 montrent +12pts d'activation."
+
+      - id: sr_ux2
+        title: "UX-2 : Sauvegarde progression onboarding"
+        acceptance_criteria:
+          - "Un utilisateur qui quitte l'app peut reprendre là où il s'est arrêté"
+          - "Les données saisies sont conservées 7 jours"
+          - "Message de rappel envoyé à J+1 si non terminé"
+        demo_note: "Sauvegarde fonctionne. Message J+1 implémenté. Conservation 7 jours OK. Tests de données sensibles (IBAN partiellement caché) validés."
+
+      - id: sr_ep4
+        title: "EP-4 : Document pré-contractuel PDF"
+        acceptance_criteria:
+          - "Document PDF conforme aux exigences AMF (validé par Nathalie)"
+          - "Téléchargeable depuis l'application"
+          - "Version en français et mise à jour automatique si conditions changent"
+        demo_note: "PDF prêt, Nathalie l'a relu et demande 2 modifications mineures sur la page 3. Elle repassera dans 48h."
+
+    tasks:
+      - id: review_finance_decision
+        type: multi_select
+        label: "Que décidez-vous pour chaque story ?"
+        points: 20
+        options:
+          - id: a
+            label: "UX-1 — ACCEPTER (données analytics confirment l'impact)"
+          - id: b
+            label: "UX-2 — ACCEPTER (tous critères remplis)"
+          - id: c
+            label: "EP-4 — ACCEPTER avec note (2 modifications mineures à faire)"
+          - id: d
+            label: "EP-4 — REFUSER et reprogrammer (critères d'acceptation non validés par la DPO)"
+        expected:
+          - a
+          - b
+          - d
+        rationale: >
+          UX-1 et UX-2 remplissent tous leurs critères → ACCEPTER.
+          EP-4 : Nathalie (experte AMF) a demandé 2 modifications avant validation.
+          Le critère "validé par Nathalie" n'est pas rempli → REFUSER.
+          Accepter avec note = créer de l'ambiguïté sur le statut réglementaire.
+          Dans la fintech, un document non validé par la conformité n'est pas livrable.
+    debrief: >
+      Les corrections UX montrent des résultats immédiats (+12pts d'activation en 3 jours).
+      Le document AMF doit attendre la validation complète de Nathalie.
+      Ne jamais accepter une story réglementaire sans validation explicite de la conformité.
+
+  - id: kpi_analysis
+    type: kpi_analysis
+    title: "Module 9 — Mesurer l'impact des corrections UX"
+    objectives:
+      - "Valider que les corrections UX ont restauré le taux d'activation"
+      - "Projeter les KPIs post-lancement épargne programmée"
+    instructions: >
+      3 semaines après les corrections UX, les données sont disponibles.
+      Analysez et prenez des décisions sur la suite.
+    charts:
+      - title: "Taux d'activation — Avant/après corrections UX"
+        type: line
+        context: "Mesure quotidienne du taux d'activation J7 (activation dans les 7 jours)"
+        data:
+          - label: "J-14 (avant)"
+            value: 31
+          - label: "J-7 (avant)"
+            value: 31
+          - label: "J0 (release)"
+            value: 31
+          - label: "J+3"
+            value: 43
+          - label: "J+7"
+            value: 46
+          - label: "J+14"
+            value: 48
+          - label: "J+21"
+            value: 49
+
+      - title: "Entonnoir post-corrections (taux de completion par étape)"
+        type: bar
+        context: "Comparaison avant/après pour l'étape la plus problématique"
+        data:
+          - label: "Étape IBAN (avant)"
+            value: 42
+          - label: "Étape IBAN (après)"
+            value: 71
+          - label: "Activation totale (avant)"
+            value: 31
+          - label: "Activation totale (après)"
+            value: 49
+
+    tasks:
+      - id: kpi_finance_interpretation
+        type: single_choice
+        label: "Quelle action prenez-vous suite à ces données ?"
+        points: 15
+        options:
+          - id: a
+            label: "L'objectif 50% est quasi-atteint (49%). Arrêter les corrections UX et passer entièrement à l'épargne programmée."
+          - id: b
+            label: "49% est proche de l'objectif mais pas atteint. Continuer UX-3 (simplification produit) en parallèle de l'épargne programmée."
+          - id: c
+            label: "49% est suffisant. Lancer une campagne d'acquisition immédiate pour capitaliser sur l'amélioration."
+          - id: d
+            label: "L'objectif n'est pas atteint. Mettre l'épargne programmée en pause et tout consacrer à l'UX."
+        expected: b
+        rationale: >
+          49% est proche de 50% mais pas atteint. UX-3 (simplification choix produit, 5pts)
+          est la dernière correction qui devrait pousser vers 52-54%.
+          La livrer en parallèle de la préparation épargne programmée est faisable.
+          Option A : 1 point sous l'objectif = ne pas atteindre le KR.
+          Option C : campagne prématurée — attendre l'épargne programmée (plus impactante).
+          Option D : inutile d'arrêter l'épargne programmée, la situation UX est presque réglée.
+        hint: "Comparez 49% à l'objectif (50%). Que manque-t-il et est-ce que ça justifie de tout arrêter ?"
+    debrief: >
+      Un KR à 49% sur 50% n'est pas un KR atteint. La nuance est importante.
+      La bonne décision est de livrer la dernière correction UX en parallèle
+      plutôt que de déclarer victoire prématurément ou de tout bloquer pour 1 point.
+
+  - id: stakeholder_mgmt
+    type: stakeholder_mgmt
+    title: "Module 10 — Gérer les parties prenantes avant le lancement"
+    objectives:
+      - "Aligner les attentes des stakeholders sur la date de lancement"
+      - "Communiquer les contraintes réglementaires clairement"
+    instructions: >
+      Le lancement approche. Trois parties prenantes ont des demandes.
+      Gérez-les avec clarté et réalisme.
+    stakeholder_messages:
+      - from: "Lucas Bernard (CMO)"
+        subject: "Confirmation GO pour la campagne du 15 juin ?"
+        priority: high
+        body: >
+          Hey,
+
+          J'ai besoin d'un GO/NO-GO formel avant vendredi pour la campagne du 15 juin.
+          L'agence attend notre confirmation pour démarrer la production créa.
+          Si c'est NO-GO, on peut décaler au 1er juillet mais ça coûte 15K€ de pénalité.
+
+          Lucas
+
+      - from: "Nathalie Perrin (Conformité)"
+        subject: "Validation AMF reçue — Avec conditions"
+        priority: high
+        body: >
+          Bonjour,
+
+          Bonne nouvelle : l'AMF a validé notre dossier.
+          Condition : le parcours de souscription doit afficher le délai de rétractation
+          EN GRAS sur la page de confirmation (exigence ajoutée).
+          Cette modification est requise avant tout lancement commercial.
+
+          Durée estimée de la modification : 2-3 jours.
+
+          Nathalie
+
+      - from: "Robert Dumont (utilisateur)"
+        subject: "Via support — Question sur l'épargne programmée"
+        priority: low
+        body: >
+          Bonjour,
+
+          J'ai vu que vous allez proposer l'épargne automatique.
+          J'aurais une question : si j'active 100€/mois, est-ce que je peux arrêter
+          facilement si j'ai un imprévu ? Et est-ce qu'il y a un minimum d'engagement ?
+
+          Merci,
+          Robert Dumont
+
+    tasks:
+      - id: stakeholder_finance_priority
+        type: ranking
+        label: "Dans quel ordre traitez-vous ces demandes ?"
+        points: 15
+        options:
+          - id: a
+            label: "Répondre à Nathalie : confirmer la modification et le délai"
+          - id: b
+            label: "Répondre à Lucas : donner un GO/NO-GO formel pour le 15 juin"
+          - id: c
+            label: "Répondre à Robert via l'équipe support : expliquer l'annulation"
+        expected_order:
+          - a
+          - b
+          - c
+        rationale: >
+          A en premier : la modification requise par l'AMF bloque le lancement.
+          Si c'est 2-3 jours, le 15 juin est toujours faisable — il faut d'abord confirmer ça.
+          B ensuite : une fois la modification estimée, on peut donner un GO avec une date réaliste.
+          C en dernier : réponse importante mais pas urgente, l'équipe support peut gérer.
+        hint: "Qu'est-ce qui doit être résolu AVANT de confirmer la date de lancement à Lucas ?"
+    debrief: >
+      La gestion des stakeholders financiers requiert de résoudre les blocages techniques
+      et réglementaires AVANT de communiquer des dates à l'externe.
+      Donner un GO à Lucas sans avoir confirmé la modification AMF = risquer de devoir annuler.
+
+  - id: release_communication
+    type: release_communication
+    title: "Module 11 — Lancement de l'épargne programmée"
+    objectives:
+      - "Rédiger une communication de lancement axée sur la valeur"
+      - "Intégrer les messages de confiance réglementaire"
+    instructions: >
+      Le lancement est confirmé pour le 15 juin.
+      Préparez les éléments de communication pour la release et la campagne marketing.
+    released_features:
+      - title: "Épargne programmée — Finio Auto"
+        description: "Définissez un montant mensuel et Finio l'investit automatiquement pour vous."
+      - title: "Annulation en 1 clic"
+        description: "Arrêtez votre épargne programmée à tout moment, sans pénalité."
+      - title: "Notification J-2 avant prélèvement"
+        description: "Recevez un rappel 2 jours avant chaque prélèvement pour rester en contrôle."
+      - title: "Amélioration de l'activation"
+        description: "Parcours d'ouverture de compte simplifié : moins d'étapes, sauvegarde automatique."
+
+    tasks:
+      - id: release_finance_tagline
+        type: single_choice
+        label: "Quel slogan reflète le mieux le positionnement de Finio Auto ?"
+        points: 15
+        options:
+          - id: a
+            label: "Finio Auto — L'épargne conforme AMF avec mandat SEPA sécurisé"
+          - id: b
+            label: "Finio Auto — Épargnez sans y penser. Arrêtez quand vous voulez."
+          - id: c
+            label: "Finio Auto — Nouvelles fonctionnalités disponibles maintenant"
+          - id: d
+            label: "Finio Auto — Le prélèvement automatique d'épargne pour les investisseurs"
+        expected: b
+        rationale: >
+          Option B : bénéfice principal (sans y penser) + réponse à la peur principale (arrêter quand on veut).
+          Ces deux messages répondent directement aux objections des personas Emma et Robert.
+          Option A : jargon réglementaire — repoussoir pour le grand public.
+          Option C : trop vague, pas d'appel à l'action.
+          Option D : "investisseurs" = positionnement trop élitiste pour les 25-40 ans.
+        hint: "Relisez les verbatims de Robert et Emma. Quelle peur principale adresse le meilleur slogan ?"
+    debrief: >
+      La communication de lancement doit adresser les peurs des utilisateurs cibles.
+      Pour l'épargne programmée, la peur principale est la perte de contrôle.
+      "Arrêtez quand vous voulez" est plus puissant que n'importe quel argument technique.
+
+events:
+  - id: bug_prelevement
+    title: "Bug critique — Double prélèvement sur 150 comptes"
+    description: >
+      J+3 après le lancement de l'épargne programmée, l'équipe support reçoit 150 tickets :
+      des utilisateurs ont été prélevés deux fois le même mois.
+      Léa identifie la cause : une condition de course dans le cron job SEPA.
+      Les prélèvements sont déjà passés. Que faites-vous en priorité ?
+    trigger: "after_module:sprint_planning"
+    urgency: high
+    choices:
+      - id: remboursement_immediat
+        label: "Bloquer immédiatement tout nouveau prélèvement + contacter personnellement les 150 utilisateurs pour rembourser sous 24h"
+        points: 15
+        rationale: >
+          Excellente décision : dans la fintech, les erreurs financières exigent une réponse
+          immédiate et personnelle. Bloquer les prélèvements arrête le problème.
+          Contacter proactivement et rembourser sous 24h transforme une crise en preuve de confiance.
+          L'AMF apprécie les entreprises qui résolvent les problèmes avant d'être contraintes.
+      - id: hotfix_dabord
+        label: "Corriger le bug en priorité, puis traiter les remboursements une fois le système stable"
+        points: 5
+        rationale: >
+          L'intention est bonne mais l'ordre est problématique : les utilisateurs impactés
+          ne savent pas encore ce qui se passe. Corriger d'abord sans les contacter
+          peut être perçu comme de la dissimulation si des médias s'emparent du sujet.
+      - id: minimiser
+        label: "Traiter les 150 cas via le support standard, délai habituel 3-5 jours ouvrés"
+        points: 0
+        rationale: >
+          Inacceptable : un double prélèvement est une erreur financière grave.
+          Un délai de 3-5 jours pour une erreur d'argent = réactions très négatives,
+          risque de plainte AMF, impact réputationnel sur l'App Store.
+
+  - id: concurrent_launch
+    title: "Revolut lance 'Savings Goals' en France"
+    description: >
+      Revolut annonce le lancement de "Savings Goals" en France — une fonctionnalité
+      d'épargne automatique similaire à Finio Auto, avec une intégration directe
+      au compte bancaire Revolut. 8M d'utilisateurs Revolut en France.
+      Comment réagissez-vous ?
+    trigger: "after_module:kpi_analysis"
+    urgency: medium
+    choices:
+      - id: differentiator
+        label: "Capitaliser sur les différenciateurs : produits structurés (SCPI, obligations) que Revolut ne propose pas + support FR + conformité AMF complète"
+        points: 15
+        rationale: >
+          Bonne réponse : Finio a des produits que Revolut n'offre pas (SCPI, obligations).
+          Revolut n'a pas la certification AMF pour ces produits en France.
+          Communiquer sur ces différences positionne Finio comme le choix "sérieux"
+          vs Revolut comme l'option "basique".
+      - id: price_war
+        label: "Réduire les frais de gestion pour être moins cher que Revolut"
+        points: 5
+        rationale: >
+          Risqué : une guerre des prix avec Revolut (qui a 10x plus de capital) est perdante.
+          Finio ne peut pas gagner sur le prix mais peut gagner sur la qualité produit.
+      - id: panic_copy
+        label: "Copier les fonctionnalités de Revolut Savings Goals pour ne pas paraître en retard"
+        points: 0
+        rationale: >
+          Mauvaise décision : copier un concurrent plus grand est une stratégie de perdant.
+          Ça dilue le positionnement de Finio et ralentit le développement des vrais différenciateurs.
+
+  - id: amf_audit
+    title: "AMF — Contrôle inopiné dans 48h"
+    description: >
+      Vous recevez un courrier de l'AMF : un contrôle de conformité est programmé
+      dans 48 heures sur l'épargne programmée. L'auditeur vérifiera :
+      les mandats SEPA, les notifications J-2, le délai de rétractation affiché,
+      et les documents pré-contractuels. Êtes-vous prêts ?
+    trigger: "after_module:stakeholder_mgmt"
+    urgency: high
+    choices:
+      - id: prepare_dpo
+        label: "Briefer immédiatement Nathalie (DPO) pour préparer le dossier de présentation et vérifier chaque exigence"
+        points: 15
+        rationale: >
+          Excellente décision : 48 heures c'est court mais suffisant pour préparer
+          une documentation claire si toutes les exigences sont bien implémentées.
+          La DPO est la bonne personne pour coordonner et présenter à l'auditeur.
+          Un contrôle réussi renforce la crédibilité de Finio auprès des utilisateurs et partenaires.
+      - id: call_lawyer
+        label: "Contacter un cabinet d'avocats spécialisé pour représenter Finio lors de l'audit"
+        points: 5
+        rationale: >
+          Acceptable mais insuffisant seul : un avocat externe ne connaît pas les détails
+          techniques de l'implémentation. La DPO interne doit être centrale dans la préparation.
+      - id: delay
+        label: "Demander un report de l'audit — 48h est trop court pour se préparer"
+        points: 0
+        rationale: >
+          Mauvaise décision : l'AMF peut refuser le report et une demande de report
+          peut être interprétée comme un signe que quelque chose ne va pas.
+          Si le produit est conforme (ce qu'il devrait être), 48h est suffisant avec une bonne organisation.
+
+feedback:
+  success_thresholds:
+    advanced:
+      min_percent: 75
+      message: >
+        Excellente performance ! Vous avez géré simultanément une crise UX et un lancement produit
+        sous contraintes réglementaires. Vous maîtrisez l'art d'arbitrer sans sacrifier ni la qualité ni la conformité.
+    intermediate:
+      min_percent: 40
+      message: >
+        Bon travail dans un contexte exigeant. Revoyez les points sur les dépendances
+        réglementaires et la communication de crise financière — des domaines clés en fintech.
+    junior:
+      min_percent: 0
+      message: >
+        La fintech est un secteur où la conformité et l'UX sont aussi critiques l'une que l'autre.
+        Les délais réglementaires ne sont pas négociables, et une mauvaise expérience utilisateur
+        peut faire échouer même le meilleur produit financier.

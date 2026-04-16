@@ -1,0 +1,82 @@
+<h2>Quelle direction visuelle pour le redesign ?</h2>
+<p class="subtitle">L'app reste dark theme (fond #0f172a). Quel style colle le mieux à une simulation professionnelle de PO ?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a;padding:20px;border-radius:8px;font-family:Inter,sans-serif;">
+      <div style="background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div style="width:36px;height:36px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">P+</div>
+          <div style="color:#f1f5f9;font-weight:700;font-size:15px;">Panier+</div>
+          <div style="margin-left:auto;background:#6366f1;color:white;padding:4px 12px;border-radius:20px;font-size:12px;">Module 2/8</div>
+        </div>
+        <div style="color:#94a3b8;font-size:13px;margin-bottom:12px;">OKR Setting</div>
+        <div style="background:#0f172a;border-radius:8px;padding:14px;border-left:3px solid #6366f1;">
+          <div style="color:#f1f5f9;font-size:13px;line-height:1.6;">Définissez l'objectif principal du Q3 pour Panier+</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <div style="flex:1;background:#0f172a;border:1px solid #334155;border-radius:6px;padding:8px 10px;color:#94a3b8;font-size:12px;">Augmenter la rétention de 20%</div>
+          <div style="flex:1;background:#6366f1;border-radius:6px;padding:8px 10px;color:white;font-size:12px;font-weight:600;">Réduire le CAC de 15%</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Enterprise SaaS</h3>
+      <p>Cartes sobres, typographie nette, bleu-violet comme accent. Ressemble aux vrais outils PO (Jira, Linear, Notion).</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;padding:20px;border-radius:8px;font-family:Inter,sans-serif;">
+      <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:20px;border:1px solid rgba(99,102,241,0.3);box-shadow:0 0 30px rgba(99,102,241,0.1);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:8px;height:8px;background:#6366f1;border-radius:50%;box-shadow:0 0 8px #6366f1;"></div>
+          <div style="color:#a5b4fc;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;">Mission active</div>
+        </div>
+        <div style="color:#f1f5f9;font-size:16px;font-weight:700;margin-bottom:8px;">Panier+ — OKR Setting</div>
+        <div style="height:2px;background:linear-gradient(90deg,#6366f1,transparent);margin-bottom:16px;border-radius:1px;"></div>
+        <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:14px;">
+          <div style="color:#e2e8f0;font-size:13px;line-height:1.6;">Définissez l'objectif principal du Q3</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <div style="flex:1;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:6px;padding:8px;color:#a5b4fc;font-size:12px;">Option A</div>
+          <div style="flex:1;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:6px;padding:8px;color:white;font-size:12px;font-weight:600;">Option B ✓</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Cyber / Immersif</h3>
+      <p>Néon doux, lueurs violettes, gradients sombres. Renforce le côté simulation et urgence de la mission.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a;padding:20px;border-radius:8px;font-family:Inter,sans-serif;">
+      <div style="background:#18212f;border-radius:12px;padding:20px;border:1px solid #2a3a4a;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="display:flex;gap:8px;">
+            <div style="width:10px;height:10px;background:#ef4444;border-radius:50%;"></div>
+            <div style="width:10px;height:10px;background:#f59e0b;border-radius:50%;"></div>
+            <div style="width:10px;height:10px;background:#22c55e;border-radius:50%;"></div>
+          </div>
+          <div style="color:#64748b;font-size:12px;font-family:monospace;">panier+ / okr-setting</div>
+        </div>
+        <div style="background:#0d1521;border-radius:8px;padding:14px;font-family:monospace;">
+          <div style="color:#94a3b8;font-size:11px;margin-bottom:6px;">// Module 2 — OKR Setting</div>
+          <div style="color:#22c55e;font-size:12px;">objective <span style="color:#f59e0b;">→</span> <span style="color:#a5b4fc;">"Q3 growth"</span></div>
+          <div style="color:#64748b;font-size:11px;margin-top:4px;">key_results: [retention +20%, CAC -15%]</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:12px;">
+          <div style="background:#0d1521;border:1px solid #2a3a4a;border-radius:4px;padding:6px 10px;color:#a5b4fc;font-size:11px;font-family:monospace;">[A] retention</div>
+          <div style="background:#22c55e;border-radius:4px;padding:6px 10px;color:#0d1521;font-size:11px;font-weight:700;font-family:monospace;">[B] selected ✓</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Terminal / Dev</h3>
+      <p>Esthétique code, mono, fond quasi-noir. Donne une vibe "outil interne" sérieux, moins grand public.</p>
+    </div>
+  </div>
+
+</div>
