@@ -1,4 +1,4 @@
-import { LayoutGrid, LineChart, Inbox, Users } from 'lucide-react'
+import { LayoutGrid, LineChart, Inbox, Users, LogOut } from 'lucide-react'
 
 const NAV_ITEMS = [
   { id: 'module',   Icon: LayoutGrid, color: 'var(--c-module)',  label: 'Module'  },
@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { id: 'personas', Icon: Users,      color: 'var(--c-team)',    label: 'Équipe'  },
 ]
 
-export default function Navbar({ company, activeTab, onTabChange, inboxCount }) {
+export default function Navbar({ company, activeTab, onTabChange, inboxCount, onGoHome }) {
   return (
     <nav className="sidebar">
       <div className="sidebar-logo" title={company}>
@@ -35,6 +35,19 @@ export default function Navbar({ company, activeTab, onTabChange, inboxCount }) 
           </button>
         )
       })}
+
+      <div style={{ flex: 1 }} />
+      <div className="sidebar-sep" />
+
+      <button
+        className="nav-btn"
+        style={{ '--nav-color': 'var(--danger)' }}
+        onClick={onGoHome}
+        title="Quitter la mission"
+        aria-label="Quitter la mission"
+      >
+        <LogOut size={18} strokeWidth={1.75} />
+      </button>
     </nav>
   )
 }

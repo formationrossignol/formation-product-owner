@@ -51,6 +51,22 @@ export default function Debrief() {
     <div className="debrief-page">
       <div id="debrief-export">
         <header className="debrief-header">
+          <div className="debrief-trophy">
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="36" cy="36" r="36" fill="#FAFAFA"/>
+              {/* Cup body */}
+              <path d="M22 18h28v16c0 8.837-6.268 16-14 16s-14-7.163-14-16V18z" fill="#FEF9C3" stroke="#FDE047" strokeWidth="2"/>
+              {/* Handles */}
+              <path d="M22 22h-6a4 4 0 000 8h6" stroke="#FDE047" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M50 22h6a4 4 0 010 8h-6" stroke="#FDE047" strokeWidth="2" strokeLinecap="round"/>
+              {/* Star inside */}
+              <text x="36" y="36" textAnchor="middle" dominantBaseline="middle" fontSize="16" fill="#CA8A04">★</text>
+              {/* Stem */}
+              <rect x="32" y="50" width="8" height="8" rx="1" fill="#FDE047"/>
+              {/* Base */}
+              <rect x="26" y="57" width="20" height="4" rx="2" fill="#FDE047" stroke="#CA8A04" strokeWidth="1"/>
+            </svg>
+          </div>
           <h1>Bilan de mission</h1>
           <p className="debrief-case">{currentCase.context.company} — {currentCase.title}</p>
         </header>

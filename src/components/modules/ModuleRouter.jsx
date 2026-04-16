@@ -9,6 +9,7 @@ import SprintReview from './SprintReview'
 import KpiAnalysis from './KpiAnalysis'
 import StakeholderMgmt from './StakeholderMgmt'
 import ReleaseCommunication from './ReleaseCommunication'
+import Prioritization from './Prioritization'
 
 const MODULE_MAP = {
   okr_setting: OkrSetting,
@@ -22,6 +23,7 @@ const MODULE_MAP = {
   kpi_analysis: KpiAnalysis,
   stakeholder_mgmt: StakeholderMgmt,
   release_communication: ReleaseCommunication,
+  prioritization: Prioritization,
 }
 
 export default function ModuleRouter({ module, onComplete }) {

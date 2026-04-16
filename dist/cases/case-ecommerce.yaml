@@ -419,6 +419,66 @@ modules:
       max_points: 25
       pass_threshold: 15
 
+  - id: prioritization
+    type: prioritization
+    title: "Priorisation des features"
+    objectives:
+      - "Appliquer les frameworks RICE, MoSCoW, WSJF et Eisenhower"
+      - "Comparer les résultats selon les approches et justifier vos choix"
+    instructions: >
+      Vous avez identifié 6 features candidates pour le prochain trimestre.
+      L'équipe tech a une capacité de 42 pts/sprint × 2 sprints = 84 points disponibles.
+      Utilisez les 4 frameworks pour affiner votre priorisation.
+    features:
+      - id: f_avis
+        title: "Système d'avis vendeurs"
+        description: "Permettre aux acheteurs de noter les vendeurs après achat"
+        theme: growth
+      - id: f_tunnel
+        title: "Tunnel de paiement simplifié"
+        description: "Réduire le checkout de 6 à 3 étapes"
+        theme: ux
+      - id: f_stats
+        title: "Stats vendeur en temps réel"
+        description: "Dashboard de vues et conversion par annonce"
+        theme: strategy
+      - id: f_protection
+        title: "Badge protection acheteur visible"
+        description: "Afficher la garantie acheteur sur chaque fiche produit"
+        theme: growth
+      - id: f_lydia
+        title: "Intégration paiement Lydia"
+        description: "Ajouter Lydia comme méthode de paiement alternative"
+        theme: tech
+      - id: f_dark
+        title: "Mode sombre (Dark mode)"
+        description: "Thème sombre pour l'application mobile"
+        theme: ux
+    tasks:
+      - id: prio_top2
+        type: multi_select
+        label: "Selon votre analyse RICE et MoSCoW, quelles sont les 2 features qui doivent absolument être livrées ce trimestre ?"
+        options:
+          - id: f_avis
+            label: "Système d'avis vendeurs"
+          - id: f_tunnel
+            label: "Tunnel de paiement simplifié"
+          - id: f_stats
+            label: "Stats vendeur en temps réel"
+          - id: f_protection
+            label: "Badge protection acheteur visible"
+          - id: f_lydia
+            label: "Intégration paiement Lydia"
+          - id: f_dark
+            label: "Mode sombre"
+        expected: [f_avis, f_tunnel]
+        points: 20
+        rationale: "Le système d'avis (conversion ×8 selon les analytics) et la simplification du tunnel (47% d'abandon à l'étape livraison) adressent directement les deux bloquants principaux identifiés. Ce sont les seuls Must Have selon MoSCoW — tout le reste peut attendre."
+    debrief: "Les frameworks de priorisation convergent vers les mêmes conclusions quand les données sont bonnes. RICE et WSJF sont puissants pour comparer des features comparables ; MoSCoW est plus rapide pour trancher en équipe. Le vrai risque est de sur-intellectualiser : la priorisation doit rester un outil au service de la décision, pas une fin en soi."
+    scoring:
+      max_points: 20
+      pass_threshold: 12
+
   - id: discovery
     type: discovery
     title: "Discovery — Comprendre les vrais problèmes"
